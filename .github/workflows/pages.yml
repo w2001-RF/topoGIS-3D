@@ -1,10 +1,14 @@
-name: Déployer TopoGIS 3D sur GitHub Pages
+name: Deploy TopoGIS 3D to GitHub Pages
 
-# Déploiement automatique à chaque envoi sur la branche principale.
-# Prérequis (une seule fois) : Settings > Pages > Source : « GitHub Actions ».
+# Publie index.html sur https://w2001-rf.github.io/topoGIS-3D/
+# Se déclenche à chaque envoi sur main qui modifie l'application, ou à la demande
+# (onglet Actions > Run workflow).
 on:
   push:
-    branches: [main, master]
+    branches: [main]
+    paths:
+      - index.html
+      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:
@@ -12,6 +16,7 @@ permissions:
   pages: write
   id-token: write
 
+# Un seul déploiement à la fois ; le plus récent remplace le précédent.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -24,14 +29,29 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Préparer le site (un seul fichier : index.html)
+
+      - name: Vérifier index.html
+        run: |
+          test -s index.html
+          grep -q "TopoGIS 3D" index.html
+          grep -q "maplibre-gl" index.html
+          grep -q "turf" index.html
+
+      - name: Préparer le site (fichier unique)
         run: |
           mkdir dist
           cp index.html dist/
           touch dist/.nojekyll
+
+      # enablement: true active Pages automatiquement si le jeton le permet.
+      # Sinon : Settings > Pages > Build and deployment > Source : GitHub Actions.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
       - id: deployment
         uses: actions/deploy-pages@v4
