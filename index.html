@@ -213,7 +213,7 @@ input:invalid{border-color:var(--danger)}
 #fatal .msg{max-width:520px}
 
 /* ---------- Mobile : panneau escamotable en bas ---------- */
-@media (max-width:860px){
+@media (max-width:860px), (max-height:500px) and (orientation:landscape){
   #app{display:block}
   #sidebar{position:fixed;left:0;right:0;bottom:0;height:var(--sheet-h);border-right:0;border-top:1px solid var(--border);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.25);transition:transform .25s ease;z-index:30}
   body.sidebar-collapsed #sidebar{transform:translateY(calc(100% - var(--sheet-handle)))}
@@ -232,6 +232,78 @@ input:invalid{border-color:var(--danger)}
 }
 @media (max-width:420px){
   .field-row.three{grid-template-columns:1fr}
+}
+
+/* ==========================================================================
+   Adaptation aux différents écrans mobiles
+   ========================================================================== */
+/* Hauteur dynamique (barres d'adresse mobiles) */
+@supports (height:100dvh){ :root{ --sheet-h:min(62dvh,540px); } }
+
+/* Zones sûres (encoche, barre de gestes, coins arrondis) */
+#sidebar-scroll{ padding-bottom:calc(12px + env(safe-area-inset-bottom)); }
+.sb-header{ padding-left:max(16px,env(safe-area-inset-left)); padding-right:max(16px,env(safe-area-inset-right)); }
+.maplibregl-ctrl-top-right{ top:env(safe-area-inset-top); right:env(safe-area-inset-right); }
+.maplibregl-ctrl-top-left{ top:env(safe-area-inset-top); left:env(safe-area-inset-left); }
+#toasts{ right:max(10px,env(safe-area-inset-right)); }
+
+/* Fenêtres d'information : jamais plus larges que l'écran */
+.maplibregl-popup{ max-width:calc(100vw - 24px)!important; }
+.maplibregl-popup-content{ max-width:min(330px,calc(100vw - 40px)); }
+
+/* Écrans tactiles : cibles ≥ 44 px, police 16 px (évite le zoom automatique d'iOS) */
+@media (pointer:coarse){
+  .btn{ min-height:44px; }
+  input[type=text],input[type=number],input[type=date],select,textarea{ min-height:44px; font-size:16px; }
+  .check input{ width:22px; height:22px; }
+  .icon-btn{ width:44px; height:44px; }
+  .maplibregl-ctrl-group button,.map-ctrl-btn{ width:40px!important; height:40px!important; }
+  .maplibregl-popup-close-button{ font-size:24px; padding:6px 12px; }
+  .card>summary{ min-height:48px; }
+  .b-item{ padding:10px 12px; }
+}
+
+/* Tablette en portrait : panneau du bas sur deux colonnes */
+@media (min-width:600px) and (max-width:860px) and (min-height:501px){
+  :root{ --sheet-h:min(58vh,560px); }
+  @supports (height:100dvh){ :root{ --sheet-h:min(58dvh,560px); } }
+  #sidebar-scroll{ display:grid; grid-template-columns:1fr 1fr; align-items:start; gap:12px; }
+  #sidebar-scroll .sb-footer{ grid-column:1/-1; }
+  #toasts{ max-width:420px; left:auto; }
+}
+
+/* Petits téléphones (≤ 360 px, ex. 320 px) */
+@media (max-width:360px){
+  #sidebar-scroll{ padding:8px; gap:8px; }
+  .card-body{ padding:2px 10px 12px; }
+  .card>summary{ padding:10px; }
+  .btn-grid{ grid-template-columns:1fr; }
+  .readout{ grid-template-columns:1fr; }
+  .stat .v{ font-size:15px; }
+  .sb-title{ font-size:17px; }
+  .sb-logo{ width:32px; height:32px; }
+  #mode-banner{ font-size:12px; padding:6px 8px; gap:6px; }
+  #contour-legend{ max-width:150px; font-size:11px; }
+  .m-table{ font-size:11px; }
+}
+
+/* Téléphone en paysage : le panneau devient un tiroir latéral */
+@media (max-height:500px) and (orientation:landscape){
+  :root{ --drawer-w:min(380px,50vw); }
+  #sidebar{ top:0; bottom:0; left:0; right:auto; width:var(--drawer-w); height:auto; border-radius:0; border-top:0; border-right:1px solid var(--border); box-shadow:6px 0 24px rgba(0,0,0,.25); padding-left:env(safe-area-inset-left); }
+  body.sidebar-collapsed #sidebar{ transform:translateX(-100%); }
+  .sheet-handle{ position:absolute; left:100%; top:10px; width:auto; min-width:0; height:44px; min-height:44px; padding:0 14px 0 10px; border-radius:0 12px 12px 0; box-shadow:var(--shadow); font-size:13px; white-space:nowrap; }
+  .sheet-handle .grip{ display:none; }
+  .sb-header{ padding-top:6px; padding-bottom:6px; }
+  .maplibregl-ctrl-bottom-left{ left:var(--drawer-w); bottom:0; }
+  body.sidebar-collapsed .maplibregl-ctrl-bottom-left{ left:0; bottom:0; }
+  .maplibregl-ctrl-bottom-right,body.sidebar-collapsed .maplibregl-ctrl-bottom-right{ bottom:0; }
+  #toasts,body:not(.sidebar-collapsed) #toasts{ top:auto; bottom:34px; left:auto; right:max(8px,env(safe-area-inset-right)); max-width:min(380px,45vw); }
+  #contour-legend,body:not(.sidebar-collapsed) #contour-legend{ left:calc(var(--drawer-w) + 10px); bottom:46px; }
+  body.sidebar-collapsed #contour-legend{ left:10px; bottom:46px; }
+  #mode-banner{ left:calc(50% + var(--drawer-w) / 2); top:8px; }
+  body.sidebar-collapsed #mode-banner{ left:50%; }
+  .readout{ grid-template-columns:1fr 1fr; }
 }
 </style>
 </head>
@@ -3195,7 +3267,8 @@ const DEM_API_KEY = '';
   /* ========================================================================
      13. INTERFACE UTILISATEUR
      ======================================================================== */
-  const isMobile = () => window.matchMedia('(max-width: 860px)').matches;
+  const MOBILE_QUERY = '(max-width: 860px), (max-height: 500px) and (orientation: landscape)';
+  const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
 
   function setSheetCollapsed(collapsed) {
     document.body.classList.toggle('sidebar-collapsed', collapsed);
@@ -3392,7 +3465,7 @@ const DEM_API_KEY = '';
       if (e.key === 'Escape' && state.mode !== 'idle' && !/INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || '')) { setMode('idle'); notify('Mode quitté.', 'info', 2500); }
     });
     // Panneau mobile : revient à l'état normal quand l'écran s'élargit
-    const mql = window.matchMedia('(max-width: 860px)');
+    const mql = window.matchMedia(MOBILE_QUERY);
     const onMql = () => { if (!mql.matches) setSheetCollapsed(false); };
     if (mql.addEventListener) mql.addEventListener('change', onMql); else if (mql.addListener) mql.addListener(onMql);
     // Redessine le profil quand sa largeur change
