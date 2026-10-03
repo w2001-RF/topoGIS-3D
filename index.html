@@ -11,8 +11,13 @@
 <meta property="og:type" content="website">
 <!-- Les chemins sont tous relatifs ou absolus vers des CDN : le fichier fonctionne tel quel
      à la racine d'un domaine, dans un sous-dossier (GitHub Pages : /nom-du-depot/) ou en local. -->
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
+<link rel="preconnect" href="https://s3.amazonaws.com" crossorigin>
+<link rel="dns-prefetch" href="https://overpass-api.de">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b2545'/%3E%3Cpath d='M32 10 52 21v22L32 54 12 43V21z' fill='none' stroke='%2332c48d' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M12 21l20 11 20-11M32 32v22' fill='none' stroke='%2332c48d' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css'">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/maplibre-gl@5.9.0/dist/maplibre-gl.css'">
 <style>
 /* ==========================================================================
    TopoGIS 3D – feuille de style (thème clair / sombre via data-theme)
@@ -58,7 +63,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 #app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;height:100vh;height:100dvh;overflow:hidden}
 #sidebar{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--border);z-index:5}
 #map-wrap{position:relative;min-width:0;min-height:0}
-#map{position:absolute;inset:0}
+#map{position:absolute;inset:0;background:#040c1a}
 .sheet-handle{display:none}
 .sb-header{display:flex;align-items:center;gap:12px;padding:14px 16px;color:#fff;background:linear-gradient(135deg,var(--navy),var(--navy-2))}
 .sb-logo{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.12);display:grid;place-items:center;color:#4be0a6;flex:none}
@@ -305,6 +310,7 @@ input:invalid{border-color:var(--danger)}
   body.sidebar-collapsed #mode-banner{ left:50%; }
   .readout{ grid-template-columns:1fr 1fr; }
 }
+.b-list li{ content-visibility:auto; contain-intrinsic-size:auto 72px; }
 </style>
 </head>
 <body>
@@ -335,6 +341,7 @@ input:invalid{border-color:var(--danger)}
     <symbol id="i-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></symbol>
     <symbol id="i-mountain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 20 6-11 4 6 3-4 5 9z"/></symbol>
     <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/></symbol>
   </defs>
 </svg>
@@ -459,6 +466,10 @@ input:invalid{border-color:var(--danger)}
       <details class="card" id="sec-relief" open>
         <summary><svg class="ico"><use href="#i-mountain"/></svg><h2>Relief et altimétrie</h2><svg class="ico chev"><use href="#i-chevron"/></svg></summary>
         <div class="card-body">
+          <div class="btn-grid">
+            <button id="btn-globe" class="btn btn-secondary" type="button" aria-pressed="false" aria-label="Basculer entre la carte plane et le globe terrestre en 3D"><svg class="ico"><use href="#i-globe"/></svg><span id="btn-globe-label">Vue globe</span></button>
+            <label class="check" style="justify-content:center"><input type="checkbox" id="chk-spin"> Rotation automatique</label>
+          </div>
           <div id="dem-status" class="msg msg-info" role="status">Source d'altitude : vérification en cours…</div>
           <div class="btn-grid">
             <button id="btn-relief" class="btn btn-secondary" type="button" aria-pressed="false" aria-label="Afficher ou masquer le modèle de terrain en relief"><svg class="ico"><use href="#i-mountain"/></svg><span id="btn-relief-label">Afficher le relief</span></button>
@@ -595,8 +606,8 @@ input:invalid{border-color:var(--danger)}
   </main>
 </div>
 
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+<script defer src="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.js" onerror="this.dataset.failed='1'"></script>
+<script defer src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js" onerror="this.dataset.failed='1'"></script>
 <script>
 /* ==========================================================================
    CLÉ API OPTIONNELLE POUR LE MODÈLE NUMÉRIQUE DE TERRAIN (MNT)
@@ -732,7 +743,8 @@ const DEM_API_KEY = '';
     dem: { available: null, checking: false, lastError: '' },
     relief: { on: false, exaggeration: 1.5 },
     contours: { on: false, token: 0, timer: null, info: null, intervalSetting: 'auto' },
-    profile: { points: [], result: null, loading: false, token: 0 }
+    profile: { points: [], result: null, loading: false, token: 0 },
+    globe: { on: false, spin: false }
   };
 
   /* ========================================================================
@@ -772,8 +784,11 @@ const DEM_API_KEY = '';
   const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const round = (v, d = 2) => (isNum(v) ? Math.round(v * 10 ** d) / 10 ** d : null);
+  const nfCache = {};
   function fmtNum(n, d = 2) {
-    return isNum(n) ? n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—';
+    if (!isNum(n)) return '—';
+    const f = nfCache[d] || (nfCache[d] = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }));
+    return f.format(n);
   }
   const fmtCoord = (v) => (isNum(v) ? v.toFixed(6) : '—');
   function fmtDistance(m) {
@@ -868,7 +883,8 @@ const DEM_API_KEY = '';
         container: 'map',
         style: buildBaseStyle(),
         center: CONFIG.defaultCenter, zoom: CONFIG.defaultZoom,
-        maxPitch: CONFIG.maxPitch, attributionControl: false, hash: false
+        maxPitch: CONFIG.maxPitch, attributionControl: false, hash: false,
+        pixelRatio: Math.min(window.devicePixelRatio || 1, 2), fadeDuration: 150
       });
     } catch (err) {
       showFatal('Impossible d\'initialiser la carte : WebGL est indisponible ou désactivé dans ce navigateur. (' + (err && err.message ? err.message : err) + ')');
@@ -880,6 +896,7 @@ const DEM_API_KEY = '';
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'metric' }), 'bottom-left');
     map.addControl(new MapButtonControl({ id: 'map-btn-recenter', title: 'Recentrer la carte', iconName: 'target', onClick: recenterMap }), 'top-right');
     map.addControl(new MapButtonControl({ id: 'map-btn-3d', title: 'Basculer entre la vue 2D et la vue 3D', text: '3D', toggle: true, onClick: () => setViewMode(!state.is3D) }), 'top-right');
+    map.addControl(new MapButtonControl({ id: 'map-btn-globe', title: 'Basculer entre la carte plane et le globe terrestre', iconName: 'globe', toggle: true, onClick: () => setGlobe(!state.globe.on) }), 'top-right');
     map.on('error', onMapError);
     map.on('load', onMapLoad);
     return true;
@@ -975,6 +992,7 @@ const DEM_API_KEY = '';
   function bindMapInteractions() {
     const map = state.map;
     map.on('click', onMapClick);
+    ['dragstart', 'mousedown', 'touchstart', 'wheel'].forEach((t) => map.on(t, () => { if (state.globe.spin) setSpin(false); }));
     INTERACTIVE_LAYERS.forEach((id) => {
       map.on('mouseenter', id, () => { if (state.mode === 'idle') map.getCanvas().style.cursor = 'pointer'; });
       map.on('mouseleave', id, () => { if (!state.drag) map.getCanvas().style.cursor = ''; });
@@ -1000,7 +1018,7 @@ const DEM_API_KEY = '';
       if (!v) return;
       state.drag.moved = true;
       v.lng = e.lngLat.lng; v.lat = e.lngLat.lat; v.alt = null;   // l'altitude GPS ne vaut plus pour le nouveau point
-      refreshParcel();
+      scheduleParcelRefresh();
     };
     map.on('mousemove', onMove);
     map.on('touchmove', onMove);
@@ -1015,6 +1033,13 @@ const DEM_API_KEY = '';
     window.addEventListener('mouseup', endDrag);
     window.addEventListener('touchend', endDrag);
     window.addEventListener('touchcancel', endDrag);
+  }
+
+  let parcelRaf = 0;
+  /** Regroupe les recalculs de la parcelle (Turf + DOM) : une fois par image au plus. */
+  function scheduleParcelRefresh() {
+    if (parcelRaf) return;
+    parcelRaf = requestAnimationFrame(() => { parcelRaf = 0; refreshParcel(); });
   }
 
   function modeCursor() { return state.mode === 'idle' ? '' : 'crosshair'; }
@@ -1095,6 +1120,7 @@ const DEM_API_KEY = '';
   }
 
   function onMapMoveEnd() {
+    if (state.globe.spin) spinStep();
     if (state.contours.on) scheduleContours();
   }
 
@@ -1311,6 +1337,9 @@ const DEM_API_KEY = '';
   /* ========================================================================
      5. BÂTIMENTS OVERPASS
      ======================================================================== */
+  const overpassCache = new Map();
+  const OVERPASS_TTL_MS = 10 * 60 * 1000;
+
   class UserAbort extends Error { constructor() { super('Recherche annulée'); this.name = 'UserAbort'; } }
 
   function classifyBuilding(tags) {
@@ -1569,7 +1598,16 @@ const DEM_API_KEY = '';
     toggleDetectUi(true);
     setStatus('buildings-status', `Recherche des bâtiments autour de la ${center.label} (rayon ${radius} m)…`, 'loading');
     try {
-      const data = await queryOverpass(buildOverpassQuery(center, radius), ctrl.signal);
+      const cacheKey = center.lat.toFixed(4) + ',' + center.lng.toFixed(4) + ',' + radius;
+      const hit = overpassCache.get(cacheKey);
+      const fromCache = !!hit && Date.now() - hit.at < OVERPASS_TTL_MS;
+      let data;
+      if (fromCache) data = hit.payload;
+      else {
+        data = await queryOverpass(buildOverpassQuery(center, radius), ctrl.signal);
+        overpassCache.set(cacheKey, { at: Date.now(), payload: data });
+        if (overpassCache.size > 5) overpassCache.delete(overpassCache.keys().next().value);
+      }
       const features = overpassToFeatures(data.elements, center);
       state.buildings = features;
       clearBuildingSelection();
@@ -1578,7 +1616,7 @@ const DEM_API_KEY = '';
       if (!features.length) {
         setStatus('buildings-status', `Aucun bâtiment OpenStreetMap trouvé dans un rayon de ${radius} m. Essayez un rayon plus grand ou un autre centre.`, 'warn');
       } else {
-        setStatus('buildings-status', `${features.length} bâtiment(s) chargé(s) depuis OpenStreetMap (rayon ${radius} m).`, 'ok');
+        setStatus('buildings-status', `${features.length} bâtiment(s) chargé(s) depuis OpenStreetMap (rayon ${radius} m)${fromCache ? ', résultat en cache de moins de 10 min' : ''}.`, 'ok');
         const circle = turf.circle([center.lng, center.lat], radius / 1000, { steps: 48, units: 'kilometers' });
         const b = turf.bbox(circle);
         state.map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 40, maxZoom: 18.5, duration: 800 });
@@ -1710,6 +1748,64 @@ const DEM_API_KEY = '';
     state.popup = new maplibregl.Popup({ maxWidth: '330px', closeButton: true, focusAfterOpen: false })
       .setLngLat(lngLat).setDOMContent(content).addTo(state.map);
     return state.popup;
+  }
+
+  /* ---------- Globe terrestre 3D (projection sphérique de MapLibre 5) ---------- */
+  function globeSupported() { return !!(state.map && typeof state.map.setProjection === 'function'); }
+
+  /** Active ou désactive la projection globe. Le relief 3D et les courbes (cartes planes) sont alors coupés. */
+  function setGlobe(on, opts) {
+    if (!requireMap()) return;
+    if (!globeSupported()) { notify('Le globe nécessite MapLibre GL JS 5 ou plus : la bibliothèque chargée est trop ancienne.', 'error', 8000); return; }
+    const map = state.map;
+    state.globe.on = !!on;
+    if (on) {
+      if (state.relief.on) disableRelief();
+      if (state.contours.on) disableContours();
+      if (state.mode !== 'idle') setMode('idle');
+    } else if (state.globe.spin) setSpin(false);
+    applyGlobe();
+    if (opts && opts.animate === false) return;
+    if (on) map.easeTo({ zoom: Math.min(map.getZoom(), 2.3), pitch: 0, bearing: 0, duration: 2000 });
+    else map.easeTo({ zoom: Math.max(map.getZoom(), 3.5), duration: 1400 });
+    if (on) notify('Globe terrestre : faites glisser pour tourner la planète, zoomez pour revenir à la carte plane.', 'info', 6000);
+  }
+
+  function applyGlobe() {
+    const on = state.globe.on;
+    if (requireMap(true) && globeSupported()) {
+      state.map.setProjection({ type: on ? 'globe' : 'mercator' });
+      try {
+        // Atmosphère visible à l'échelle de la planète, fondue au zoom rapproché
+        if (typeof state.map.setSky === 'function') {
+          state.map.setSky(on ? { 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 1, 7, 0], 'sky-color': '#5aa9ff', 'horizon-color': '#cfe6ff', 'fog-color': '#cfe6ff', 'sky-horizon-blend': 0.6, 'horizon-fog-blend': 0.6, 'fog-ground-blend': 0.9 } : { 'atmosphere-blend': 0 });
+        }
+      } catch (e) { console.warn('Atmosphère non appliquée :', e); }
+    }
+    document.getElementById('map').classList.toggle('globe-on', on);
+    $('btn-globe').setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('btn-globe-label').textContent = on ? 'Vue plane' : 'Vue globe';
+    const mb = $('map-btn-globe');
+    if (mb) mb.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
+  function spinStep() {
+    const map = state.map;
+    if (!state.globe.spin || !map) return;
+    const c = map.getCenter();
+    map.easeTo({ center: [c.lng - 18, c.lat], duration: 1000, easing: (t) => t, essential: true });
+  }
+
+  function setSpin(on) {
+    if (on && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      notify('Rotation automatique désactivée : votre appareil demande de réduire les animations.', 'info');
+      on = false;
+    }
+    state.globe.spin = !!on;
+    $('chk-spin').checked = !!on;
+    if (!on) { if (state.map) state.map.stop(); return; }
+    if (!state.globe.on) { setGlobe(true); return; }      // la rotation démarre à la fin du zoom arrière (moveend)
+    spinStep();
   }
 
   /** Vue 2D / 3D : bascule des couches et inclinaison automatique. */
@@ -2323,7 +2419,8 @@ const DEM_API_KEY = '';
     }
     if (token !== state.contours.token || !state.contours.on) return;
     let res;
-    try { res = buildContours(tiles, z, range); } catch (err) { reportError('Erreur lors du calcul des courbes de niveau.', err); return; }
+    try { res = await buildContours(tiles, z, range); } catch (err) { reportError('Erreur lors du calcul des courbes de niveau.', err); return; }
+    if (token !== state.contours.token || !state.contours.on) return;
     if (!res.features.length) {
       clearContourGraphics();
       setStatus('contour-info', `Terrain quasi plat dans cette vue (altitudes de ${fmtNum(res.min, 1)} à ${fmtNum(res.max, 1)} m) : aucune courbe pour l'équidistance de ${res.interval} m. Choisissez une équidistance plus fine.`, 'warn');
@@ -2341,7 +2438,9 @@ const DEM_API_KEY = '';
   }
 
   /** Construit les courbes de niveau d'une grille d'altitudes (marching squares). */
-  function buildContours(tiles, z, range) {
+  const yieldToMain = () => new Promise((r) => setTimeout(r, 0));
+
+  async function buildContours(tiles, z, range) {
     const W = (range.x1 - range.x0 + 1) * 256, H = (range.y1 - range.y0 + 1) * 256;
     const s = Math.max(1, Math.ceil(Math.max(W, H) / CONFIG.contours.maxGrid));
     const gw = Math.floor((W - 1) / s) + 1, gh = Math.floor((H - 1) / s) + 1;
@@ -2385,6 +2484,7 @@ const DEM_API_KEY = '';
     const first = Math.ceil(min / interval);
     for (let k = first; k * interval <= max; k++) {
       const L = k * interval;
+      if (k % 3 === 0) await yieldToMain();
       const segs = [];
       for (let y = 0; y < gh - 1; y++) {
         for (let x = 0; x < gw - 1; x++) {
@@ -3148,7 +3248,7 @@ const DEM_API_KEY = '';
       gpsTrack: state.gpsTrack, csvPoints: state.csvPoints, imported: state.imported,
       measure: { points: state.measure.points },
       profile: { points: state.profile.points, result: state.profile.result },
-      view: Object.assign({ mode3d: state.is3D }, view || {}),
+      view: Object.assign({ mode3d: state.is3D, globe: state.globe.on }, view || {}),
       ui: { radius: Number($('in-radius').value) || CONFIG.defaultRadius, filter: state.buildingFilter }
     };
   }
@@ -3217,6 +3317,7 @@ const DEM_API_KEY = '';
       if (state.profile.result) renderProfile(); else { $('profile-results').hidden = true; }
       const v = data.view || {};
       setViewMode(!!v.mode3d, { animate: false });
+      if (globeSupported() && !!v.globe !== state.globe.on) setGlobe(!!v.globe, { animate: false });
       if (Array.isArray(v.center) && isNum(v.center[0]) && isNum(v.center[1]) && isNum(v.zoom)) {
         state.map.jumpTo({ center: v.center, zoom: v.zoom, pitch: isNum(v.pitch) ? v.pitch : (v.mode3d ? CONFIG.pitch3D : 0), bearing: isNum(v.bearing) ? v.bearing : 0 });
       }
@@ -3424,6 +3525,7 @@ const DEM_API_KEY = '';
   /* ----- Liaison des événements ----- */
   const ACTIONS = {
     'btn-theme': toggleTheme,
+    'btn-globe': () => setGlobe(!state.globe.on),
     'btn-locate': requestPosition, 'btn-track': startTracking, 'btn-stop-track': () => stopTracking(false), 'btn-recenter': recenterMap,
     'btn-detect': detectBuildings, 'btn-cancel-detect': cancelDetect, 'btn-view3d': () => setViewMode(!state.is3D),
     'btn-parcel-start': startParcel, 'btn-parcel-addpoint': addVertexFromGps, 'btn-parcel-close': closeParcel,
@@ -3454,6 +3556,7 @@ const DEM_API_KEY = '';
     }
     $('file-geojson').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importGeoJsonFile(f); }));
     $('file-csv').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importCsvFile(f); }));
+    $('chk-spin').addEventListener('change', (e) => setSpin(e.target.checked));
     $('sel-filter').addEventListener('change', (e) => { state.buildingFilter = e.target.value; applyBuildingFilter(); });
     $('in-radius').addEventListener('keydown', (e) => { if (e.key === 'Enter') safe(detectBuildings)(); });
     $('rng-exag').addEventListener('input', (e) => setExaggeration(Number(e.target.value)));
@@ -3544,13 +3647,27 @@ const DEM_API_KEY = '';
     });
   }
 
+  /** Attend le script différé du CDN principal ; abandonne dès qu'il échoue ou après 15 s. */
+  function waitForLib(lib) {
+    return new Promise((resolve) => {
+      const t0 = Date.now();
+      (function poll() {
+        if (lib.ok()) return resolve(true);
+        const tag = document.querySelector('script[src*="' + lib.sel + '"]');
+        if ((tag && tag.dataset.failed) || Date.now() - t0 > 15000) return resolve(false);
+        setTimeout(poll, 40);
+      })();
+    });
+  }
+
   /** Vérifie MapLibre et Turf ; tente des CDN de secours si besoin. */
   async function ensureLibraries() {
     const libs = [
-      { name: 'MapLibre GL JS', ok: () => !!window.maplibregl, urls: ['https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js', 'https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js'] },
-      { name: 'Turf.js', ok: () => !!window.turf, urls: ['https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js'] }
+      { name: 'MapLibre GL JS', sel: 'maplibre-gl.js', ok: () => !!window.maplibregl, urls: ['https://cdn.jsdelivr.net/npm/maplibre-gl@5.9.0/dist/maplibre-gl.js', 'https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js'] },
+      { name: 'Turf.js', sel: 'turf.min.js', ok: () => !!window.turf, urls: ['https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js'] }
     ];
     for (const lib of libs) {
+      await waitForLib(lib);
       for (const url of lib.urls) { if (lib.ok()) break; try { await loadScript(url); } catch (e) { /* essai suivant */ } }
       if (!lib.ok()) throw new Error(lib.name + ' n\'a pas pu être chargé (réseau ou CDN bloqué). Vérifiez votre connexion puis rechargez la page.');
     }
@@ -3588,7 +3705,7 @@ const DEM_API_KEY = '';
   // Poignée de débogage / tests : expose l'état et quelques fonctions internes.
   window.TopoGIS = {
     version: CONFIG.appVersion, state, config: CONFIG,
-    internals: { parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
+    internals: { overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
   };
 
   init().catch(handleUnexpected);
