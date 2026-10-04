@@ -339,6 +339,94 @@ input:invalid{border-color:var(--danger)}
 .cad-text,.cad-dim{font:600 12px/1.2 system-ui,sans-serif;background:rgba(255,255,255,.88);padding:1px 5px;border-radius:3px;white-space:nowrap;pointer-events:none}
 .cad-dim{border:1px solid;font-variant-numeric:tabular-nums}
 .cad-text.sel,.cad-dim.sel{outline:2px solid #ff7b00}
+/* ---------- Aide et tutoriels ---------- */
+.tuto-link{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;background:none;border:0;color:var(--primary);font-weight:650;font-size:12.5px;cursor:pointer;padding:4px 0;min-height:36px;text-align:left}
+.tuto-link span{display:inline-grid;place-items:center;width:18px;height:18px;flex:0 0 18px;border-radius:50%;border:1.5px solid currentColor;font-size:11px}
+.tuto-link:hover{text-decoration:underline}
+.welcome{border-color:var(--primary);background:var(--primary-soft)}
+.welcome h2{font-size:15px;margin-top:10px}
+#tour-hl{position:fixed;z-index:3000;pointer-events:none;border:3px solid #ffb703;border-radius:10px;box-shadow:0 0 0 9999px rgba(6,16,30,.42);transition:left .2s,top .2s,width .2s,height .2s}
+#tour-pop{position:fixed;z-index:3001;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.35);padding:14px 16px;max-height:min(72vh,580px);overflow:auto;display:flex;flex-direction:column;gap:8px}
+#tour-pop:focus,#tour-title:focus{outline:none}
+#tour-progress{font-size:12px;font-weight:650;color:var(--muted);padding-right:34px}
+#tour-title{font-size:16px}
+#tour-body p{margin:0 0 6px;font-size:13.5px;line-height:1.45}
+#tour-body code,.scenario code,.help-panel code{font:12.5px ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.tour-examples{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.tour-examples li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.tour-examples li span{flex:1 1 140px}
+.tour-try{min-height:36px;padding:4px 12px;font-size:12.5px}
+.tour-status{font-size:13px;padding:7px 10px;border-radius:8px;background:var(--warn-soft);color:var(--warn)}
+.tour-status.ok{background:var(--success-soft);color:var(--success)}
+:root[data-theme="dark"] .tour-status.ok{color:#8be0b3}
+.tour-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.tour-actions .btn{flex:1 1 auto}
+#btn-tour-demo{flex:1 1 100%}
+.tour-close{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-size:20px;line-height:1;cursor:pointer}
+#help-dialog{width:min(880px,calc(100vw - 24px));max-height:min(88vh,920px);padding:0;border:1px solid var(--border);border-radius:16px;background:var(--panel);color:var(--text);box-shadow:var(--shadow);overflow:hidden}
+#help-dialog[open]{display:flex;flex-direction:column}
+#help-dialog::backdrop{background:rgba(6,16,30,.55)}
+.help-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--navy);color:#fff}
+.help-head h2{font-size:17px}
+.help-head .icon-btn{font-size:22px;line-height:1}
+#help-tabs{display:flex;gap:2px;padding:4px 10px 0;border-bottom:1px solid var(--border);overflow-x:auto;flex:0 0 auto}
+#help-tabs [role=tab]{border:0;background:none;color:var(--muted);font-weight:650;font-size:14px;padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer;min-height:44px;white-space:nowrap}
+#help-tabs [aria-selected=true]{color:var(--primary);border-bottom-color:var(--primary)}
+.help-body{overflow:auto;padding:14px 16px 20px;min-height:0}
+.tuto-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.tuto-card{border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--panel-2)}
+.tuto-card.done{border-color:color-mix(in srgb,var(--success) 50%,var(--border))}
+.tuto-head{display:flex;gap:8px;align-items:flex-start}
+.tuto-card h3{font-size:14.5px;flex:1}
+.tuto-meta{font-size:12px;color:var(--muted);font-weight:650}
+.tuto-card p{margin:0;font-size:13px;line-height:1.4}
+.tuto-card .btn{margin-top:auto}
+.help-panel h3{font-size:15px;margin:16px 0 8px}
+.help-panel>h3:first-child,.help-panel section:first-child h3{margin-top:0}
+.help-files{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.help-files li{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.help-files li span{flex:1 1 220px}
+.scenario{border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;background:var(--panel-2)}
+.scenario h4{font-size:14px}
+.scenario ol{margin:6px 0 10px;padding-left:20px;font-size:13px;line-height:1.55}
+.help-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.help-table th,.help-table td{border-bottom:1px solid var(--border);padding:5px 6px;text-align:left;vertical-align:top}
+.help-list{margin:0;padding-left:20px;font-size:13px;line-height:1.6}
+.faq{border-bottom:1px solid var(--border);padding:6px 0}
+.faq summary{cursor:pointer;font-weight:650;min-height:36px;display:flex;align-items:center}
+.faq p{margin:4px 0 6px;font-size:13px;line-height:1.5}
+@media (max-width:600px){
+  #help-dialog{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;margin:0}
+  .tuto-list{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){ #tour-hl{transition:none} }
+/* ---------- Tâches en cours ---------- */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+#busy-bar{position:absolute;left:0;right:0;top:0;height:3px;z-index:8;overflow:hidden;background:color-mix(in srgb,var(--primary) 20%,transparent);pointer-events:none}
+#busy-bar i{position:absolute;top:0;bottom:0;width:30%;background:var(--primary);animation:busy 1.1s ease-in-out infinite}
+@keyframes busy{0%{left:-30%}100%{left:100%}}
+#tasks{position:absolute;left:10px;top:12px;z-index:7;display:flex;flex-direction:column;gap:6px;width:min(330px,calc(100% - 80px));pointer-events:none}
+.task{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:var(--panel);color:var(--text);border-left:4px solid var(--primary);box-shadow:var(--shadow);font-size:12.5px;animation:pop .2s ease-out}
+.task.done{border-left-color:var(--success)}
+.task.error,.task.timeout{border-left-color:var(--danger)}
+.task.cancelled{opacity:.8;border-left-color:var(--muted)}
+.task-icon{flex:0 0 18px;width:18px;height:18px;display:inline-grid;place-items:center;font-weight:800;font-size:13px}
+.task.done .task-icon{color:var(--success)}
+.task.error .task-icon,.task.timeout .task-icon{color:var(--danger)}
+.task-main{flex:1;min-width:0}
+.task-label{font-weight:650}
+.task-detail{color:var(--muted);overflow-wrap:anywhere}
+.task.error .task-detail,.task.timeout .task-detail{color:var(--danger)}
+.task-bar{position:relative;height:4px;border-radius:2px;margin-top:5px;background:var(--panel-2);overflow:hidden}
+.task-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--primary);transition:width .2s}
+.task-bar.indeterminate i{width:30%;animation:busy 1.1s ease-in-out infinite}
+.task-actions{display:flex;gap:6px;align-items:center;pointer-events:auto}
+.task-actions .btn{min-height:32px;padding:3px 9px;font-size:12px}
+.task-x{background:none;border:0;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;min-width:28px;min-height:28px}
+#mode-banner:not([hidden]) ~ #tasks{top:118px}
+@media (max-width:860px){ #tasks{left:8px;width:calc(100% - 64px)} }
+@media (max-height:500px) and (orientation:landscape){ #tasks{top:62px;width:min(300px,50%)} }
+@media (prefers-reduced-motion: reduce){ #busy-bar i,.task-bar.indeterminate i{animation-duration:3s} }
 </style>
 </head>
 <body>
@@ -370,6 +458,7 @@ input:invalid{border-color:var(--danger)}
     <symbol id="i-mountain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 20 6-11 4 6 3-4 5 9z"/></symbol>
     <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.3-2.7 4.2"/><path d="M12 17.6h.01"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/></symbol>
   </defs>
 </svg>
@@ -390,6 +479,7 @@ input:invalid{border-color:var(--danger)}
         <h1 class="sb-title">TopoGIS 3D</h1>
         <p class="sb-sub">Outil de relevé et d'analyse topographique</p>
       </div>
+      <button id="btn-help" class="icon-btn" type="button" aria-label="Aide, tutoriels et exemples" title="Aide et tutoriels"><svg class="ico"><use href="#i-help"/></svg></button>
       <button id="btn-theme" class="icon-btn" type="button" aria-label="Basculer entre le mode clair et le mode sombre" title="Mode clair / sombre">
         <svg class="ico" id="theme-icon-moon"><use href="#i-moon"/></svg>
         <svg class="ico" id="theme-icon-sun" hidden><use href="#i-sun"/></svg>
@@ -397,6 +487,17 @@ input:invalid{border-color:var(--danger)}
     </header>
 
     <div id="sidebar-scroll">
+      <section id="welcome" class="card welcome" aria-labelledby="welcome-title" hidden>
+        <div class="card-body">
+          <h2 id="welcome-title">Bienvenue !</h2>
+          <p class="note">Nouveau sur TopoGIS 3D ? Suivez la visite guidée (2 minutes) ou chargez un projet d'exemple pour essayer tous les outils sans être sur le terrain. L'aide reste accessible avec le bouton <strong>?</strong> en haut du panneau.</p>
+          <div class="btn-grid">
+            <button id="btn-welcome-tour" class="btn" type="button"><svg class="ico"><use href="#i-help"/></svg>Visite guidée</button>
+            <button id="btn-welcome-example" class="btn btn-secondary" type="button"><svg class="ico"><use href="#i-folder"/></svg>Projet d'exemple</button>
+          </div>
+          <button id="btn-welcome-hide" class="btn btn-secondary btn-block" type="button">Ne plus afficher</button>
+        </div>
+      </section>
 
       <!-- B. Localisation GPS -->
       <details class="card" id="sec-gps" open>
@@ -659,6 +760,9 @@ input:invalid{border-color:var(--danger)}
             <button id="btn-new-project" class="btn btn-danger" type="button" aria-label="Démarrer un nouveau projet vide"><svg class="ico"><use href="#i-file"/></svg>Nouveau projet</button>
           </div>
           <div id="storage-status" class="hint" role="status"></div>
+          <h3>Performances</h3>
+          <label class="check"><input type="checkbox" id="chk-eco"> Mode économie (batterie, appareil ancien)</label>
+          <p id="perf-info" class="hint"></p>
         </div>
       </details>
 
@@ -681,9 +785,112 @@ input:invalid{border-color:var(--danger)}
     </div>
     <div id="contour-legend" hidden aria-label="Légende des courbes de niveau"></div>
     <div id="toasts" aria-live="polite" aria-atomic="false"></div>
+    <div id="busy-bar" hidden aria-hidden="true"><i></i></div>
+    <div id="tasks" aria-label="Tâches en cours"></div>
+    <div id="sr-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <noscript><div id="fatal"><div class="msg msg-error">TopoGIS 3D nécessite JavaScript.</div></div></noscript>
   </main>
 </div>
+
+<!-- ===================== VISITE GUIDÉE ===================== -->
+<div id="tour" hidden>
+  <div id="tour-hl" aria-hidden="true"></div>
+  <div id="tour-pop" role="dialog" aria-labelledby="tour-title" aria-describedby="tour-body" tabindex="-1">
+    <button id="btn-tour-close" class="tour-close" type="button" aria-label="Quitter le tutoriel">×</button>
+    <div id="tour-progress"></div>
+    <h2 id="tour-title" tabindex="-1"></h2>
+    <div id="tour-body"></div>
+    <div id="tour-status" class="tour-status" role="status" aria-live="polite" hidden></div>
+    <div class="tour-actions">
+      <button id="btn-tour-demo" class="btn btn-success" type="button" hidden>Le faire pour moi</button>
+      <button id="btn-tour-prev" class="btn btn-secondary" type="button">Précédent</button>
+      <button id="btn-tour-next" class="btn" type="button">Suivant</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CENTRE D'AIDE ===================== -->
+<dialog id="help-dialog" aria-labelledby="help-title">
+  <div class="help-head">
+    <h2 id="help-title">Aide, tutoriels et exemples</h2>
+    <button id="btn-help-close" class="icon-btn" type="button" aria-label="Fermer l'aide">×</button>
+  </div>
+  <div id="help-tabs" role="tablist" aria-label="Rubriques de l'aide">
+    <button role="tab" type="button" data-tab="tutos" aria-controls="help-tutos" aria-selected="true">Tutoriels</button>
+    <button role="tab" type="button" data-tab="exemples" aria-controls="help-exemples" aria-selected="false" tabindex="-1">Exemples</button>
+    <button role="tab" type="button" data-tab="memo" aria-controls="help-memo" aria-selected="false" tabindex="-1">Aide-mémoire</button>
+    <button role="tab" type="button" data-tab="faq" aria-controls="help-faq" aria-selected="false" tabindex="-1">Questions</button>
+  </div>
+  <div class="help-body">
+    <section id="help-tutos" class="help-panel" role="tabpanel" aria-label="Tutoriels">
+      <p class="note">Chaque tutoriel met les contrôles en évidence, donne un exemple concret et peut exécuter l'action pour vous (« le faire pour moi »). L'étape est validée automatiquement quand vous la réalisez vous-même.</p>
+      <p id="help-progress" class="hint"></p>
+      <ol id="help-tutos-list" class="tuto-list"></ol>
+    </section>
+    <section id="help-exemples" class="help-panel" role="tabpanel" aria-label="Exemples" hidden>
+      <h3>Projet d'exemple</h3>
+      <p class="note">Une parcelle fictive d'environ 4 000 m² à Kénitra, sa fiche topographique et un plan CAO (limite, axe de voie, cote). Idéal pour essayer les lots, reculs, profils et terrassements.</p>
+      <button id="btn-help-example" class="btn" type="button"><svg class="ico"><use href="#i-folder"/></svg>Charger le projet d'exemple</button>
+      <h3>Fichiers à importer</h3>
+      <ul class="help-files">
+        <li><button class="btn btn-secondary" type="button" data-example="csv"><svg class="ico"><use href="#i-download"/></svg>exemple-points.csv</button><span>4 bornes et un point de nivellement (latitude, longitude, altitude). À importer avec « Importer CSV ».</span></li>
+        <li><button class="btn btn-secondary" type="button" data-example="geojson"><svg class="ico"><use href="#i-download"/></svg>exemple-parcelle-voisine.geojson</button><span>Une parcelle voisine et un puits. À importer avec « Importer GeoJSON ».</span></li>
+        <li><button class="btn btn-secondary" type="button" data-example="dxf"><svg class="ico"><use href="#i-download"/></svg>exemple-maison.dxf</button><span>Plan d'une maison de 12 × 9 m en coordonnées locales, centré sur la vue à l'import (« Import DXF »).</span></li>
+      </ul>
+      <h3>Scénarios pas à pas</h3>
+      <article class="scenario">
+        <h4>Lotir un terrain de 4 000 m² en 4 lots</h4>
+        <ol>
+          <li>Chargez le projet d'exemple (la limite est déjà dans le plan CAO).</li>
+          <li>Ouvrez le plan CAO et tapez <code>lots 4</code>, puis cliquez dans la parcelle.</li>
+          <li>Appuyez sur Entrée : les limites séparatives sont perpendiculaires au plus long côté (la façade sur voie).</li>
+          <li>Lisez les surfaces (≈ 1 000 m² chacune) et le contrôle « somme des lots = parcelle ».</li>
+        </ol>
+        <button class="btn btn-secondary" type="button" data-scenario="cao-civil">Lancer le tutoriel guidé</button>
+      </article>
+      <article class="scenario">
+        <h4>Implanter une maison avec des reculs de 5 m (avant), 3 m (côtés) et 4 m (fond)</h4>
+        <ol>
+          <li>Tapez <code>retrait</code>, cliquez la parcelle, puis saisissez <code>5;3;4</code>.</li>
+          <li>Cliquez le côté donnant sur la voie : la zone constructible apparaît sur le calque Reculs.</li>
+          <li>Dessinez l'emprise : <code>rec</code>, un clic dans la zone, puis <code>@12;10</code> (12 m × 10 m).</li>
+          <li>Contrôlez avec <code>aire</code> et déplacez au besoin avec <code>m</code> et <code>@1;0</code>.</li>
+        </ol>
+        <button class="btn btn-secondary" type="button" data-scenario="cao-civil">Lancer le tutoriel guidé</button>
+      </article>
+      <article class="scenario">
+        <h4>Estimer le terrassement d'une plateforme</h4>
+        <ol>
+          <li>Dessinez la plateforme avec <code>pol</code> (ou utilisez la parcelle).</li>
+          <li>Tapez <code>deblai</code>, cliquez la plateforme et appuyez sur Entrée : niveau d'équilibre, déblai = remblai.</li>
+          <li>Recommencez avec une altitude imposée, par exemple <code>15</code> : comparez le solde.</li>
+          <li>Rouge = déblai, bleu = remblai. Les volumes sont des estimations de pré-étude (MNT).</li>
+        </ol>
+        <button class="btn btn-secondary" type="button" data-scenario="cao-terrain">Lancer le tutoriel guidé</button>
+      </article>
+      <article class="scenario">
+        <h4>Profil en long d'une voie projetée</h4>
+        <ol>
+          <li>Tracez l'axe avec <code>pl</code> (clics sur la carte, Entrée), sur le calque Axes (<code>layer Axes</code>).</li>
+          <li>Tapez <code>profil</code> et cliquez l'axe : altitudes, pentes par tronçon, dénivelés.</li>
+          <li>Exportez le CSV pour votre logiciel de projet routier.</li>
+        </ol>
+        <button class="btn btn-secondary" type="button" data-scenario="cao-terrain">Lancer le tutoriel guidé</button>
+      </article>
+      <article class="scenario">
+        <h4>Lever une parcelle au GPS, sur place</h4>
+        <ol>
+          <li>Ouvrez le site en HTTPS sur le téléphone et autorisez la localisation.</li>
+          <li>Sur chaque borne : « Ajouter un point » (attendez une précision de quelques mètres).</li>
+          <li>« Fermer le polygone », complétez la fiche, puis « Enregistrer » et « Export GeoJSON ».</li>
+        </ol>
+        <button class="btn btn-secondary" type="button" data-scenario="gps">Lancer le tutoriel guidé</button>
+      </article>
+    </section>
+    <section id="help-memo" class="help-panel" role="tabpanel" aria-label="Aide-mémoire" hidden><div id="help-cheat"></div></section>
+    <section id="help-faq" class="help-panel" role="tabpanel" aria-label="Questions fréquentes" hidden></section>
+  </div>
+</dialog>
 
 <script defer src="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.js" onerror="this.dataset.failed='1'"></script>
 <script defer src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js" onerror="this.dataset.failed='1'"></script>
@@ -923,6 +1130,394 @@ const DEM_API_KEY = '';
   }
 
   /* ========================================================================
+     2c. PERFORMANCES : PROFIL MATÉRIEL, TÂCHES DE FOND, INDICATEURS
+     - Le rendu cartographique est fait par la carte graphique (WebGL).
+     - Le profil (élevé / moyen / économe) est choisi d'après la carte graphique
+       détectée, le nombre de cœurs et la mémoire ; il règle la densité de pixels,
+       les caches et la finesse des calculs. Il s'allège seul si la carte saccade.
+     - Les calculs lourds (décodage du MNT, courbes de niveau, lecture DXF)
+       tournent dans des Web Workers : l'interface ne se fige pas.
+     ======================================================================== */
+  const ECO_KEY = 'topogis3d.eco';
+  const PERF = detectPerformance();
+
+  function detectPerformance() {
+    const nav = navigator, cores = nav.hardwareConcurrency || 2, mem = nav.deviceMemory || null;
+    const saveData = !!(nav.connection && nav.connection.saveData);
+    let gpu = { renderer: 'inconnu', software: false, webgl2: false, maxTexture: 0 };
+    try {
+      const cv = document.createElement('canvas');
+      const gl = cv.getContext('webgl2') || cv.getContext('webgl');
+      if (gl) {
+        const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+        const r = String(dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER) || '');
+        gpu = { renderer: r.replace(/\s*\(0x[0-9a-f]+\)/gi, '').slice(0, 90) || 'WebGL', software: /swiftshader|llvmpipe|softpipe|basic render|software/i.test(r), webgl2: typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext, maxTexture: gl.getParameter(gl.MAX_TEXTURE_SIZE) };
+        const lose = gl.getExtension('WEBGL_lose_context');
+        if (lose) lose.loseContext();                         // libère immédiatement ce contexte de test
+      } else gpu.renderer = 'WebGL indisponible';
+    } catch (e) { /* détection facultative */ }
+    let eco = false;
+    try { eco = localStorage.getItem(ECO_KEY) === '1'; } catch (e) { /* ignoré */ }
+    let tier = 'moyen';
+    if (gpu.software || cores <= 2 || (mem && mem <= 2) || saveData) tier = 'économe';
+    else if (cores >= 8 && (!mem || mem >= 8) && gpu.webgl2) tier = 'élevé';
+    const p = { cores, mem, saveData, gpu, webgpu: !!nav.gpu, detectedTier: tier, eco, degraded: false, lastFps: null, workers: 0, workerMode: 'non démarré' };
+    applyTier(p, eco ? 'économe' : tier);
+    return p;
+  }
+  function applyTier(p, tier) {
+    p.tier = tier;
+    const T = {
+      'élevé': { pixelRatio: 2, fade: 150, tileCache: 400, demCache: 140, contourGrid: 320, maxLabels: 400, undoChars: 40e6 },
+      'moyen': { pixelRatio: 1.5, fade: 150, tileCache: 200, demCache: 90, contourGrid: 240, maxLabels: 250, undoChars: 20e6 },
+      'économe': { pixelRatio: 1, fade: 0, tileCache: 80, demCache: 40, contourGrid: 160, maxLabels: 120, undoChars: 8e6 }
+    }[tier];
+    Object.assign(p, T);
+    p.pixelRatio = Math.min(window.devicePixelRatio || 1, T.pixelRatio);
+  }
+  /** Applique le profil à la carte déjà créée (changement manuel ou allègement automatique). */
+  function applyPerfToMap() {
+    const map = state.map;
+    if (map) {
+      if (typeof map.setPixelRatio === 'function' && Math.abs(map.getPixelRatio() - PERF.pixelRatio) > 0.01) map.setPixelRatio(PERF.pixelRatio);
+      if (map.getLayer('osm')) map.setPaintProperty('osm', 'raster-fade-duration', PERF.fade);
+    }
+    CONFIG.contours.maxGrid = PERF.contourGrid;
+    renderPerfInfo();
+  }
+  function setEcoMode(on) {
+    PERF.eco = !!on;
+    try { localStorage.setItem(ECO_KEY, on ? '1' : '0'); } catch (e) { /* ignoré */ }
+    applyTier(PERF, on ? 'économe' : PERF.detectedTier);
+    PERF.degraded = false;
+    applyPerfToMap();
+    trimDemCache();
+    notify(on ? 'Mode économie activé : affichage et calculs allégés (batterie, appareil ancien).' : 'Mode économie désactivé : profil « ' + PERF.tier + ' » rétabli.', 'info', 5000);
+  }
+  function renderPerfInfo() {
+    const box = $('perf-info');
+    if (!box) return;
+    const g = PERF.gpu;
+    box.textContent = `Profil de performance : ${PERF.tier}${PERF.degraded ? ' (allégé automatiquement)' : ''}. Carte graphique : ${g.software ? 'rendu logiciel (' + g.renderer + ')' : g.renderer}${g.webgl2 ? ', WebGL 2' : ''}. ` +
+      `${PERF.cores} cœur(s)${PERF.mem ? ', ' + PERF.mem + ' Go' : ''}. Calculs de fond : ${PERF.workerMode}.${PERF.lastFps ? ' Fluidité mesurée : ' + Math.round(PERF.lastFps) + ' images/s.' : ''}`;
+    const chk = $('chk-eco');
+    if (chk) chk.checked = PERF.eco;
+  }
+
+  /* ----- Surveillance de la fluidité : allège l'affichage si la carte saccade ----- */
+  const fpsMon = { frames: 0, t0: 0, slow: 0 };
+  function bindPerfMonitor(map) {
+    map.on('movestart', () => { fpsMon.frames = 0; fpsMon.t0 = performance.now(); });
+    map.on('render', () => { if (fpsMon.t0) fpsMon.frames++; });
+    map.on('moveend', () => {
+      const dt = performance.now() - fpsMon.t0;
+      const n = fpsMon.frames;
+      fpsMon.t0 = 0;
+      if (dt < 700 || n < 3 || document.hidden) return;
+      PERF.lastFps = (n * 1000) / dt;
+      fpsMon.slow = PERF.lastFps < 20 ? fpsMon.slow + 1 : Math.max(0, fpsMon.slow - 1);
+      if (fpsMon.slow >= 3 && !PERF.degraded && PERF.tier !== 'économe') {
+        PERF.degraded = true;
+        applyTier(PERF, PERF.tier === 'élevé' ? 'moyen' : 'économe');
+        PERF.degraded = true;
+        applyPerfToMap();
+        trimDemCache();
+        notify('La carte saccadait (' + Math.round(PERF.lastFps) + ' images/s) : affichage allégé automatiquement. Le mode économie se règle dans « Import / export ».', 'info', 8000);
+      }
+      renderPerfInfo();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {                           // onglet masqué : aucune animation ni calcul inutile
+        if (state.globe.spin) setSpin(false);
+        clearTimeout(state.contours.timer);
+      } else if (state.contours.on && !state.contours.info) scheduleContours();
+    });
+  }
+
+  /* ----- Gestionnaire de tâches : progression, annulation, délai dépassé, erreurs ----- */
+  const TASKS = new Map();
+  let taskSeq = 0;
+  function announce(msg) { const r = $('sr-live'); if (r) { r.textContent = ''; setTimeout(() => { r.textContent = msg; }, 30); } }
+  function updateBusyBar() { const b = $('busy-bar'); if (b) b.hidden = ![...TASKS.values()].some((t) => t.state === 'running'); }
+
+  /**
+   * Démarre une tâche visible. Options : key (une seule tâche par clé, la précédente est remplacée),
+   * label, timeoutMs, onCancel(raison) pour interrompre le travail, timeoutMessage, quiet (pas d'annonce).
+   * Renvoie { progress(pct, détail), detail(texte), done(message), fail(erreur, {retry}), cancel(), active }.
+   */
+  function startTask(o) {
+    if (o.key) for (const t of TASKS.values()) if (t.key === o.key && t.state === 'running') t.finish('replaced');
+    const id = ++taskSeq, t0 = performance.now();
+    const label = el('div', { class: 'task-label', text: o.label });
+    const detail = el('div', { class: 'task-detail' });
+    const bar = el('div', { class: 'task-bar indeterminate' }, el('i'));
+    const icon = el('span', { class: 'task-icon spinner', 'aria-hidden': 'true' });
+    const actions = el('div', { class: 'task-actions' });
+    const node = el('div', { class: 'task running', 'data-key': o.key || '' }, icon, el('div', { class: 'task-main' }, label, detail, bar), actions);
+    const t = {
+      id, key: o.key, state: 'running', node, pct: null, text: '',
+      get active() { return this.state === 'running'; },
+      progress(pct, txt) {
+        if (this.state !== 'running') return;
+        if (isNum(pct)) { this.pct = clamp(pct, 0, 1); bar.classList.remove('indeterminate'); bar.firstChild.style.width = Math.round(this.pct * 100) + '%'; }
+        if (txt != null) this.text = txt;
+        refreshDetail();
+      },
+      detail(txt) { this.progress(null, txt); },
+      done(msg) { this.finish('done', msg); },
+      fail(err, opts) { this.finish('error', typeof err === 'string' ? err : (err && err.userError ? err.message : describeNetworkFailure(err)), opts); },
+      cancel(reason) { if (this.state !== 'running') return; if (o.onCancel) { try { o.onCancel(reason || 'user'); } catch (e) { /* ignoré */ } } this.finish(reason === 'timeout' ? 'timeout' : 'cancelled'); },
+      finish(kind, msg, opts) {
+        if (this.state !== 'running') return;
+        this.state = kind;
+        clearInterval(timer);
+        node.classList.remove('running');
+        node.classList.add(kind);
+        bar.remove();
+        icon.className = 'task-icon';
+        icon.textContent = { done: '✓', error: '!', timeout: '⏱', cancelled: '–', replaced: '' }[kind];
+        actions.replaceChildren();
+        if (kind === 'replaced') { node.remove(); TASKS.delete(id); updateBusyBar(); return; }
+        const secs = (performance.now() - t0) / 1000;
+        const texts = {
+          done: msg || 'Terminé' + (secs >= 1 ? ' en ' + fmtNum(secs, 1) + ' s' : '') + '.',
+          error: 'Échec : ' + (msg || 'erreur inconnue') + '.',
+          timeout: o.timeoutMessage || `Délai dépassé (${Math.round((o.timeoutMs || 0) / 1000)} s) : le serveur ou le calcul ne répond pas. Réessayez, ou réduisez la zone.`,
+          cancelled: 'Annulé.'
+        };
+        detail.textContent = texts[kind];
+        detail.setAttribute('role', kind === 'error' || kind === 'timeout' ? 'alert' : 'status');
+        if ((kind === 'error' || kind === 'timeout') && opts && opts.retry) actions.append(el('button', { type: 'button', class: 'btn btn-secondary', text: 'Réessayer', onclick: () => { remove(); safe(opts.retry)(); } }));
+        if (kind === 'error' || kind === 'timeout') actions.append(el('button', { type: 'button', class: 'task-x', 'aria-label': 'Fermer ce message', text: '×', onclick: remove }));
+        if (!o.quiet || kind === 'error' || kind === 'timeout') announce(o.label + ' : ' + texts[kind]);
+        setTimeout(remove, { done: 2500, cancelled: 1800, error: 10000, timeout: 12000 }[kind]);
+        updateBusyBar();
+      }
+    };
+    const remove = () => { node.remove(); TASKS.delete(id); updateBusyBar(); };
+    function refreshDetail() {
+      const secs = (performance.now() - t0) / 1000;
+      const parts = [];
+      if (t.pct != null) parts.push(Math.round(t.pct * 100) + ' %');
+      if (t.text) parts.push(t.text);
+      if (secs >= 1.5) parts.push(Math.floor(secs) + ' s');
+      if (o.timeoutMs && secs > o.timeoutMs / 2000) parts.push('réseau ou calcul lent…');
+      detail.textContent = parts.join(' · ');
+    }
+    if (o.onCancel) actions.append(el('button', { type: 'button', class: 'btn btn-secondary', text: 'Annuler', 'aria-label': 'Annuler : ' + o.label, onclick: () => t.cancel('user') }));
+    const timer = setInterval(() => {
+      refreshDetail();
+      if (o.timeoutMs && performance.now() - t0 > o.timeoutMs) t.cancel('timeout');
+    }, 500);
+    TASKS.set(id, t);
+    const host = $('tasks');
+    if (host) { host.append(node); while (host.children.length > 5) host.firstChild.remove(); }
+    if (!o.quiet) announce(o.label);
+    updateBusyBar();
+    return t;
+  }
+
+  /** Indicateur de chargement du fond de carte (affiché seulement si l'attente se prolonge). */
+  function bindMapLoadingIndicator(map) {
+    let timer = 0, task = null;
+    map.on('dataloading', () => {
+      if (timer || task || state.globe.spin) return;
+      timer = setTimeout(() => {
+        timer = 0;
+        if (!map.areTilesLoaded()) task = startTask({ key: 'tiles', label: 'Chargement du fond de carte…', quiet: true, timeoutMs: 30000, timeoutMessage: 'Le fond de carte tarde à se charger (réseau lent ou serveur saturé). La carte reste utilisable ; les tuiles apparaîtront dès leur arrivée.' });
+      }, 1200);
+    });
+    map.on('idle', () => { clearTimeout(timer); timer = 0; if (task) { task.done('Fond de carte chargé.'); task = null; } });
+  }
+
+  /* ----- Cœurs de calcul « purs » : exécutés dans un worker, ou ici à défaut ----- */
+  function demDecodeCore(rgba, n, encoding) {
+    const elev = new Float32Array(n);
+    if (encoding === 'mapbox') for (let i = 0, j = 0; i < n; i++, j += 4) elev[i] = -10000 + (rgba[j] * 65536 + rgba[j + 1] * 256 + rgba[j + 2]) * 0.1;
+    else for (let i = 0, j = 0; i < n; i++, j += 4) elev[i] = rgba[j] * 256 + rgba[j + 1] + rgba[j + 2] / 256 - 32768;
+    return elev;
+  }
+  /** Courbes de niveau (marching squares) ; produit l'avancement (0–1) et renvoie le résultat. */
+  function* contoursGen(p) {
+    const tiles = new Map(p.tiles), range = p.range, z = p.z;
+    const W = (range.x1 - range.x0 + 1) * 256, H = (range.y1 - range.y0 + 1) * 256;
+    const s = Math.max(1, Math.ceil(Math.max(W, H) / p.maxGrid));
+    const gw = Math.floor((W - 1) / s) + 1, gh = Math.floor((H - 1) / s) + 1;
+    const raw = new Float32Array(gw * gh);
+    for (let gy = 0; gy < gh; gy++) {
+      const py = gy * s, ty = range.y0 + Math.floor(py / 256), ly = py % 256;
+      for (let gx = 0; gx < gw; gx++) { const px = gx * s, tx = range.x0 + Math.floor(px / 256); raw[gy * gw + gx] = tiles.get(tx + '/' + ty)[ly * 256 + (px % 256)]; }
+    }
+    const g = new Float32Array(gw * gh);                      // lissage 3×3 (bruit du MNT)
+    let min = Infinity, max = -Infinity;
+    for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
+      let sum = 0, c = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && xx < gw && yy >= 0 && yy < gh) { sum += raw[yy * gw + xx]; c++; } }
+      const v = sum / c; g[y * gw + x] = v; if (v < min) min = v; if (v > max) max = v;
+    }
+    yield 0.08;
+    let interval = p.setting === 'auto' ? (p.nice.find((v) => v >= (max - min) / p.targetLines) || 1000) : Number(p.setting);
+    if (!(interval > 0)) interval = 10;
+    let adjusted = false;
+    const countLevels = (i) => Math.floor(max / i) - Math.ceil(min / i) + 1;
+    while (countLevels(interval) > p.maxLevels) { interval = p.nice.find((v) => v > interval) || interval * 2; adjusted = true; }
+    const S = 256 * Math.pow(2, z), R = 1e7;
+    const toLL = (gx, gy) => {
+      const x = range.x0 * 256 + gx * s + 0.5, y = range.y0 * 256 + gy * s + 0.5, n = Math.PI - (2 * Math.PI * y) / S;
+      return [Math.round(((x / S) * 360 - 180) * R) / R, Math.round((180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))) * R) / R];
+    };
+    const features = [], labels = [], labelPts = [];
+    const first = Math.ceil(min / interval), total = Math.max(1, Math.floor(max / interval) - first + 1);
+    for (let k = first; k * interval <= max; k++) {
+      const L = k * interval, segs = [];
+      for (let y = 0; y < gh - 1; y++) {
+        for (let x = 0; x < gw - 1; x++) {
+          const v00 = g[y * gw + x], v10 = g[y * gw + x + 1], v11 = g[(y + 1) * gw + x + 1], v01 = g[(y + 1) * gw + x];
+          const idx = (v00 >= L ? 1 : 0) | (v10 >= L ? 2 : 0) | (v11 >= L ? 4 : 0) | (v01 >= L ? 8 : 0);
+          if (idx === 0 || idx === 15) continue;
+          const top = () => [x + (L - v00) / (v10 - v00), y], right = () => [x + 1, y + (L - v10) / (v11 - v10)];
+          const bottom = () => [x + (L - v01) / (v11 - v01), y + 1], left = () => [x, y + (L - v00) / (v01 - v00)];
+          const center = (v00 + v10 + v11 + v01) / 4;
+          let pairs;
+          switch (idx) {
+            case 1: case 14: pairs = [[left, top]]; break;
+            case 2: case 13: pairs = [[top, right]]; break;
+            case 3: case 12: pairs = [[left, right]]; break;
+            case 4: case 11: pairs = [[right, bottom]]; break;
+            case 6: case 9: pairs = [[top, bottom]]; break;
+            case 7: case 8: pairs = [[left, bottom]]; break;
+            case 5: pairs = center >= L ? [[top, right], [left, bottom]] : [[left, top], [right, bottom]]; break;
+            case 10: pairs = center >= L ? [[left, top], [right, bottom]] : [[top, right], [left, bottom]]; break;
+            default: pairs = [];
+          }
+          for (const [a, bb] of pairs) segs.push([a(), bb()]);
+        }
+      }
+      if (segs.length) {
+        const isIndex = Math.round(L / interval) % p.indexEvery === 0;
+        features.push({ type: 'Feature', properties: { elev: L, index: isIndex }, geometry: { type: 'MultiLineString', coordinates: segs.map(([a, bb]) => [toLL(a[0], a[1]), toLL(bb[0], bb[1])]) } });
+        if (isIndex && labels.length < 30) {
+          let placed = 0;
+          for (let i = 0; i < segs.length && placed < 3; i += Math.max(1, Math.floor(segs.length / 6))) {
+            const mx = ((segs[i][0][0] + segs[i][1][0]) / 2) * s, my = ((segs[i][0][1] + segs[i][1][1]) / 2) * s;
+            if (labelPts.every((q) => Math.hypot(q[0] - mx, q[1] - my) > p.minSep)) {
+              labelPts.push([mx, my]);
+              labels.push({ elev: L, lngLat: toLL((segs[i][0][0] + segs[i][1][0]) / 2, (segs[i][0][1] + segs[i][1][1]) / 2) });
+              placed++;
+            }
+          }
+        }
+      }
+      yield 0.08 + (0.92 * (k - first + 1)) / total;
+    }
+    return { features, labels, min, max, interval, adjusted };
+  }
+
+  /* ----- Réserve de Web Workers ----- */
+  const pool = { ok: null, url: null, light: [], heavy: null, jobs: new Map(), seq: 0, offscreen: false };
+  function workerSource() {
+    return ['\'use strict\';', demDecodeCore.toString(), contoursGen.toString(), parseDxf.toString(),
+      `async function decodeBlob(blob, encoding) {
+        const bmp = await createImageBitmap(blob, { premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
+        const cv = new OffscreenCanvas(bmp.width, bmp.height), ctx = cv.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(bmp, 0, 0);
+        const d = ctx.getImageData(0, 0, bmp.width, bmp.height).data, w = bmp.width, h = bmp.height;
+        bmp.close();
+        return { w, h, elev: demDecodeCore(d, w * h, encoding) };
+      }
+      self.onmessage = async (ev) => {
+        const { id, type, payload } = ev.data;
+        try {
+          if (type === 'ping') { self.postMessage({ id, ok: true, result: { offscreen: typeof OffscreenCanvas !== 'undefined' && typeof createImageBitmap === 'function' } }); return; }
+          if (type === 'decode') { const r = await decodeBlob(payload.blob, payload.encoding); self.postMessage({ id, ok: true, result: r }, [r.elev.buffer]); return; }
+          if (type === 'contours') {
+            const it = contoursGen(payload); let s, last = 0;
+            while (!(s = it.next()).done) { const now = Date.now(); if (now - last > 100) { last = now; self.postMessage({ id, progress: s.value }); } }
+            self.postMessage({ id, ok: true, result: s.value }); return;
+          }
+          if (type === 'dxf') { const r = parseDxf(payload.text); r.layers = [...r.layers]; self.postMessage({ id, ok: true, result: r }); return; }
+          throw new Error('tâche inconnue');
+        } catch (e) { self.postMessage({ id, ok: false, error: String((e && e.message) || e) }); }
+      };`].join('\n');
+  }
+  function spawnWorker() {
+    const w = new Worker(pool.url);
+    w.load = 0;
+    w.onmessage = (ev) => {
+      const m = ev.data, job = pool.jobs.get(m.id);
+      if (!job) return;
+      if ('progress' in m) { if (job.onProgress) job.onProgress(m.progress); return; }
+      pool.jobs.delete(m.id); w.load--;
+      job.cleanup();
+      if (m.ok) job.resolve(m.result); else job.reject(Object.assign(new Error(m.error), { code: 'WORKER_TASK' }));
+    };
+    w.onerror = (ev) => {
+      if (ev && ev.preventDefault) ev.preventDefault();
+      pool.ok = false; PERF.workerMode = 'indisponibles (calculs sur le fil principal, découpés)'; renderPerfInfo();
+      for (const [id, job] of pool.jobs) if (job.w === w) { pool.jobs.delete(id); job.cleanup(); job.reject(Object.assign(new Error('worker indisponible'), { code: 'WORKER' })); }
+    };
+    return w;
+  }
+  function initWorkers() {
+    if (!window.Worker || !window.Blob || !URL.createObjectURL) { pool.ok = false; PERF.workerMode = 'non pris en charge'; return; }
+    try {
+      pool.url = URL.createObjectURL(new Blob([workerSource()], { type: 'text/javascript' }));
+      const n = clamp((PERF.cores || 2) - 1, 1, 3);
+      for (let i = 0; i < n; i++) pool.light.push(spawnWorker());
+      pool.ok = true;
+      PERF.workers = n + 1;
+      PERF.workerMode = 'vérification…';
+      runInWorker('ping', null, { light: true, timeoutMs: 5000 }).then((r) => {
+        pool.offscreen = !!r.offscreen;
+        PERF.workerMode = `${n + 1} worker(s) en parallèle${pool.offscreen ? '' : ' (décodage MNT sur le fil principal)'}`;
+        renderPerfInfo();
+      }).catch(() => { pool.ok = false; PERF.workerMode = 'indisponibles (calculs sur le fil principal, découpés)'; renderPerfInfo(); });
+    } catch (e) { pool.ok = false; PERF.workerMode = 'indisponibles (calculs sur le fil principal, découpés)'; }
+  }
+  /** Exécute une tâche dans un worker. light : décodage (réserve partagée) ; sinon worker dédié aux calculs longs, interruptible. */
+  function runInWorker(type, payload, opts) {
+    const o = opts || {};
+    if (!pool.ok) return Promise.reject(Object.assign(new Error('worker indisponible'), { code: 'WORKER' }));
+    let w;
+    if (o.light) w = pool.light.reduce((a, b) => (b.load < a.load ? b : a));
+    else { if (!pool.heavy) pool.heavy = spawnWorker(); w = pool.heavy; }
+    const id = ++pool.seq;
+    return new Promise((resolve, reject) => {
+      let timer = 0;
+      const kill = (code, msg) => {
+        if (!pool.jobs.has(id)) return;
+        // un calcul synchrone ne peut pas être interrompu : on remplace le worker
+        for (const [jid, job] of pool.jobs) if (job.w === w) { pool.jobs.delete(jid); job.cleanup(); job.reject(Object.assign(new Error(jid === id ? msg : 'interrompu'), { code: jid === id ? code : 'ABORT', name: 'AbortError' })); }
+        w.terminate();
+        if (w === pool.heavy) pool.heavy = null; else pool.light[pool.light.indexOf(w)] = spawnWorker();
+      };
+      const onAbort = () => kill('ABORT', 'annulé');
+      const job = { w, resolve, reject, onProgress: o.onProgress, cleanup: () => { clearTimeout(timer); if (o.signal) o.signal.removeEventListener('abort', onAbort); } };
+      pool.jobs.set(id, job);
+      w.load++;
+      if (o.signal) { if (o.signal.aborted) { pool.jobs.delete(id); w.load--; reject(Object.assign(new Error('annulé'), { code: 'ABORT', name: 'AbortError' })); return; } o.signal.addEventListener('abort', onAbort, { once: true }); }
+      if (o.timeoutMs) timer = setTimeout(() => kill('TIMEOUT', 'délai dépassé'), o.timeoutMs);
+      try { w.postMessage({ id, type, payload }, o.transfer || []); }
+      catch (e) { pool.jobs.delete(id); w.load--; job.cleanup(); reject(Object.assign(e, { code: 'WORKER' })); }
+    });
+  }
+  /** Courbes de niveau : worker si possible, sinon fil principal découpé (l'interface reste réactive). */
+  async function runContours(payload, onProgress, signal) {
+    if (pool.ok) {
+      try { return await runInWorker('contours', payload, { onProgress, signal, timeoutMs: 60000 }); }
+      catch (err) { if (err.code !== 'WORKER') throw err; }
+    }
+    const it = contoursGen(payload);
+    let s, last = performance.now();
+    while (!(s = it.next()).done) {
+      if (signal && signal.aborted) throw Object.assign(new Error('annulé'), { code: 'ABORT', name: 'AbortError' });
+      if (performance.now() - last > 12) { if (onProgress) onProgress(s.value); await new Promise((r) => setTimeout(r, 0)); last = performance.now(); }
+    }
+    return s.value;
+  }
+  function trimDemCache() { while (demCache.size > PERF.demCache) demCache.delete(demCache.keys().next().value); }
+
+  /* ========================================================================
      3. INITIALISATION DE LA CARTE
      ======================================================================== */
   function buildBaseStyle() {
@@ -964,13 +1559,16 @@ const DEM_API_KEY = '';
         style: buildBaseStyle(),
         center: CONFIG.defaultCenter, zoom: CONFIG.defaultZoom,
         maxPitch: CONFIG.maxPitch, attributionControl: false, hash: false,
-        pixelRatio: Math.min(window.devicePixelRatio || 1, 2), fadeDuration: 150
+        pixelRatio: PERF.pixelRatio, fadeDuration: PERF.fade, maxTileCacheSize: PERF.tileCache,
+        antialias: PERF.tier === 'élevé', refreshExpiredTiles: false
       });
     } catch (err) {
       showFatal('Impossible d\'initialiser la carte : WebGL est indisponible ou désactivé dans ce navigateur. (' + (err && err.message ? err.message : err) + ')');
       return false;
     }
     state.map = map;
+    bindPerfMonitor(map);
+    bindMapLoadingIndicator(map);
     map.addControl(new maplibregl.AttributionControl({ compact: false }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showCompass: true, showZoom: true }), 'top-right');
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'metric' }), 'bottom-left');
@@ -993,6 +1591,7 @@ const DEM_API_KEY = '';
     }
     state.mapReady = true;
     applyMapTheme();
+    applyPerfToMap();
     refreshAll();
     map.on('moveend', onMapMoveEnd);
     setStatus('buildings-status', '', null);
@@ -1215,6 +1814,7 @@ const DEM_API_KEY = '';
   function onMapMoveEnd() {
     if (state.globe.spin) spinStep();
     if (state.contours.on) scheduleContours();
+    if (state.cad.entities.length) cadRefreshLabels();
   }
 
   /** Thème sombre : adoucit le fond OSM pour limiter l'éblouissement. */
@@ -1347,8 +1947,14 @@ const DEM_API_KEY = '';
     const p = state.position;
     if (!p || !requireMap(true)) return;
     const map = state.map;
-    if (zoomIn) map.flyTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), 17), essential: true });
-    else map.easeTo({ center: [p.lng, p.lat], duration: 600 });
+    if (zoomIn) {
+      const zoom = Math.max(map.getZoom(), 17);
+      state.flyZoom = { zoom, until: Date.now() + 4000 };          // une mise à jour GPS ne doit pas figer un zoom intermédiaire
+      map.flyTo({ center: [p.lng, p.lat], zoom, essential: true });
+    } else {
+      const fz = state.flyZoom && Date.now() < state.flyZoom.until ? state.flyZoom.zoom : null;
+      map.easeTo(Object.assign({ center: [p.lng, p.lat], duration: 600 }, fz != null ? { zoom: fz } : {}));
+    }
   }
 
   function updatePositionMarker() {
@@ -1626,10 +2232,11 @@ const DEM_API_KEY = '';
   }
 
   /** Interroge Overpass avec bascule automatique sur les serveurs miroirs. */
-  async function queryOverpass(query, signal) {
+  async function queryOverpass(query, signal, onAttempt) {
     const failures = [];
-    for (const endpoint of CONFIG.overpass.endpoints) {
+    for (const [i, endpoint] of CONFIG.overpass.endpoints.entries()) {
       if (signal.aborted) throw new UserAbort();
+      if (onAttempt) onAttempt(i, CONFIG.overpass.endpoints.length, endpoint, failures[failures.length - 1]);
       try {
         const data = await fetchJson(endpoint, {
           method: 'POST',
@@ -1690,6 +2297,9 @@ const DEM_API_KEY = '';
     state.loadingBuildings = true;
     toggleDetectUi(true);
     setStatus('buildings-status', `Recherche des bâtiments autour de la ${center.label} (rayon ${radius} m)…`, 'loading');
+    let timedOut = false;
+    const maxMs = CONFIG.overpass.endpoints.length * CONFIG.overpass.clientTimeoutMs + 5000;
+    const task = startTask({ key: 'buildings', label: `Bâtiments OSM (rayon ${radius} m)`, timeoutMs: maxMs, onCancel: (why) => { timedOut = why === 'timeout'; ctrl.abort(); } });
     try {
       const cacheKey = center.lat.toFixed(4) + ',' + center.lng.toFixed(4) + ',' + radius;
       const hit = overpassCache.get(cacheKey);
@@ -1697,11 +2307,14 @@ const DEM_API_KEY = '';
       let data;
       if (fromCache) data = hit.payload;
       else {
-        data = await queryOverpass(buildOverpassQuery(center, radius), ctrl.signal);
+        data = await queryOverpass(buildOverpassQuery(center, radius), ctrl.signal, (i, n, url, lastErr) => task.detail(`Serveur ${i + 1}/${n} : ${new URL(url).host}${lastErr ? ' (précédent : ' + lastErr + ')' : ''}`));
+        task.detail('Analyse de la réponse…');
+        await yieldToMain();
         overpassCache.set(cacheKey, { at: Date.now(), payload: data });
         if (overpassCache.size > 5) overpassCache.delete(overpassCache.keys().next().value);
       }
       const features = overpassToFeatures(data.elements, center);
+      task.done(`${features.length} bâtiment(s)${fromCache ? ' (cache)' : ''}.`);
       state.buildings = features;
       clearBuildingSelection();
       refreshBuildingsLayer();
@@ -1716,8 +2329,11 @@ const DEM_API_KEY = '';
         collapseSheetIfMobile();
       }
     } catch (err) {
-      if (err instanceof UserAbort) setStatus('buildings-status', 'Recherche annulée.', 'info');
-      else {
+      if (err instanceof UserAbort) {
+        if (timedOut) setStatus('buildings-status', `Délai dépassé (${Math.round(maxMs / 1000)} s) : aucun serveur Overpass n'a répondu à temps. Réessayez ou réduisez le rayon.`, 'error');
+        else { setStatus('buildings-status', 'Recherche annulée.', 'info'); if (task.active) task.cancel('user'); }
+      } else {
+        task.fail(err.message || err, { retry: detectBuildings });
         setStatus('buildings-status', err.message || 'Erreur lors de la recherche des bâtiments.', 'error');
         notify(err.message || 'Erreur lors de la recherche des bâtiments.', 'error', 10000);
       }
@@ -2287,7 +2903,7 @@ const DEM_API_KEY = '';
     if (y < 0 || y >= n) return Promise.reject(Object.assign(new Error('tuile hors du monde'), { code: 'DEM' }));
     const wx = ((x % n) + n) % n;
     const key = z + '/' + wx + '/' + y;
-    if (demCache.has(key)) return demCache.get(key);
+    if (demCache.has(key)) { const hit = demCache.get(key); demCache.delete(key); demCache.set(key, hit); return hit; }   // LRU
     const p = (async () => {
       if (demNeedsKey()) throw Object.assign(new Error('clé API requise (DEM_API_KEY)'), { code: 'DEM' });
       const ctrl = new AbortController();
@@ -2296,14 +2912,17 @@ const DEM_API_KEY = '';
         const res = await fetch(demTileUrl(z, wx, y), { signal: ctrl.signal, mode: 'cors' });
         if (!res.ok) { const e = new Error('HTTP ' + res.status); e.status = res.status; throw e; }
         const blob = await res.blob();
+        if (pool.ok && pool.offscreen) {                    // décodage hors du fil principal
+          try { return await runInWorker('decode', { blob, encoding: CONFIG.dem.encoding }, { light: true, timeoutMs: CONFIG.dem.timeoutMs }); }
+          catch (werr) { if (werr.code !== 'WORKER' && werr.code !== 'WORKER_TASK') throw werr; }
+        }
         const bmp = await createImageBitmap(blob, { premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
         const cv = document.createElement('canvas');
         cv.width = bmp.width; cv.height = bmp.height;
         const ctx = cv.getContext('2d', { willReadFrequently: true });
         ctx.drawImage(bmp, 0, 0);
         const img = ctx.getImageData(0, 0, bmp.width, bmp.height).data;
-        const elev = new Float32Array(bmp.width * bmp.height);
-        for (let i = 0, j = 0; i < elev.length; i++, j += 4) elev[i] = decodeDemPixel(img[j], img[j + 1], img[j + 2]);
+        const elev = demDecodeCore(img, bmp.width * bmp.height, CONFIG.dem.encoding);
         const out = { w: bmp.width, h: bmp.height, elev };
         if (bmp.close) bmp.close();
         return out;
@@ -2314,7 +2933,7 @@ const DEM_API_KEY = '';
     })();
     demCache.set(key, p);
     p.catch(() => demCache.delete(key));
-    if (demCache.size > 90) demCache.delete(demCache.keys().next().value);
+    trimDemCache();
     return p;
   }
 
@@ -2462,6 +3081,7 @@ const DEM_API_KEY = '';
     state.contours.on = false;
     state.contours.token += 1;
     clearTimeout(state.contours.timer);
+    if (state.contours.abort) state.contours.abort.abort();
     clearContourGraphics();
     setStatus('contour-info', '', null);
     updateReliefUi();
@@ -2505,22 +3125,49 @@ const DEM_API_KEY = '';
     let z = clamp(Math.round(map.getZoom()), 9, CONFIG.dem.sampleMaxZoom);
     let range = tileRangeFor(west, south, east, north, z);
     while (range.count > CONFIG.contours.maxTiles && z > 8) { z -= 1; range = tileRangeFor(west, south, east, north, z); }
+    if (state.contours.abort) state.contours.abort.abort();
+    const ctrl = new AbortController();
+    state.contours.abort = ctrl;
+    const task = startTask({
+      key: 'contours', label: 'Courbes de niveau', quiet: true, timeoutMs: 60000,
+      timeoutMessage: 'Délai dépassé (60 s) pour les courbes de niveau. Zoomez davantage ou choisissez une équidistance plus grande.',
+      onCancel: (why) => {
+        ctrl.abort();
+        if (token !== state.contours.token) return;
+        state.contours.token++;
+        setStatus('contour-info', why === 'timeout' ? 'Calcul des courbes interrompu : délai dépassé (60 s). Zoomez davantage ou choisissez une équidistance plus grande.' : 'Calcul des courbes annulé. Déplacez la carte pour le relancer.', why === 'timeout' ? 'error' : 'info');
+      }
+    });
     setStatus('contour-info', 'Calcul des courbes de niveau à partir du MNT…', 'loading');
     let tiles;
     try {
       const jobs = [];
-      for (let ty = range.y0; ty <= range.y1; ty++) for (let tx = range.x0; tx <= range.x1; tx++) jobs.push(loadDemTile(z, tx, ty).then((t) => [tx + '/' + ty, t]));
+      let done = 0;
+      const total = range.count;
+      task.progress(0, `Lecture du MNT : 0/${total} tuile(s)`);
+      for (let ty = range.y0; ty <= range.y1; ty++) for (let tx = range.x0; tx <= range.x1; tx++) {
+        jobs.push(loadDemTile(z, tx, ty).then((t) => { done++; task.progress(0.4 * done / total, `Lecture du MNT : ${done}/${total} tuile(s)`); return [tx + '/' + ty, t]; }));
+      }
       tiles = new Map(await Promise.all(jobs));
     } catch (err) {
-      if (token !== state.contours.token) return;
+      if (token !== state.contours.token) { task.finish('replaced'); return; }
       clearContourGraphics();
       setStatus('contour-info', 'Impossible de lire les altitudes (' + describeNetworkFailure(err) + '). Aucune courbe n\'est tracée : aucune altitude n\'est inventée.', 'error');
+      task.fail(err, { retry: generateContours });
       return;
     }
-    if (token !== state.contours.token || !state.contours.on) return;
+    if (token !== state.contours.token || !state.contours.on) { task.finish('replaced'); return; }
     let res;
-    try { res = await buildContours(tiles, z, range); } catch (err) { reportError('Erreur lors du calcul des courbes de niveau.', err); return; }
-    if (token !== state.contours.token || !state.contours.on) return;
+    try {
+      res = await runContours(contourPayload(tiles, z, range), (f) => task.progress(0.4 + 0.6 * f, 'Calcul des courbes (tâche de fond)'), ctrl.signal);
+      res.labels = res.labels.map((l) => ({ text: fmtNum(l.elev, 0) + ' m', lngLat: l.lngLat }));
+    } catch (err) {
+      if (err.code === 'ABORT' || token !== state.contours.token) { task.finish('replaced'); return; }
+      if (err.code === 'TIMEOUT') { task.cancel('timeout'); return; }
+      task.fail(err); reportError('Erreur lors du calcul des courbes de niveau.', err); return;
+    }
+    if (token !== state.contours.token || !state.contours.on) { task.finish('replaced'); return; }
+    task.done(res.features.length ? `${res.features.length} niveau(x) tracé(s).` : 'Aucune courbe dans cette vue.');
     if (!res.features.length) {
       clearContourGraphics();
       setStatus('contour-info', `Terrain quasi plat dans cette vue (altitudes de ${fmtNum(res.min, 1)} à ${fmtNum(res.max, 1)} m) : aucune courbe pour l'équidistance de ${res.interval} m. Choisissez une équidistance plus fine.`, 'warn');
@@ -2537,99 +3184,20 @@ const DEM_API_KEY = '';
     setStatus('contour-info', `${res.features.length} niveau(x) tracé(s), équidistance ${res.interval} m${res.adjusted ? ' (ajustée pour limiter le nombre de courbes)' : ''}. Altitudes estimées (MNT, résolution ≈ ${fmtNum(state.contours.info.resolutionM, 0)} m).`, 'info');
   }
 
-  /** Construit les courbes de niveau d'une grille d'altitudes (marching squares). */
+  /** Données envoyées au calcul des courbes (worker ou fil principal). */
+  function contourPayload(tiles, z, range) {
+    return {
+      tiles: [...tiles].map(([k, t]) => [k, t.elev]), range, z, maxGrid: CONFIG.contours.maxGrid, setting: state.contours.intervalSetting,
+      nice: NICE_INTERVALS, targetLines: CONFIG.contours.targetLines, maxLevels: CONFIG.contours.maxLevels, indexEvery: CONFIG.contours.indexEvery,
+      minSep: 170 / 2 ** Math.max(0, state.map.getZoom() - z)
+    };
+  }
   const yieldToMain = () => new Promise((r) => setTimeout(r, 0));
-
+  /** Courbes de niveau d'une grille d'altitudes (marching squares, voir contoursGen). */
   async function buildContours(tiles, z, range) {
-    const W = (range.x1 - range.x0 + 1) * 256, H = (range.y1 - range.y0 + 1) * 256;
-    const s = Math.max(1, Math.ceil(Math.max(W, H) / CONFIG.contours.maxGrid));
-    const gw = Math.floor((W - 1) / s) + 1, gh = Math.floor((H - 1) / s) + 1;
-    const raw = new Float32Array(gw * gh);
-    for (let gy = 0; gy < gh; gy++) {
-      const py = gy * s, ty = range.y0 + Math.floor(py / 256), ly = py % 256;
-      for (let gx = 0; gx < gw; gx++) {
-        const px = gx * s, tx = range.x0 + Math.floor(px / 256);
-        raw[gy * gw + gx] = tiles.get(tx + '/' + ty).elev[ly * 256 + (px % 256)];
-      }
-    }
-    // Lissage léger 3×3 pour limiter le bruit du MNT
-    const g = new Float32Array(gw * gh);
-    let min = Infinity, max = -Infinity;
-    for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
-      let sum = 0, c = 0;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-        const xx = x + dx, yy = y + dy;
-        if (xx >= 0 && xx < gw && yy >= 0 && yy < gh) { sum += raw[yy * gw + xx]; c++; }
-      }
-      const v = sum / c;
-      g[y * gw + x] = v;
-      if (v < min) min = v;
-      if (v > max) max = v;
-    }
-    // Équidistance
-    const setting = state.contours.intervalSetting;
-    let interval = setting === 'auto' ? (NICE_INTERVALS.find((v) => v >= (max - min) / CONFIG.contours.targetLines) || 1000) : Number(setting);
-    if (!(interval > 0)) interval = 10;
-    let adjusted = false;
-    const countLevels = (i) => Math.floor(max / i) - Math.ceil(min / i) + 1;
-    while (countLevels(interval) > CONFIG.contours.maxLevels) {
-      interval = NICE_INTERVALS.find((v) => v > interval) || interval * 2;
-      adjusted = true;
-    }
-    const toLngLat = (gx, gy) => worldPxToLngLat((range.x0 * 256) + gx * s + 0.5, (range.y0 * 256) + gy * s + 0.5, z);
-    const features = [];
-    const labels = [];
-    const labelPts = [];
-    const minSep = 170 / 2 ** Math.max(0, state.map.getZoom() - z);       // séparation mini des étiquettes (px de grille)
-    const first = Math.ceil(min / interval);
-    for (let k = first; k * interval <= max; k++) {
-      const L = k * interval;
-      if (k % 3 === 0) await yieldToMain();
-      const segs = [];
-      for (let y = 0; y < gh - 1; y++) {
-        for (let x = 0; x < gw - 1; x++) {
-          const v00 = g[y * gw + x], v10 = g[y * gw + x + 1], v11 = g[(y + 1) * gw + x + 1], v01 = g[(y + 1) * gw + x];
-          const idx = (v00 >= L ? 1 : 0) | (v10 >= L ? 2 : 0) | (v11 >= L ? 4 : 0) | (v01 >= L ? 8 : 0);
-          if (idx === 0 || idx === 15) continue;
-          const top = () => [x + (L - v00) / (v10 - v00), y];
-          const right = () => [x + 1, y + (L - v10) / (v11 - v10)];
-          const bottom = () => [x + (L - v01) / (v11 - v01), y + 1];
-          const left = () => [x, y + (L - v00) / (v01 - v00)];
-          const center = (v00 + v10 + v11 + v01) / 4;
-          let pairs;
-          switch (idx) {
-            case 1: case 14: pairs = [[left, top]]; break;
-            case 2: case 13: pairs = [[top, right]]; break;
-            case 3: case 12: pairs = [[left, right]]; break;
-            case 4: case 11: pairs = [[right, bottom]]; break;
-            case 6: case 9: pairs = [[top, bottom]]; break;
-            case 7: case 8: pairs = [[left, bottom]]; break;
-            case 5: pairs = center >= L ? [[top, right], [left, bottom]] : [[left, top], [right, bottom]]; break;
-            case 10: pairs = center >= L ? [[left, top], [right, bottom]] : [[top, right], [left, bottom]]; break;
-            default: pairs = [];
-          }
-          for (const [a, bb] of pairs) segs.push([a(), bb()]);
-        }
-      }
-      if (!segs.length) continue;
-      const isIndex = Math.round(L / interval) % CONFIG.contours.indexEvery === 0;
-      features.push({
-        type: 'Feature', properties: { elev: L, index: isIndex },
-        geometry: { type: 'MultiLineString', coordinates: segs.map(([a, bb]) => [toLngLat(a[0], a[1]), toLngLat(bb[0], bb[1])]) }
-      });
-      if (isIndex && labels.length < 30) {
-        let placed = 0;
-        for (let i = 0; i < segs.length && placed < 3; i += Math.max(1, Math.floor(segs.length / 6))) {
-          const mx = (segs[i][0][0] + segs[i][1][0]) / 2 * s, my = (segs[i][0][1] + segs[i][1][1]) / 2 * s;
-          if (labelPts.every((q) => Math.hypot(q[0] - mx, q[1] - my) > minSep)) {
-            labelPts.push([mx, my]);
-            labels.push({ text: fmtNum(L, 0) + ' m', lngLat: toLngLat((segs[i][0][0] + segs[i][1][0]) / 2, (segs[i][0][1] + segs[i][1][1]) / 2) });
-            placed++;
-          }
-        }
-      }
-    }
-    return { features, labels, min, max, interval, adjusted };
+    const res = await runContours(contourPayload(tiles, z, range));
+    res.labels = res.labels.map((l) => ({ text: fmtNum(l.elev, 0) + ' m', lngLat: l.lngLat }));
+    return res;
   }
 
   /** Légende des courbes de niveau (carte + panneau latéral). */
@@ -2715,6 +3283,7 @@ const DEM_API_KEY = '';
     state.profile.result = null;
     $('profile-results').hidden = true;
     setStatus('profile-status', 'Lecture des altitudes du MNT et calcul du profil…', 'loading');
+    const task = startTask({ key: 'profile', label: 'Profil altimétrique', timeoutMs: 45000, onCancel: () => { if (token === state.profile.token) { state.profile.token++; setStatus('profile-status', 'Calcul du profil interrompu (annulé ou délai dépassé). Aucune altitude n\'est inventée.', 'warn'); updateToolButtons(); } } });
     try {
       const dist = turf.distance([A.lng, A.lat], [B.lng, B.lat], { units: 'meters' });
       if (dist < 1) throw Object.assign(new Error('Les deux points sont confondus : choisissez deux points distincts.'), { userError: true });
@@ -2730,8 +3299,9 @@ const DEM_API_KEY = '';
         const c = i === 0 ? [A.lng, A.lat] : i === n - 1 ? [B.lng, B.lat] : turf.along(line, d / 1000, { units: 'kilometers' }).geometry.coordinates;
         pts.push({ lng: c[0], lat: c[1], d });
       }
+      task.detail(`${n} points, lecture du MNT`);
       const elevs = await sampleElevations(pts, z);
-      if (token !== state.profile.token) return;
+      if (token !== state.profile.token) { task.finish('replaced'); return; }
       if (elevs.some((v) => !isNum(v))) throw new Error('altitudes illisibles dans le MNT');
       const samples = pts.map((p, i) => ({ lng: p.lng, lat: p.lat, d: p.d, elev: elevs[i] }));
       state.profile.result = {
@@ -2740,8 +3310,10 @@ const DEM_API_KEY = '';
       };
       setStatus('profile-status', '', null);
       renderProfile();
+      task.done(`Profil de ${fmtDistance(dist)} calculé.`);
     } catch (err) {
-      if (token !== state.profile.token) return;
+      if (token !== state.profile.token) { task.finish('replaced'); return; }
+      task.fail(err.userError ? err.message : err, { retry: computeProfile });
       state.profile.result = null;
       const m = err.userError ? err.message : 'Impossible de calculer le profil : ' + describeNetworkFailure(err) + '. Aucune altitude n\'est inventée.';
       setStatus('profile-status', m, 'error');
@@ -3083,6 +3655,7 @@ const DEM_API_KEY = '';
   function cadAddEntity(e) {
     const c = state.cad;
     e.id = c.nextId++;
+    c.ver = (c.ver || 0) + 1;
     if (!e.layer || !cadLayerOf(e.layer)) e.layer = c.current;
     c.entities.push(e);
     return e;
@@ -3096,6 +3669,8 @@ const DEM_API_KEY = '';
     const c = state.cad;
     c.undo.push(JSON.stringify({ layers: c.layers, entities: c.entities, nextId: c.nextId, current: c.current }));
     if (c.undo.length > 60) c.undo.shift();
+    let size = c.undo.reduce((n, u) => n + u.length, 0);          // mémoire d'annulation plafonnée selon le profil
+    while (c.undo.length > 1 && size > PERF.undoChars) size -= c.undo.shift().length;
     c.redo = [];
   }
   function cadRestore(json) {
@@ -3157,23 +3732,88 @@ const DEM_API_KEY = '';
       default: return {};
     }
   }
-  function cadEntityFeatures(e, color, selected) {
-    const base = { id: e.id, color, selected, layer: e.layer, cad: e.type };
-    const F = (geometry) => ({ type: 'Feature', properties: base, geometry });
+  /* Cache par tableau de sommets : géométries lng/lat et emprise, recalculées seulement si l'objet change. */
+  const cadGeoCache = new WeakMap();
+  function cadGeo(e) {
+    const k = e.type + '|' + (e.r || 0) + '|' + (e.off || 0) + '|' + state.cad.crs.zone;
+    let g = cadGeoCache.get(e.pts);
+    if (!g || g.k !== k) { g = { k, geoms: null, bb: null }; cadGeoCache.set(e.pts, g); }
+    return g;
+  }
+  function cadEntityGeoms(e) {
+    const g = cadGeo(e);
+    if (g.geoms) return g.geoms;
     const LL = (pts) => pts.map(cadToLL);
     switch (e.type) {
-      case 'line': case 'pline': return [F({ type: 'LineString', coordinates: LL(e.pts) })];
-      case 'poly': return [F({ type: 'Polygon', coordinates: [LL(e.pts.concat([e.pts[0]]))] })];
-      case 'circle': { const r = cadCircleRing(e); return [F({ type: 'Polygon', coordinates: [LL(r.concat([r[0]]))] })]; }
-      case 'point': return [F({ type: 'Point', coordinates: cadToLL(e.pts[0]) })];
-      case 'dim': return cadDimGeom(e).lines.map((l) => F({ type: 'LineString', coordinates: LL(l) }));
-      default: return [];
+      case 'line': case 'pline': g.geoms = [{ type: 'LineString', coordinates: LL(e.pts) }]; break;
+      case 'poly': g.geoms = [{ type: 'Polygon', coordinates: [LL(e.pts.concat([e.pts[0]]))] }]; break;
+      case 'circle': { const r = cadCircleRing(e); g.geoms = [{ type: 'Polygon', coordinates: [LL(r.concat([r[0]]))] }]; break; }
+      case 'point': g.geoms = [{ type: 'Point', coordinates: cadToLL(e.pts[0]) }]; break;
+      case 'dim': g.geoms = cadDimGeom(e).lines.map((l) => ({ type: 'LineString', coordinates: LL(l) })); break;
+      default: g.geoms = [];
     }
+    return g.geoms;
+  }
+  function cadBBox(e) {
+    const g = cadGeo(e);
+    if (g.bb) return g.bb;
+    const pts = e.type === 'circle' ? [[e.pts[0][0] - e.r, e.pts[0][1] - e.r], [e.pts[0][0] + e.r, e.pts[0][1] + e.r]] : e.type === 'dim' ? e.pts.concat(cadSegments(e).flat()) : e.pts;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const q of pts) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
+    g.bb = [x0, y0, x1, y1];
+    return g.bb;
+  }
+  /** Zone de recherche (m) autour du curseur : seuls les objets proches sont testés (plans de milliers d'objets). */
+  function cadQuery(screenPt, px) {
+    const map = state.map;
+    if (!screenPt || map.getPitch() > 25) return null;           // vue inclinée : pas de préfiltre
+    const ll = map.unproject([screenPt.x, screenPt.y]);
+    const mpp = (40075016.686 * Math.cos((ll.lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
+    return { p: cadToXY(ll.lng, ll.lat), r: px * mpp * 1.6 + 0.01 };
+  }
+  function cadNear(e, q) {
+    if (!q) return true;
+    const b = cadBBox(e);
+    return q.p[0] >= b[0] - q.r && q.p[0] <= b[2] + q.r && q.p[1] >= b[1] - q.r && q.p[1] <= b[3] + q.r;
+  }
+  /* Index spatial en grille (reconstruit seulement quand le plan change) : accrochage et sélection
+     ne testent que les objets voisins du curseur, même avec des dizaines de milliers d'objets. */
+  let cadIdx = null;
+  function cadIndex() {
+    const c = state.cad;
+    if (cadIdx && cadIdx.ver === c.ver && cadIdx.ents === c.entities && cadIdx.n === c.entities.length) return cadIdx;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const e of c.entities) { const b = cadBBox(e); if (b[0] < x0) x0 = b[0]; if (b[1] < y0) y0 = b[1]; if (b[2] > x1) x1 = b[2]; if (b[3] > y1) y1 = b[3]; }
+    const cell = Math.max(Math.max(x1 - x0, y1 - y0) / 128, 0.5);
+    const grid = new Map(), big = [];
+    for (const e of c.entities) {
+      const b = cadBBox(e), i0 = Math.floor((b[0] - x0) / cell), i1 = Math.floor((b[2] - x0) / cell), j0 = Math.floor((b[1] - y0) / cell), j1 = Math.floor((b[3] - y0) / cell);
+      if ((i1 - i0 + 1) * (j1 - j0 + 1) > 64) { big.push(e); continue; }
+      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) { const k = i * 131071 + j, a = grid.get(k); if (a) a.push(e); else grid.set(k, [e]); }
+    }
+    cadIdx = { ver: c.ver, ents: c.entities, n: c.entities.length, x0, y0, cell, grid, big };
+    return cadIdx;
+  }
+  function cadCandidates(q) {
+    const c = state.cad;
+    if (!q || c.entities.length < 200) return c.entities;
+    const I = cadIndex();
+    const i0 = Math.floor((q.p[0] - q.r - I.x0) / I.cell), i1 = Math.floor((q.p[0] + q.r - I.x0) / I.cell);
+    const j0 = Math.floor((q.p[1] - q.r - I.y0) / I.cell), j1 = Math.floor((q.p[1] + q.r - I.y0) / I.cell);
+    if ((i1 - i0 + 1) * (j1 - j0 + 1) > 900) return c.entities;      // vue très éloignée : parcours complet
+    const out = new Set(I.big);
+    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) { const a = I.grid.get(i * 131071 + j); if (a) for (const e of a) out.add(e); }
+    return out;
+  }
+  function cadEntityFeatures(e, color, selected) {
+    const base = { id: e.id, color, selected, layer: e.layer, cad: e.type };
+    return cadEntityGeoms(e).map((geometry) => ({ type: 'Feature', properties: base, geometry }));
   }
 
   /* ---------- Rendu ---------- */
   function cadRender() {
     const c = state.cad;
+    c.ver = (c.ver || 0) + 1;                             // le plan a changé : l'index spatial sera reconstruit
     if (c.render) return;
     c.render = requestAnimationFrame(() => { c.render = 0; cadRenderNow(); });
   }
@@ -3191,32 +3831,45 @@ const DEM_API_KEY = '';
       c.entities.forEach((e) => { const L = cadLayerOf(e.layer); if (L && L.visible) feats.push(...cadEntityFeatures(e, L.color, c.selection.has(e.id))); });
       setSourceData('cad', { type: 'FeatureCollection', features: feats });
       setSourceData('cad-grips', { type: 'FeatureCollection', features: cadGripFeatures() });
-      setSourceData('cad-cutfill', { type: 'FeatureCollection', features: c.cutfill });
+      if (cadShownCutfill !== c.cutfill) { cadShownCutfill = c.cutfill; setSourceData('cad-cutfill', { type: 'FeatureCollection', features: c.cutfill }); }
       cadRefreshLabels();
     } else if (requireMap(true)) {
       setSourceData('cad', EMPTY_FC()); setSourceData('cad-grips', EMPTY_FC()); cadRefreshLabels();
     }
     cadRenderUi();
   }
-  /** Textes et cotes : repères HTML, nettoyés puis recréés à chaque rendu. */
+  let cadShownCutfill = null;
+  /** Textes et cotes : repères HTML réutilisés d'un rendu à l'autre, limités à la vue affichée. */
+  const cadLabelMarkers = new Map();
   function cadRefreshLabels() {
-    const c = state.cad;
-    c.markers.forEach((m) => m.remove());
-    c.markers = [];
-    if (!state.map || !window.maplibregl || !c.crs.zone) return;
-    let n = 0;
-    for (const e of c.entities) {
-      if (n >= 400) break;
-      const L = cadLayerOf(e.layer);
-      if (!L || !L.visible) continue;
-      let text = null, at = null, cls = 'cad-text';
-      if (e.type === 'text') { text = e.text; at = e.pts[0]; }
-      else if (e.type === 'dim') { const g = cadDimGeom(e); text = fmtNum(g.length, 2) + ' m'; at = g.mid; cls = 'cad-dim'; }
-      if (!text) continue;
-      const node = el('div', { class: cls + (c.selection.has(e.id) ? ' sel' : ''), text, style: { color: L.color, borderColor: L.color } });
-      c.markers.push(new maplibregl.Marker({ element: node, anchor: 'center' }).setLngLat(cadToLL(at)).addTo(state.map));
-      n++;
+    const c = state.cad, keep = new Set(), map = state.map;
+    if (map && window.maplibregl && c.crs.zone) {
+      const b = map.getBounds(), mx = (b.getEast() - b.getWest()) * 0.15, my = (b.getNorth() - b.getSouth()) * 0.15;
+      const tilted = map.getPitch() > 40;
+      const inView = (ll) => tilted || (ll[0] >= b.getWest() - mx && ll[0] <= b.getEast() + mx && ll[1] >= b.getSouth() - my && ll[1] <= b.getNorth() + my);
+      for (const e of c.entities) {
+        if (keep.size >= PERF.maxLabels) break;
+        if (e.type !== 'text' && e.type !== 'dim') continue;
+        const L = cadLayerOf(e.layer);
+        if (!L || !L.visible) continue;
+        let text, at, cls = 'cad-text';
+        if (e.type === 'text') { text = e.text; at = e.pts[0]; }
+        else { const g = cadDimGeom(e); text = fmtNum(g.length, 2) + ' m'; at = g.mid; cls = 'cad-dim'; }
+        if (!text) continue;
+        const ll = cadToLL(at);
+        if (!inView(ll)) continue;
+        const sel = c.selection.has(e.id), sig = text + '|' + cls + '|' + L.color + '|' + sel;
+        let m = cadLabelMarkers.get(e.id);
+        if (m && m.sig !== sig) { m.marker.remove(); m = null; }
+        if (!m) {
+          const node = el('div', { class: cls + (sel ? ' sel' : ''), text, style: { color: L.color, borderColor: L.color } });
+          m = { sig, ll, marker: new maplibregl.Marker({ element: node, anchor: 'center' }).setLngLat(ll).addTo(map) };
+          cadLabelMarkers.set(e.id, m);
+        } else if (m.ll[0] !== ll[0] || m.ll[1] !== ll[1]) { m.marker.setLngLat(ll); m.ll = ll; }
+        keep.add(e.id);
+      }
     }
+    for (const [id, m] of cadLabelMarkers) if (!keep.has(id)) { m.marker.remove(); cadLabelMarkers.delete(id); }
   }
 
   /* ---------- Accrochages, sélection ---------- */
@@ -3240,8 +3893,9 @@ const DEM_API_KEY = '';
       segList.forEach((s) => { if (c.snap.mid) consider([(s[0][0] + s[1][0]) / 2, (s[0][1] + s[1][1]) / 2], 'mid'); segs.push(s); });
       if (center && c.snap.cen) consider(center, 'cen');
     };
-    for (const e of c.entities) {
-      if (!cadVisible(e)) continue;
+    const q = cadQuery(screenPt, tol + 2);          // un accrochage (même une intersection) est à moins de « tol » px du curseur
+    for (const e of cadCandidates(q)) {
+      if (!cadVisible(e) || !cadNear(e, q)) continue;
       if (e.type === 'circle') { feed([[e.pts[0][0] + e.r, e.pts[0][1]], [e.pts[0][0] - e.r, e.pts[0][1]], [e.pts[0][0], e.pts[0][1] + e.r], [e.pts[0][0], e.pts[0][1] - e.r]], [], e.pts[0]); cadSegments(e).forEach((s) => segs.push(s)); }
       else if (e.type === 'point' || e.type === 'text') feed([e.pts[0]], [], null);
       else if (e.type === 'dim') feed([e.pts[0], e.pts[1]], [], null);
@@ -3250,7 +3904,7 @@ const DEM_API_KEY = '';
     const par = state.parcel.vertices.map((v) => cadToXY(v.lng, v.lat));
     if (par.length) feed(par, par.length > 1 ? par.slice(1).map((p, i) => [par[i], p]).concat(state.parcel.closed ? [[par[par.length - 1], par[0]]] : []) : [], null);
     if (c.snap.int || c.snap.nea) {
-      const near = segs.filter((s) => { const a = cadScreen(s[0]), b = cadScreen(s[1]); return cadSegDistPx(screenPt, a, b) < tol * 4; }).slice(0, 24);
+      const near = segs.filter((s) => { const a = cadScreen(s[0]), b = cadScreen(s[1]); return cadSegDistPx(screenPt, a, b) < tol + 1; }).slice(0, 24);
       if (c.snap.int) for (let i = 0; i < near.length; i++) for (let j = i + 1; j < near.length; j++) { const p = segIntersect(near[i][0], near[i][1], near[j][0], near[j][1]); if (p) consider(p, 'int'); }
       if (c.snap.nea && !best) { const cur = cadToXY(...Object.values(state.map.unproject([screenPt.x, screenPt.y]).toArray())); near.forEach((s) => consider(nearestOnSeg(cur, s[0], s[1]), 'nea')); }
     }
@@ -3283,8 +3937,9 @@ const DEM_API_KEY = '';
   function cadPickAt(screenPt) {
     const tol = cadTol() - 4;
     let best = null, bd = Infinity;
-    for (const e of state.cad.entities) {
-      if (!cadVisible(e) || !cadEditable(e)) continue;
+    const q = cadQuery(screenPt, tol + 2);
+    for (const e of cadCandidates(q)) {
+      if (!cadVisible(e) || !cadEditable(e) || !cadNear(e, q)) continue;
       const d = cadDistToEntityPx(e, screenPt);
       if (d <= tol && d < bd) { bd = d; best = e.id; }
     }
@@ -3612,11 +4267,11 @@ const DEM_API_KEY = '';
     return e;
   }
   function cadSetVertex(e, idx, pt) {
-    if (e.type === 'circle') { if (idx === 0) e.pts[0] = pt.slice(); else e.r = Math.max(d2(e.pts[0], pt), 0.001); }
+    if (e.type === 'circle') { if (idx === 0) e.pts = [pt.slice()]; else e.r = Math.max(d2(e.pts[0], pt), 0.001); }
     else if (e.type === 'dim') {
-      if (idx < 2) e.pts[idx] = pt.slice();
+      if (idx < 2) { e.pts = e.pts.slice(); e.pts[idx] = pt.slice(); }
       else { const [p1, p2] = e.pts, L = d2(p1, p2) || 1e-9; e.off = ((pt[0] - p1[0]) * -(p2[1] - p1[1]) + (pt[1] - p1[1]) * (p2[0] - p1[0])) / L; }
-    } else e.pts[idx] = pt.slice();
+    } else { e.pts = e.pts.slice(); e.pts[idx] = pt.slice(); }        // nouveau tableau : invalide le cache géométrique
   }
   function cadGripAt(screen) {
     if (!screen) return null;
@@ -4189,8 +4844,12 @@ const DEM_API_KEY = '';
   /** Exécute une opération asynchrone avec message d'attente et gestion d'erreur homogène. */
   async function cadRunAsync(statusId, waitMsg, fn) {
     setStatus(statusId, waitMsg, 'loading');
-    try { await fn(); setStatus(statusId, '', null); }
+    let stale = false;
+    const task = startTask({ key: 'cad-calc', label: waitMsg.replace(/…$/, ''), timeoutMs: 60000, onCancel: () => { stale = true; setStatus(statusId, 'Calcul interrompu (annulé ou délai dépassé de 60 s).', 'warn'); } });
+    try { await fn(task); if (stale) return; setStatus(statusId, '', null); task.done(); }
     catch (err) {
+      if (stale) return;
+      task.fail(err.userError ? err.message : err);
       const m = err.userError ? err.message : 'Calcul impossible : ' + describeNetworkFailure(err) + '. Aucune altitude n\'est inventée.';
       setStatus(statusId, m, 'error');
       if (!err.userError) notify(m, 'error', 9000);
@@ -4299,10 +4958,11 @@ const DEM_API_KEY = '';
   }
   function cadZoomExtents() {
     const c = state.cad;
-    const pts = [];
-    c.entities.forEach((e) => { if (cadVisible(e)) cadVertices(e).forEach((p) => pts.push(cadToLL(p))); });
-    if (!pts.length) { notify('Le plan est vide.', 'info'); return; }
-    fitToFeatures([{ type: 'Feature', properties: {}, geometry: { type: 'MultiPoint', coordinates: pts } }]);
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    c.entities.forEach((e) => { if (!cadVisible(e)) return; const bb = cadBBox(e); x0 = Math.min(x0, bb[0]); y0 = Math.min(y0, bb[1]); x1 = Math.max(x1, bb[2]); y1 = Math.max(y1, bb[3]); });
+    if (!Number.isFinite(x0)) { notify('Le plan est vide.', 'info'); return; }
+    const corners = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map(cadToLL);          // 4 conversions au lieu d'une par sommet
+    fitToFeatures([{ type: 'Feature', properties: {}, geometry: { type: 'MultiPoint', coordinates: corners } }]);
   }
   function cadClearAll() {
     const c = state.cad;
@@ -4410,7 +5070,7 @@ const DEM_API_KEY = '';
     notify(`Export DXF : ${r.count} objet(s). Coordonnées ${cadCrsLabel()}, unité : mètre. Accents retirés (DXF R12).`, 'ok', 8000);
   }
 
-  function parseDxf(text) {
+  function parseDxf(text) {                            // fonction pure : exécutée aussi dans un worker
     const L = text.split(/\r?\n/);
     const pairs = [];
     for (let i = 0; i + 1 < L.length; i += 2) { const code = parseInt(L[i].trim(), 10); if (Number.isNaN(code)) continue; pairs.push([code, L[i + 1].replace(/\s+$/, '')]); }
@@ -4453,7 +5113,7 @@ const DEM_API_KEY = '';
         const closed = (parseInt(first(e, 70) || '0', 10) & 1) === 1;
         if (pts.length >= 2) out.push({ type: closed && pts.length >= 3 ? 'poly' : 'pline', layer: ly, pts });
       } else if (e.kind === 'POLYLINE') {
-        const pts = (e.verts || []).map((v) => { const x = parseFloat((v.g.find((q) => q[0] === 10) || [0, 'NaN'])[1]), y = parseFloat((v.g.find((q) => q[0] === 20) || [0, 'NaN'])[1]); return [x, y]; }).filter((p) => isNum(p[0]) && isNum(p[1]));
+        const pts = (e.verts || []).map((v) => { const x = parseFloat((v.g.find((q) => q[0] === 10) || [0, 'NaN'])[1]), y = parseFloat((v.g.find((q) => q[0] === 20) || [0, 'NaN'])[1]); return [x, y]; }).filter((p) => Number.isFinite(p[0]) && Number.isFinite(p[1]));
         const closed = (parseInt(first(e, 70) || '0', 10) & 1) === 1;
         if (pts.length >= 2) out.push({ type: closed && pts.length >= 3 ? 'poly' : 'pline', layer: ly, pts });
       } else if (e.kind === 'CIRCLE') { const c0 = P(10, 20), r = numv(e, 40); if (c0 && r > 0) out.push({ type: 'circle', layer: ly, pts: [c0], r }); }
@@ -4470,9 +5130,9 @@ const DEM_API_KEY = '';
     }
     return { entities: out, layers, skipped };
   }
-  function cadImportDxfText(text) {
+  function cadImportDxfText(text, parsed) {
     if (!/\b(SECTION|ENTITIES)\b/.test(text.slice(0, 4000))) throw userError('Ce fichier ne ressemble pas à un DXF au format texte (les DXF binaires ne sont pas pris en charge).');
-    const r = parseDxf(text);
+    const r = parsed || parseDxf(text);
     if (!r.entities.length) throw userError('Aucune entité reconnue dans ce DXF (LIGNE, POLYLIGNE, CERCLE, ARC, POINT, TEXTE sont pris en charge).');
     const MAX = 20000;
     let ents = r.entities;
@@ -4512,8 +5172,28 @@ const DEM_API_KEY = '';
     if (!file) return;
     if (!requireMap()) return;
     if (file.size > CONFIG.maxFileBytes) { notify('Fichier trop volumineux (' + fmtNum(file.size / 1048576, 1) + ' Mo, limite ' + CONFIG.maxFileBytes / 1048576 + ' Mo).', 'error'); return; }
-    try { cadImportDxfText(await file.text()); }
-    catch (err) { if (err.userError) notify(err.message, 'error', 9000); else reportError('Import DXF impossible.', err); }
+    const ctrl = new AbortController();
+    const task = startTask({ label: 'Import DXF : ' + file.name, timeoutMs: 90000, onCancel: () => ctrl.abort() });
+    try {
+      task.detail('Lecture du fichier (' + fmtNum(file.size / 1048576, 1) + ' Mo)');
+      const text = await file.text();
+      if (!/\b(SECTION|ENTITIES)\b/.test(text.slice(0, 4000))) throw userError('Ce fichier ne ressemble pas à un DXF au format texte (les DXF binaires ne sont pas pris en charge).');
+      let parsed = null;
+      if (pool.ok) {
+        task.detail('Analyse des entités (tâche de fond)');
+        try { parsed = await runInWorker('dxf', { text }, { signal: ctrl.signal, timeoutMs: 85000 }); parsed.layers = new Map(parsed.layers); }
+        catch (werr) { if (werr.code === 'ABORT') return; if (werr.code !== 'WORKER') throw werr; }
+      }
+      if (!task.active) return;
+      task.detail('Ajout au plan');
+      await yieldToMain();
+      cadImportDxfText(text, parsed);
+      task.done();
+    } catch (err) {
+      if (!task.active) return;
+      task.fail(err.userError ? err.message : err);
+      if (err.userError) notify(err.message, 'error', 9000); else reportError('Import DXF impossible.', err);
+    }
   }
 
   /* ---------- Plan imprimable (PNG avec cartouche) ---------- */
@@ -5380,6 +6060,397 @@ const DEM_API_KEY = '';
     else showFeaturePopup(e);
   }
 
+
+  /* ========================================================================
+     13b. AIDE : TUTORIELS GUIDÉS, EXEMPLES, AIDE-MÉMOIRE
+     Une visite guidée met en évidence un contrôle, explique son rôle avec un
+     exemple, peut exécuter l'action (« Le faire pour moi ») et détecte quand
+     l'utilisateur a réalisé l'étape lui-même.
+     ======================================================================== */
+  const TUTO_KEY = 'topogis3d.tutorials', WELCOME_KEY = 'topogis3d.welcome';
+  function tutoProgress() { try { return JSON.parse(store.get(TUTO_KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function tutoMarkDone(id) { const p = tutoProgress(); p[id] = new Date().toISOString(); try { store.set(TUTO_KEY, JSON.stringify(p)); } catch (e) { /* stockage indisponible */ } }
+
+  /* ----- Données d'exemple (fictives) ----- */
+  const EXAMPLE_PARCEL_M = [[-40, -25], [42, -22], [38, 27], [-36, 24]];   // décalages (m) depuis le centre par défaut
+  function exampleLL(dx, dy, center) {
+    const c = center || CONFIG.defaultCenter, k = Math.cos((c[1] * Math.PI) / 180);
+    return [c[0] + dx / (111320 * k), c[1] + dy / 110574];
+  }
+  const hasProjectData = () => state.parcel.vertices.length > 0 || state.cad.entities.length > 0 || state.buildings.length > 0 || state.imported.length > 0 || state.csvPoints.length > 0;
+
+  /** Projet d'exemple : parcelle fermée, fiche topographique et plan CAO (limite, axe de voie, cote, texte). */
+  function loadExample(opts) {
+    if (!requireMap()) return false;
+    if (!(opts && opts.force) && hasProjectData() && !window.confirm('Remplacer le projet affiché par le projet d\'exemple ? (Les données enregistrées localement ne sont pas modifiées.)')) return false;
+    setMode('idle');
+    closePopup();
+    const pts = EXAMPLE_PARCEL_M.map(([x, y]) => exampleLL(x, y));
+    state.parcel = { vertices: pts.map(([lng, lat]) => ({ lng, lat, alt: null })), closed: true };
+    state.topo = Object.assign(createEmptyTopo(), {
+      projectName: 'Exemple — Lotissement Les Orangers', landReference: 'TF 00000/K (fictif)', clientName: 'Client exemple',
+      surveyorName: 'Cabinet de topographie exemple', surveyDate: todayIso(), soilType: 'limoneux', landUse: 'Terrain nu',
+      notes: 'Projet fictif fourni pour apprendre TopoGIS 3D. Toutes les valeurs sont des exemples.'
+    });
+    applyTopoToForm();
+    cadLoad(null);
+    const xy = pts.map(([lng, lat]) => cadToXY(lng, lat));
+    cadAddEntity({ type: 'poly', layer: 'Limites', pts: xy, parcel: true });
+    // axe de la voie de desserte, parallèle à la limite sud, à 8 m
+    const off = offsetPath([xy[0], xy[1]], -8);
+    const dir = [off[1][0] - off[0][0], off[1][1] - off[0][1]], L = Math.hypot(dir[0], dir[1]);
+    const ext = (p, k) => [p[0] + (dir[0] / L) * k, p[1] + (dir[1] / L) * k];
+    cadAddEntity({ type: 'line', layer: 'Axes', pts: [ext(off[0], -25), ext(off[1], 25)] });
+    cadAddEntity({ type: 'text', layer: 'Textes', pts: [ext(off[1], 10)], text: 'Voie projetée (emprise 8 m)' });
+    cadAddEntity({ type: 'dim', layer: 'Cotes', pts: [xy[0], xy[1]], off: -3 });
+    cadAddEntity({ type: 'text', layer: 'Textes', pts: [polyCentroid(xy)], text: 'Parcelle exemple' });
+    cadRender();
+    refreshAll();
+    updateToolButtons();
+    fitToFeatures([buildParcelFeature()]);
+    notify('Projet d\'exemple chargé : parcelle de ' + fmtNum(state.parcelMetrics ? state.parcelMetrics.areaM2 : Math.abs(ringArea(xy)), 0) + ' m², fiche remplie et plan CAO (données fictives).', 'ok', 7000);
+    return true;
+  }
+
+  function exampleCsv() {
+    const rows = [['B1', -40, -25, 14.2, 'Borne de propriété'], ['B2', 42, -22, 13.6, 'Borne de propriété'], ['B3', 38, 27, 15.1, 'Borne de propriété'], ['B4', -36, 24, 15.4, 'Borne de propriété'], ['P1', 0, 0, 14.6, 'Point de nivellement']];
+    return 'nom,latitude,longitude,altitude,description\r\n' + rows.map(([n, x, y, z, d]) => { const [lng, lat] = exampleLL(x, y); return [n, lat.toFixed(7), lng.toFixed(7), z.toFixed(2), d].join(','); }).join('\r\n') + '\r\n';
+  }
+  function exampleGeoJson() {
+    const ring = [[60, -20], [110, -18], [108, 25], [62, 22], [60, -20]].map(([x, y]) => exampleLL(x, y));
+    return JSON.stringify({ type: 'FeatureCollection', features: [
+      { type: 'Feature', properties: { name: 'Parcelle voisine (exemple)', usage: 'Agricole' }, geometry: { type: 'Polygon', coordinates: [ring] } },
+      { type: 'Feature', properties: { name: 'Puits (exemple)' }, geometry: { type: 'Point', coordinates: exampleLL(85, 0) } }
+    ] }, null, 2);
+  }
+  function exampleDxf() {
+    // plan de maison en coordonnées locales (0–12 m) : il sera centré sur la vue à l'import
+    const g = [];
+    const add = (...a) => g.push(...a.map(String));
+    add(0, 'SECTION', 2, 'ENTITIES');
+    const pl = (layer, pts, closed) => { add(0, 'POLYLINE', 8, layer, 66, 1, 70, closed ? 1 : 0); pts.forEach(([x, y]) => add(0, 'VERTEX', 8, layer, 10, x, 20, y, 30, 0)); add(0, 'SEQEND', 8, layer); };
+    pl('MURS', [[0, 0], [12, 0], [12, 9], [0, 9]], true);
+    pl('MURS', [[5, 0], [5, 9]], false);
+    add(0, 'CIRCLE', 8, 'RESEAUX', 10, 14, 20, 4.5, 30, 0, 40, 0.6);
+    add(0, 'TEXT', 8, 'TEXTES', 10, 2, 20, 4, 30, 0, 40, 0.8, 1, 'Sejour');
+    add(0, 'TEXT', 8, 'TEXTES', 10, 7.5, 20, 4, 30, 0, 40, 0.8, 1, 'Chambre');
+    add(0, 'ENDSEC', 0, 'EOF');
+    return g.join('\r\n') + '\r\n';
+  }
+  const EXAMPLE_FILES = {
+    csv: { name: 'exemple-points.csv', mime: 'text/csv;charset=utf-8', make: () => '﻿' + exampleCsv(), how: 'Section « Import / export » → « Importer CSV ».' },
+    geojson: { name: 'exemple-parcelle-voisine.geojson', mime: 'application/geo+json', make: exampleGeoJson, how: 'Section « Import / export » → « Importer GeoJSON ».' },
+    dxf: { name: 'exemple-maison.dxf', mime: 'application/dxf', make: exampleDxf, how: 'Section « Plan CAO » → « Import DXF » (coordonnées locales : centré sur la vue).' }
+  };
+  function downloadExample(kind) {
+    const f = EXAMPLE_FILES[kind];
+    downloadFile(f.name, f.make(), f.mime);
+    notify(`Fichier d'exemple téléchargé : ${f.name}. Pour l'essayer : ${f.how}`, 'ok', 8000);
+  }
+
+  /* ----- Aides pour les démonstrations ----- */
+  function demoMapPoints(offsets) {                 // pixels autour du centre de la carte → lng/lat
+    const m = state.map, c = m.getContainer();
+    return offsets.map(([dx, dy]) => m.unproject([c.clientWidth / 2 + dx, c.clientHeight / 2 + dy]));
+  }
+  function demoCadOn() { if (state.mode !== 'cad') cadSetTool('select'); }
+  function demoFeed(pt) { const t = state.cad.tool; if (t && CAD_TOOLS[t.name].click) { CAD_TOOLS[t.name].click(t, pt, { screen: null, shift: false }); cadAfter(); } }
+  const demoCenterXY = () => { const c = state.map.getCenter(); return cadToXY(c.lng, c.lat); };
+  function demoParcelPoly() {
+    let e = state.cad.entities.find((x) => x.type === 'poly' && x.parcel) || state.cad.entities.find((x) => x.type === 'poly');
+    if (!e) { loadExample({ force: !hasProjectData() }); e = state.cad.entities.find((x) => x.type === 'poly'); }
+    return e;
+  }
+  function demoSelect(e) { if (!e) return; demoCadOn(); state.cad.selection = new Set([e.id]); cadRender(); }
+  const cadCount = (type) => state.cad.entities.filter((e) => !type || e.type === type).length;
+
+  /* ----- Contenu des tutoriels ----- */
+  const TUTORIALS = [
+    { id: 'decouverte', title: 'Découvrir l\'interface', level: 'Débutant', minutes: 2, summary: 'Où se trouvent les outils, comment naviguer sur la carte et retrouver l\'aide.', steps: [
+      { title: 'Bienvenue dans TopoGIS 3D', body: ['Cette visite vous montre l\'organisation de l\'application. Chaque étape met un élément en évidence ; vous pouvez l\'utiliser pendant la visite.', 'Navigation : « Suivant » / « Précédent », ou les flèches ← → du clavier. Échap quitte la visite.'] },
+      { target: '#sidebar-scroll', title: 'Le panneau de contrôle', body: ['Les outils sont rangés par sections : GPS, bâtiments, mesures, plan CAO, relief, fiche topographique, import/export.', 'Cliquez sur le titre d\'une section pour l\'ouvrir ou la replier. Sur téléphone, le panneau s\'affiche en bas de l\'écran : la poignée permet de le masquer pour voir la carte.'] },
+      { target: '#map', title: 'La carte', body: ['Glisser : se déplacer. Molette ou pincement : zoomer. Clic droit + glisser (ou deux doigts) : incliner et pivoter.', 'Cliquez sur un objet (bâtiment, parcelle, point) pour afficher ses informations.'] },
+      { target: '.maplibregl-ctrl-top-right', title: 'Les contrôles de la carte', body: ['De haut en bas : zoom, boussole (un clic remet le nord en haut), recentrage sur votre position, bascule 2D/3D et vue du globe terrestre.'] },
+      { target: '#btn-theme', title: 'Mode clair ou sombre', body: ['Adaptez l\'affichage à la luminosité : le mode sombre est plus confortable la nuit, le mode clair en plein soleil sur le terrain.'] },
+      { target: '#btn-help', title: 'Retrouver l\'aide', body: ['Ce bouton ouvre le centre d\'aide : tous les tutoriels, un projet d\'exemple, des fichiers à importer, l\'aide-mémoire des commandes et la FAQ.', 'Conseil : poursuivez avec le tutoriel « Charger le projet d\'exemple ».'] }
+    ] },
+    { id: 'exemple', title: 'Charger le projet d\'exemple', level: 'Débutant', minutes: 1, summary: 'Un terrain fictif prêt à l\'emploi pour essayer tous les outils sans être sur place.', steps: [
+      { title: 'Un projet pour s\'exercer', body: ['Le projet d\'exemple contient une parcelle d\'environ 4 000 m² à Kénitra, sa fiche topographique remplie et un plan CAO (limite, axe de voie, cote).', 'Les données sont fictives. Vos données enregistrées dans le navigateur ne sont pas modifiées.'], task: 'Chargez l\'exemple.', check: () => state.parcel.closed && state.cad.entities.some((e) => e.parcel), demo: { label: 'Charger l\'exemple', run: () => loadExample() } },
+      { target: '#parcel-stats', title: 'Surface et périmètre', body: ['Ils sont calculés automatiquement dès que la parcelle est fermée : surface en m² et en hectares (1 ha = 10 000 m²), périmètre en mètres.'] },
+      { target: '#sec-topo', title: 'La fiche topographique', body: ['Nom du projet, référence foncière, client, topographe, sol, occupation, observations. Ces informations sont reprises dans les exports et dans le cartouche du plan PNG.'] },
+      { target: '#sec-cad', title: 'Le plan CAO de l\'exemple', body: ['La limite de la parcelle (calque Limites), l\'axe de la voie (Axes) et une cote de façade (Cotes) sont déjà dessinés.', 'Suite logique : « Plan CAO : dessiner » puis « Lotir et implanter ».'] }
+    ] },
+    { id: 'gps', title: 'Se localiser et relever au GPS', level: 'Débutant', minutes: 3, summary: 'Obtenir sa position, suivre un parcours et relever les sommets d\'un terrain en marchant.', steps: [
+      { target: '#btn-locate', title: 'Obtenir ma position', body: ['Le navigateur demande l\'autorisation d\'accéder à la position. Elle n\'est disponible qu\'en HTTPS (GitHub Pages) ou sur localhost.', 'Exemple : sur le terrain, attendez quelques secondes à découvert pour que la précision s\'améliore.'], task: 'Obtenez votre position.', check: () => !!state.position, demo: { label: 'Me localiser', run: () => requestPosition() } },
+      { target: '#sec-gps', title: 'Lire la position', body: ['Latitude, longitude, précision et altitude GPS. L\'altitude GPS est étiquetée « Mesurée » mais reste souvent moins précise que la position horizontale.', 'Repères : ± 5 m = bonne précision ; au-delà de 20 m (intérieur, ville dense) la position est à utiliser avec prudence.'] },
+      { target: '#btn-track', title: 'Suivre ma position', body: ['La carte suit vos déplacements ; chaque déplacement de plus de 3 m est enregistré comme point GPS (exportable en CSV).', '« Arrêter le suivi » met fin à l\'enregistrement.'] },
+      { target: '#btn-parcel-addpoint', title: 'Relever un terrain en marchant', body: ['« Ajouter un point » pose un sommet de parcelle à votre position GPS, avec son altitude mesurée.', 'Exemple : placez-vous sur la borne B1 → « Ajouter un point », puis B2, B3, B4 → « Fermer le polygone ». La surface du terrain réellement parcouru s\'affiche.'] }
+    ] },
+    { id: 'parcelle', title: 'Dessiner une parcelle', level: 'Débutant', minutes: 3, summary: 'Poser des sommets sur la carte, fermer le polygone et lire surface et périmètre.', steps: [
+      { target: '#btn-parcel-start', title: 'Commencer une parcelle', body: ['Le mode dessin s\'active : un bandeau en haut de la carte rappelle l\'action en cours.'], task: 'Cliquez « Commencer une parcelle ».', check: () => state.mode === 'parcel', demo: { label: 'Commencer', run: () => startParcel() } },
+      { target: '#map', title: 'Poser les sommets', body: ['Cliquez sur la carte à chaque angle du terrain. Faites glisser un sommet pour le corriger.', 'Astuce : zoomez au maximum sur les bornes ou les angles de clôture visibles pour gagner en précision.'], task: 'Posez au moins 3 sommets.', check: () => state.parcel.vertices.length >= 3, demo: { label: 'Poser 4 sommets', run: () => { if (state.mode !== 'parcel') startParcel(); demoMapPoints([[-90, -60], [100, -50], [90, 70], [-80, 60]]).forEach((p) => addVertex(p.lng, p.lat, null)); } } },
+      { target: '#btn-parcel-close', title: 'Fermer le polygone', body: ['Vous pouvez aussi cliquer sur le premier sommet. Le polygone fermé devient la parcelle du projet.'], task: 'Fermez le polygone.', check: () => state.parcel.closed, demo: { label: 'Fermer', run: () => closeParcel() } },
+      { target: '#parcel-stats', title: 'Lire les résultats', body: ['Exemple : un terrain de 40 m × 25 m fait 1 000 m², soit 0,1000 ha, pour un périmètre de 130 m.', 'Les calculs sont géodésiques (Turf.js) : ils restent justes quelle que soit la latitude.'] },
+      { target: '#btn-parcel-undo', title: 'Corriger', body: ['« Annuler le dernier point » retire le dernier sommet (et rouvre le polygone) ; « Supprimer la parcelle » repart de zéro.'] }
+    ] },
+    { id: 'mesure', title: 'Mesurer une distance', level: 'Débutant', minutes: 1, summary: 'Mesurer une longueur ou un cheminement en plusieurs segments.', steps: [
+      { target: '#btn-measure-toggle', title: 'Activer la mesure', body: ['Chaque clic sur la carte ajoute un point ; la longueur de chaque segment et le total s\'affichent.'], task: 'Activez la mesure.', check: () => state.mode === 'measure', demo: { label: 'Activer', run: () => { if (state.mode !== 'measure') toggleMeasureMode(); } } },
+      { target: '#map', title: 'Cliquer les points', body: ['Exemple : mesurez la longueur d\'une façade, puis le retour du bâtiment, sans quitter le mode.'], task: 'Placez au moins 2 points.', check: () => state.measure.points.length >= 2, demo: { label: 'Placer 3 points', run: () => { if (state.mode !== 'measure') toggleMeasureMode(); demoMapPoints([[-120, 40], [0, -40], [120, 30]]).forEach((p) => addMeasurePoint(p)); } } },
+      { target: '#measure-results', title: 'Le détail de la mesure', body: ['Distances par segment, total et coordonnées des points. « Terminer » dans le bandeau fige la mesure ; « Effacer la mesure » la supprime.'] }
+    ] },
+    { id: 'batiments', title: 'Bâtiments OpenStreetMap et vue 3D', level: 'Débutant', minutes: 2, summary: 'Charger les bâtiments voisins, les filtrer et les voir en volume.', steps: [
+      { target: '#in-radius', title: 'Choisir le rayon', body: ['Les bâtiments sont cherchés autour de votre position GPS ou du centre de la carte.', 'Exemple : 150 m en ville dense, 300 à 500 m en zone peu bâtie.'] },
+      { target: '#btn-detect', title: 'Détecter les bâtiments', body: ['La requête interroge OpenStreetMap (Overpass). Cliquez ensuite un bâtiment pour voir son type, sa hauteur et sa surface.'], task: 'Chargez les bâtiments.', check: () => state.buildings.length > 0, demo: { label: 'Détecter', run: () => detectBuildings() } },
+      { target: '#sel-filter', title: 'Filtrer par type', body: ['Résidentiel, commercial, école… La liste et la carte n\'affichent plus que le type choisi.'] },
+      { target: '#btn-view3d', title: 'Passer en 3D', body: ['Les bâtiments sont extrudés selon leur hauteur OSM (ou nombre d\'étages × 3 m). Sans information, 8 m sont utilisés : la hauteur est alors indiquée comme estimée.'], demo: { label: 'Vue 3D', run: () => setViewMode(!state.is3D) } }
+    ] },
+    { id: 'relief', title: 'Relief, courbes de niveau et profil', level: 'Intermédiaire', minutes: 3, summary: 'Lire le terrain : ombrage 3D, courbes de niveau et profil altimétrique entre deux points.', steps: [
+      { target: '#btn-relief', title: 'Afficher le relief', body: ['Le terrain est affiché en 3D avec un ombrage, à partir d\'un modèle numérique de terrain (MNT). Le curseur « Exagération » accentue les reliefs faibles.'], demo: { label: 'Afficher le relief', run: () => { if (!state.relief.on) toggleRelief(); } } },
+      { target: '#btn-contours', title: 'Courbes de niveau', body: ['Courbes calculées pour la vue affichée (zoom 12 minimum), avec courbes maîtresses et légende. L\'équidistance est automatique ou choisie (ex. 5 m pour un terrain en pente douce).'], demo: { label: 'Afficher les courbes', run: () => { if (!state.contours.on) toggleContours(); } } },
+      { target: '#btn-profile-start', title: 'Profil altimétrique', body: ['Cliquez « Sélectionner deux points », puis le point A et le point B sur la carte.'], task: 'Tracez un profil.', check: () => !!state.profile.result || state.profile.loading, demo: { label: 'Tracer un profil', run: async () => { await startProfileMode(); demoMapPoints([[-150, 60], [150, -60]]).forEach((p) => { if (state.mode === 'profile') handleProfileClick({ lngLat: p }); }); } } },
+      { target: '#profile-results', title: 'Lire le profil', body: ['Distance, altitudes minimale et maximale, dénivelés positif (D+) et négatif (D−), pente moyenne. Survolez le graphique pour lire chaque point.', 'Ces altitudes sont « Estimées » (MNT) : quelques mètres d\'incertitude. Elles ne remplacent pas un nivellement.'] }
+    ] },
+    { id: 'cao-dessin', title: 'Plan CAO : dessiner', level: 'Intermédiaire', minutes: 4, summary: 'Outils de dessin, ligne de commande, saisie de coordonnées, accrochages et calques.', steps: [
+      { target: '#btn-cad-start', title: 'Ouvrir le plan CAO', body: ['Le plan fonctionne comme un logiciel de DAO : les objets sont calculés en mètres, dans le repère UTM du terrain.'], task: 'Ouvrez le plan CAO.', check: () => state.mode === 'cad', demo: { label: 'Ouvrir', run: () => demoCadOn() } },
+      { target: '#cad-tools', title: 'Les outils', body: ['Dessin, modification, mesure et génie civil. Chaque bouton lance un outil ; la consigne s\'affiche dans le bandeau de la carte.', 'Entrée (ou clic droit) termine l\'outil, Échap l\'annule.'] },
+      { target: '#cad-cmd', title: 'La ligne de commande', body: ['Tapez une commande comme dans AutoCAD, puis Entrée. Exemples :'], examples: [['rec', 'rectangle : cliquez un coin puis l\'autre'], ['ligne', 'ligne : cliquez le départ'], ['@25;0', 'point suivant à 25 m vers l\'est'], ['@30<45', '30 m dans la direction azimut 45° (nord-est)'], ['c', 'cercle : centre puis rayon saisi (ex. 6)'], ['aide', 'liste de toutes les commandes']], task: 'Dessinez un objet.', check: () => cadCount() > 0, demo: { label: 'Dessiner un rectangle 25 × 15 m', run: () => { demoCadOn(); cadSubmit('rec'); demoFeed(demoCenterXY()); cadSubmit('@25;15'); } } },
+      { target: '.cad-opts', title: 'Accrochages et mode orthogonal', body: ['Le curseur s\'aimante aux extrémités, milieux, centres et intersections : vos objets se raccordent exactement.', 'Ortho (F8) contraint le tracé à l\'horizontale ou à la verticale de la grille.'] },
+      { target: '#cad-layers', title: 'Les calques', body: ['Cliquez un nom pour en faire le calque courant : les nouveaux objets y sont rangés. Couleur, visibilité et verrouillage se règlent par calque.', 'Exemple : dessinez les clôtures sur « Limites » et les constructions sur « Bâti ».'] },
+      { target: '#cad-props', title: 'Les propriétés', body: ['Sélectionnez un objet : longueur, surface, azimut ou coordonnées s\'affichent ici, ainsi qu\'une liste pour changer son calque.'] }
+    ] },
+    { id: 'cao-edition', title: 'Plan CAO : modifier', level: 'Intermédiaire', minutes: 4, summary: 'Sélectionner, déplacer, copier, pivoter, décaler, poignées et annulation.', steps: [
+      { target: '#map', title: 'Sélectionner', body: ['Outil « Sélection » : cliquez le contour d\'un objet ; Maj + clic ajoute à la sélection.', '« Fenêtre » : de gauche à droite, sélectionne les objets entièrement inclus ; de droite à gauche, ceux qui sont touchés.'], task: 'Sélectionnez un objet.', check: () => state.mode === 'cad' && state.cad.selection.size > 0, demo: { label: 'Sélectionner un objet', run: () => { if (!cadCount('poly')) { demoCadOn(); cadSubmit('rec'); demoFeed(demoCenterXY()); cadSubmit('@25;15'); } demoSelect(state.cad.entities.filter((e) => e.type === 'poly').pop()); } } },
+      { target: '#cad-cmd', title: 'Déplacer et copier', body: ['`m` (déplacer) ou `co` (copier) : cliquez un point de base puis la destination, ou tapez un déplacement relatif.'], examples: [['m', 'puis point de base, puis @5;0 → 5 m vers l\'est'], ['co', 'copies multiples ; Entrée pour terminer']], demo: { label: 'Déplacer de 5 m vers l\'est', run: () => { const e = cadSelected()[0] || state.cad.entities.filter((x) => x.type === 'poly').pop(); if (!e) return; demoSelect(e); cadSubmit('m'); demoFeed(e.pts[0]); cadSubmit('@5;0'); } } },
+      { target: '#cad-cmd', title: 'Pivoter, échelle, miroir', body: ['Après le point de base, saisissez la valeur dans la ligne de commande.'], examples: [['ro', 'pivoter : base puis 90 (degrés, sens anti-horaire)'], ['sc', 'échelle : base puis 2 (double les dimensions)'], ['mi', 'miroir : deux points de l\'axe de symétrie']] },
+      { target: '#cad-cmd', title: 'Décaler (parallèle)', body: ['Indispensable pour les emprises et retraits : `o 3` puis cliquez l\'objet et le côté. Les angles restent vifs.'], examples: [['o 3', 'décalage à 3 m']], task: 'Créez un décalage.', check: () => state.cad.undo.length > 0 && cadCount('poly') >= 2, demo: { label: 'Décaler de 3 m vers l\'extérieur', run: () => { const e = cadSelected().find((x) => x.type === 'poly') || state.cad.entities.filter((x) => x.type === 'poly').pop(); if (!e) return; const r = cadOffsetEntity(e, 3, [Math.max(...e.pts.map((p) => p[0])) + 50, e.pts[0][1]]); if (typeof r !== 'string') { cadPushUndo(); cadAddEntity(r); cadRender(); cadLog('Décalage de 3 m (démonstration).'); } } } },
+      { target: '#map', title: 'Les poignées', body: ['Quand un objet est sélectionné, ses sommets portent des poignées orange : cliquez une poignée, puis la nouvelle position. Les accrochages s\'appliquent.'] },
+      { target: '#btn-cad-undo', title: 'Annuler et rétablir', body: ['Chaque modification peut être annulée (Ctrl+Z ou `u`) et rétablie (Ctrl+Y ou `redo`). « Suppr » efface la sélection.'] }
+    ] },
+    { id: 'cao-civil', title: 'Lotir et implanter (lots, reculs)', level: 'Avancé', minutes: 3, summary: 'Diviser un terrain en lots de surfaces égales et calculer la zone constructible.', steps: [
+      { title: 'Il faut un polygone', body: ['Les outils de génie civil travaillent sur un polygone du plan : utilisez « Parcelle → plan » pour copier votre parcelle, ou le projet d\'exemple.'], task: 'Disposez d\'un polygone dans le plan.', check: () => cadCount('poly') > 0, demo: { label: 'Préparer un polygone', run: () => { demoParcelPoly(); demoCadOn(); } } },
+      { target: '#cad-cmd', title: 'Lotissement', body: ['`lots 4` puis cliquez dans la parcelle. Entrée découpe perpendiculairement au plus long côté ; ou cliquez deux points sur l\'alignement de la voie.', 'Variante : `lots` puis `300 m2` calcule le nombre de lots pour une surface cible.'], examples: [['lots 4', '4 lots de surfaces égales'], ['lots', 'puis 300 m2 : lots d\'environ 300 m²']], task: 'Créez des lots.', check: () => state.cad.entities.some((e) => e.layer === 'Lots' && e.type === 'poly'), demo: { label: 'Lotir en 4 lots', run: () => { const e = demoParcelPoly(); demoSelect(e); cadSubmit('lots 4'); cadEnterKey(); } } },
+      { target: '#cad-results', title: 'Contrôler les lots', body: ['Surface et périmètre de chaque lot, et contrôle : la somme des lots est égale à la surface de la parcelle (écart affiché).'] },
+      { target: '#cad-cmd', title: 'Reculs et zone constructible', body: ['`retrait 5` : recul uniforme de 5 m. Ou `retrait` puis `5;3;4` (avant ; côtés ; fond) et cliquez le côté sur rue.', 'Le résultat (calque Reculs) donne la surface constructible et sa part de la parcelle.'], examples: [['retrait 5', 'recul uniforme de 5 m'], ['retrait', 'puis 5;3;4 et clic sur la façade']], demo: { label: 'Reculs de 5 m', run: () => { const e = demoParcelPoly(); demoSelect(e); cadSubmit('retrait 5'); } } }
+    ] },
+    { id: 'cao-terrain', title: 'Terrassements et profils', level: 'Avancé', minutes: 3, summary: 'Estimer déblais et remblais d\'une plateforme, tracer profil en long et coupes.', steps: [
+      { target: '#cad-cmd', title: 'Déblai / remblai', body: ['`deblai`, cliquez le polygone de la plateforme puis saisissez son altitude (ex. `14.5`). Entrée seule calcule le niveau d\'équilibre (déblai = remblai).'], examples: [['deblai', 'puis Entrée : niveau d\'équilibre'], ['deblai', 'puis 14.5 : plateforme à 14,50 m']], task: 'Lancez un calcul de volumes.', check: () => state.cad.cutfill.length > 0, demo: { label: 'Calculer à l\'équilibre', run: () => { const e = demoParcelPoly(); demoSelect(e); cadSubmit('deblai'); cadSubmit(''); } } },
+      { target: '#cad-results', title: 'Lire les volumes', body: ['Déblai, remblai et solde en m³, terrain naturel moyen, maille de calcul. Sur la carte : rouge = déblai, bleu = remblai.', 'Le MNT mondial a une précision de plusieurs mètres : ces volumes servent à une pré-étude, pas à un métré.'] },
+      { target: '#cad-cmd', title: 'Profil en long et coupe', body: ['`profil` puis cliquez une polyligne (ex. l\'axe de voie) : altitudes, pentes par tronçon, export CSV.', '`coupe` puis deux points : coupe transversale A-B.'], examples: [['profil', 'profil en long d\'une ligne ou polyligne'], ['coupe', 'coupe entre deux points']], demo: { label: 'Profil de l\'axe de voie', run: () => { demoParcelPoly(); const ax = state.cad.entities.find((e) => e.type === 'line' || e.type === 'pline'); if (!ax) { notify('Dessinez d\'abord une ligne ou une polyligne.', 'warn'); return; } demoSelect(ax); cadSubmit('profil'); } } }
+    ] },
+    { id: 'echanges', title: 'Enregistrer, importer, exporter', level: 'Débutant', minutes: 3, summary: 'Sauvegarder le projet, échanger avec un SIG ou AutoCAD, éditer un plan.', steps: [
+      { target: '#btn-save', title: 'Enregistrer dans le navigateur', body: ['Parcelle, fiche, bâtiments, points, mesures et plan CAO sont enregistrés sur cet appareil. « Restaurer » les recharge.', 'Pour changer d\'appareil, exportez en GeoJSON.'] },
+      { target: '#btn-export-geojson', title: 'Exporter pour un SIG', body: ['GeoJSON (QGIS, ArcGIS…) : toutes les entités avec leurs attributs. CSV : les points (GPS, sommets, imports) pour un tableur.'] },
+      { target: '#btn-import-csv', title: 'Importer des points', body: ['Colonnes reconnues : latitude/lat, longitude/lon, altitude, nom, description ; séparateur virgule ou point-virgule.', 'Essayez avec le fichier d\'exemple :'], demo: { label: 'Télécharger le CSV d\'exemple', run: () => downloadExample('csv') } },
+      { target: '#btn-cad-dxf', title: 'Échanger avec AutoCAD', body: ['Export DXF (R12) en coordonnées UTM, unité mètre, un calque DXF par calque du plan. Import DXF : lignes, polylignes, cercles, arcs, points et textes.', 'Un DXF en coordonnées locales est centré sur la vue.'], demo: { label: 'Télécharger un DXF d\'exemple', run: () => downloadExample('dxf') } },
+      { target: '#btn-cad-png', title: 'Éditer un plan', body: ['Image de la vue avec flèche du nord, barre d\'échelle et cartouche (projet, client, topographe, date, repère). Remplissez la fiche topographique avant l\'export.'] }
+    ] }
+  ];
+  const SECTION_TUTORIAL = { 'sec-gps': 'gps', 'sec-buildings': 'batiments', 'sec-measure': 'parcelle', 'sec-cad': 'cao-dessin', 'sec-relief': 'relief', 'sec-topo': 'exemple', 'sec-io': 'echanges' };
+
+  /* ----- Moteur de visite guidée ----- */
+  const tour = { t: null, i: 0, raf: 0, sig: '', lastCheck: 0, done: false, target: null };
+  const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /** Texte avec `code` en ligne (aucun HTML interprété). */
+  function richText(s) {
+    return s.split('`').map((part, i) => (i % 2 ? el('code', { text: part }) : document.createTextNode(part)));
+  }
+  function startTour(id, stepIndex) {
+    const t = TUTORIALS.find((x) => x.id === id);
+    if (!t) return;
+    const dlg = $('help-dialog');
+    if (dlg.open) dlg.close();
+    tour.t = t; tour.i = clamp(stepIndex || 0, 0, t.steps.length - 1);
+    $('tour').hidden = false;
+    document.body.classList.add('touring');
+    showTourStep();
+    if (!tour.raf) tour.raf = requestAnimationFrame(tourLoop);
+    $('tour-pop').focus();
+  }
+  function endTour(completed) {
+    if (!tour.t) return;
+    const t = tour.t;
+    if (completed) { tutoMarkDone(t.id); notify(`Tutoriel « ${t.title} » terminé. Retrouvez les autres dans l'aide (bouton ?).`, 'ok', 6000); }
+    tour.t = null; tour.target = null;
+    $('tour').hidden = true;
+    document.body.classList.remove('touring');
+    cancelAnimationFrame(tour.raf); tour.raf = 0;
+    renderHelpTutorials();
+    const hb = $('btn-help');
+    if (hb) hb.focus();
+  }
+  function tourStepTarget(step) {
+    if (!step.target) return null;
+    const node = document.querySelector(step.target);
+    if (!node) return null;
+    return node.hidden || (node.getClientRects().length === 0 && node.id !== 'map') ? (node.closest('details') || node.parentElement) : node;
+  }
+  function showTourStep() {
+    const t = tour.t, step = t.steps[tour.i];
+    tour.done = false; tour.sig = '';
+    const node = step.target ? document.querySelector(step.target) : null;
+    if (node) {
+      const det = node.closest('details');
+      if (det && !det.open) det.open = true;
+      if (node.matches('details') && !node.open) node.open = true;
+      const inSidebar = !!node.closest('#sidebar');
+      if (isMobile()) setSheetCollapsed(!inSidebar);
+      if (inSidebar) node.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+    } else if (isMobile()) setSheetCollapsed(true);
+    tour.target = tourStepTarget(step);
+    $('tour-progress').textContent = `${t.title} · étape ${tour.i + 1} sur ${t.steps.length}`;
+    $('tour-title').textContent = step.title;
+    const body = $('tour-body');
+    body.replaceChildren(...(step.body || []).map((p) => el('p', null, richText(p))));
+    if (step.examples) {
+      body.append(el('ul', { class: 'tour-examples' }, step.examples.map(([code, note]) => el('li', null,
+        el('code', { text: code }), el('span', { text: ' — ' + note }),
+        el('button', { type: 'button', class: 'btn btn-secondary tour-try', text: 'Essayer', 'aria-label': 'Essayer la commande ' + code, onclick: safe(() => { demoCadOn(); $('cad-cmd').value = ''; cadSubmit(code); notify('Commande « ' + code + ' » lancée : suivez la consigne du bandeau.', 'info', 4000); }) })))));
+    }
+    const st = $('tour-status');
+    if (step.task) { st.hidden = false; st.className = 'tour-status'; st.textContent = 'À vous : ' + step.task; }
+    else st.hidden = true;
+    $('btn-tour-prev').disabled = tour.i === 0;
+    $('btn-tour-next').textContent = tour.i === t.steps.length - 1 ? 'Terminer' : 'Suivant';
+    const demo = $('btn-tour-demo');
+    demo.hidden = !step.demo;
+    if (step.demo) demo.textContent = step.demo.label + ' (le faire pour moi)';
+    $('tour-title').focus();
+    placeTour(true);
+  }
+  function tourNext() { if (!tour.t) return; if (tour.i >= tour.t.steps.length - 1) endTour(true); else { tour.i++; showTourStep(); } }
+  function tourPrev() { if (tour.t && tour.i > 0) { tour.i--; showTourStep(); } }
+  async function tourDemo() {
+    const step = tour.t && tour.t.steps[tour.i];
+    if (!step || !step.demo) return;
+    if (!state.mapReady) { notify('La carte n\'est pas encore prête.', 'warn'); return; }
+    await step.demo.run();
+    tourCheck(true);
+  }
+  function tourCheck(force) {
+    const step = tour.t && tour.t.steps[tour.i];
+    if (!step || !step.check || tour.done) return;
+    let ok = false;
+    try { ok = !!step.check(); } catch (e) { ok = false; }
+    if (ok) {
+      tour.done = true;
+      const st = $('tour-status');
+      st.className = 'tour-status ok'; st.textContent = '✓ Étape réussie : ' + step.task.replace(/\.$/, '') + '. Cliquez « Suivant ».';
+      if (force) $('btn-tour-next').focus();
+    }
+  }
+  function tourLoop(ts) {
+    if (!tour.t) { tour.raf = 0; return; }
+    placeTour(false);
+    if (!tour.lastCheck || ts - tour.lastCheck > 400) { tour.lastCheck = ts; tourCheck(false); }
+    tour.raf = requestAnimationFrame(tourLoop);
+  }
+  /** Place la surbrillance sur la cible et la bulle à côté, sans déborder de l'écran. */
+  function placeTour(force) {
+    const hl = $('tour-hl'), pop = $('tour-pop'), node = tour.target;
+    const W = window.innerWidth, H = window.innerHeight, pad = 6, gap = 14, m = 10;
+    const r = node && node.isConnected ? node.getBoundingClientRect() : null;
+    const sig = r ? [r.left, r.top, r.width, r.height, W, H].map(Math.round).join(',') : 'none,' + W + ',' + H;
+    if (!force && sig === tour.sig) return;
+    tour.sig = sig;
+    if (r && r.width > 0) {
+      const x0 = Math.max(r.left - pad, 2), y0 = Math.max(r.top - pad, 2), x1 = Math.min(r.right + pad, W - 2), y1 = Math.min(r.bottom + pad, H - 2);
+      Object.assign(hl.style, { display: 'block', left: x0 + 'px', top: y0 + 'px', width: Math.max(x1 - x0, 0) + 'px', height: Math.max(y1 - y0, 0) + 'px' });
+    } else hl.style.display = 'none';
+    const pw = Math.min(380, W - 2 * m);
+    pop.style.width = pw + 'px';
+    const ph = pop.offsetHeight;
+    let left, top;
+    if (!r || r.width === 0) { left = (W - pw) / 2; top = Math.max((H - ph) / 2, m); }
+    else if (isMobile()) {
+      left = (W - pw) / 2;
+      const inSidebar = !!node.closest('#sidebar');
+      if (inSidebar) top = m;
+      else { const sb = $('sidebar').getBoundingClientRect(); top = Math.max(Math.min(sb.top, H) - ph - m, m); }
+    } else if (r.right + gap + pw <= W - m) { left = r.right + gap; top = clamp(r.top, m, H - ph - m); }
+    else if (r.left - gap - pw >= m) { left = r.left - gap - pw; top = clamp(r.top, m, H - ph - m); }
+    else if (r.bottom + gap + ph <= H - m) { left = clamp(r.left, m, W - pw - m); top = r.bottom + gap; }
+    else if (r.top - gap - ph >= m) { left = clamp(r.left, m, W - pw - m); top = r.top - gap - ph; }
+    else { left = W - pw - m - 50; top = H - ph - 40; }                     // grande cible (carte) : coin bas droit
+    pop.style.left = Math.max(m, left) + 'px';
+    pop.style.top = Math.max(m, top) + 'px';
+  }
+
+  /* ----- Centre d'aide ----- */
+  function openHelp(tab) {
+    const dlg = $('help-dialog');
+    renderHelpTutorials();
+    setHelpTab(tab || 'tutos');
+    if (!dlg.open) { if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); }
+  }
+  function setHelpTab(tab) {
+    document.querySelectorAll('#help-tabs [role=tab]').forEach((b) => { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
+    document.querySelectorAll('.help-panel').forEach((p) => { p.hidden = p.id !== 'help-' + tab; });
+  }
+  function renderHelpTutorials() {
+    const host = $('help-tutos-list');
+    if (!host) return;
+    const prog = tutoProgress();
+    const n = TUTORIALS.filter((t) => prog[t.id]).length;
+    $('help-progress').textContent = `${n} tutoriel(s) terminé(s) sur ${TUTORIALS.length}.`;
+    host.replaceChildren(...TUTORIALS.map((t) => el('li', { class: 'tuto-card' + (prog[t.id] ? ' done' : '') },
+      el('div', { class: 'tuto-head' }, el('h3', { text: t.title }), prog[t.id] ? el('span', { class: 'badge ok', text: '✓ Terminé' }) : null),
+      el('p', { class: 'tuto-meta', text: `${t.level} · ${t.minutes} min · ${t.steps.length} étapes` }),
+      el('p', { text: t.summary }),
+      el('button', { type: 'button', class: 'btn' + (prog[t.id] ? ' btn-secondary' : ''), 'data-tuto': t.id, text: prog[t.id] ? 'Refaire' : 'Commencer', 'aria-label': (prog[t.id] ? 'Refaire' : 'Commencer') + ' le tutoriel ' + t.title, onclick: () => startTour(t.id) }))));
+  }
+  const CHEAT = [
+    ['Dessin', [['L / ligne', 'Segments enchaînés', 'L, clic, @20;0, Entrée'], ['PL / polyligne', 'Polyligne ; « c » ferme', 'PL, clics, Entrée'], ['POL / polygone', 'Contour fermé', 'POL, clics, Entrée'], ['REC', 'Rectangle par deux coins', 'REC, clic, @30;20'], ['C / cercle', 'Centre puis rayon', 'C, clic, 6'], ['PT / point', 'Points isolés', 'PT, clics'], ['T / texte', 'Texte posé au clic', 'T, clic, « Lot 1 »'], ['DIM / cote', 'Cote alignée', 'DIM, 2 points, position']]],
+    ['Modification', [['S / W', 'Sélection / fenêtre', 'W : gauche→droite = inclus'], ['M / CO', 'Déplacer / copier', 'M, base, @5;0'], ['RO', 'Pivoter (degrés, anti-horaire)', 'RO, base, 90'], ['SC', 'Échelle', 'SC, base, 2'], ['MI', 'Miroir (originaux conservés)', 'MI, 2 points'], ['O', 'Décaler', 'O 3, objet, côté'], ['E / exploser', 'Effacer / décomposer', 'Suppr efface la sélection'], ['U / redo', 'Annuler / rétablir', 'Ctrl+Z / Ctrl+Y']]],
+    ['Mesure et génie civil', [['DI', 'Distance plane, géodésique, azimut', 'DI, 2 points'], ['aire / id', 'Surface / coordonnées', 'aire, clic sur un polygone'], ['lots', 'Lots de surfaces égales', 'lots 4 ; lots puis 300 m2'], ['retrait', 'Zone constructible', 'retrait 5 ; 5;3;4'], ['deblai', 'Déblai / remblai sur MNT', 'deblai, clic, Entrée'], ['profil / coupe', 'Profil en long / coupe A-B', 'profil, clic sur l\'axe']]],
+    ['Saisie et réglages', [['E;N', 'Point absolu (UTM)', '722800;3793700'], ['@dx;dy', 'Point relatif', '@12.5;-4'], ['@d<az', 'Polaire (azimut depuis le nord)', '@30<45'], ['nombre', 'Distance vers le curseur', '15'], ['ortho / F8', 'Mode orthogonal', 'ortho'], ['layer nom', 'Calque courant (créé si absent)', 'layer Voirie'], ['ze / dxf / png', 'Cadrer / exporter', 'dxf']]]
+  ];
+  const FAQ = [
+    ['Les altitudes sont-elles fiables ?', 'Les altitudes « Mesurées » viennent du GPS de l\'appareil (souvent ± 5 à 15 m en vertical). Les altitudes « Estimées » viennent d\'un MNT mondial (SRTM…), précis à quelques mètres. Aucune altitude n\'est inventée : sans source, la valeur reste vide.'],
+    ['Pourquoi ma position GPS n\'est-elle pas disponible ?', 'La géolocalisation exige HTTPS (GitHub Pages) ou localhost. Ouvert en file://, le navigateur peut la refuser. Vérifiez aussi l\'autorisation du site dans les réglages du navigateur.'],
+    ['Pourquoi mon rectangle CAO paraît-il légèrement incliné ?', 'Le plan est calculé dans la grille UTM. Le nord de la grille diffère un peu du nord géographique (convergence des méridiens) : c\'est normal et identique dans un logiciel de DAO géoréférencé.'],
+    ['Où sont enregistrées mes données ?', 'Uniquement dans ce navigateur (stockage local). Rien n\'est envoyé à un serveur, sauf les requêtes de cartes, de bâtiments (Overpass) et d\'altitudes. Exportez en GeoJSON pour sauvegarder ou partager.'],
+    ['Les surfaces ont-elles une valeur juridique ?', 'Non. Les données cartographiques et OSM sont indicatives : un levé par un géomètre et les données cadastrales officielles font foi.'],
+    ['L\'application est lente ou la batterie se vide vite ?', 'Cochez « Mode économie » (section Import / export) : densité de pixels réduite, caches et calculs allégés. L\'application s\'allège aussi seule si la carte saccade. Les calculs lourds (MNT, courbes, DXF) tournent en tâche de fond ; une tâche en cours s\'affiche en haut à gauche de la carte avec sa progression, un bouton « Annuler » et un message clair en cas d\'erreur ou de délai dépassé.'],
+    ['Comment ouvrir le DXF dans AutoCAD ?', 'Le fichier est au format R12, unité mètre, en coordonnées UTM (zone affichée dans le panneau). Utilisez « Zoom étendu » après l\'ouverture. Les accents sont retirés des noms de calques et des textes.']
+  ];
+  function buildHelpStatic() {
+    $('help-cheat').replaceChildren(...CHEAT.map(([title, rows]) => el('section', null, el('h3', { text: title }),
+      el('table', { class: 'help-table' }, el('thead', null, el('tr', null, ...['Commande', 'Rôle', 'Exemple'].map((h) => el('th', { scope: 'col', text: h })))),
+        el('tbody', null, ...rows.map(([a, b, c]) => el('tr', null, el('td', null, el('code', { text: a })), el('td', { text: b }), el('td', { text: c }))))))),
+    el('section', null, el('h3', { text: 'Raccourcis clavier' }), el('ul', { class: 'help-list' },
+      ...['Échap : annuler l\'outil, puis vider la sélection, puis quitter le mode', 'Entrée ou clic droit : valider / terminer ; répète la dernière commande', 'Suppr : effacer la sélection (plan CAO)', 'Ctrl+Z / Ctrl+Y : annuler / rétablir (plan CAO)', 'F8 : mode orthogonal', 'Taper une lettre sur la carte place le curseur dans la ligne de commande', '↑ / ↓ dans la ligne de commande : historique'].map((t) => el('li', { text: t })))),
+    el('section', null, el('h3', { text: 'Origine des altitudes' }), el('p', null, sourceTag('gps'), ' GPS de l\'appareil · ', sourceTag('mnt'), ' modèle numérique de terrain · ', sourceTag('manuel'), ' saisie · ', sourceTag('calc'), ' calcul géométrique')));
+    $('help-faq').replaceChildren(...FAQ.map(([q, a]) => el('details', { class: 'faq' }, el('summary', { text: q }), el('p', { text: a }))));
+    // liens « Tutoriel » dans chaque section du panneau
+    Object.entries(SECTION_TUTORIAL).forEach(([sec, id]) => {
+      const body = document.querySelector('#' + sec + ' .card-body');
+      const t = TUTORIALS.find((x) => x.id === id);
+      if (!body || !t || body.querySelector('.tuto-link')) return;
+      body.prepend(el('button', { type: 'button', class: 'tuto-link', 'data-tuto': id, 'aria-label': 'Ouvrir le tutoriel ' + t.title, onclick: () => startTour(id) }, el('span', { 'aria-hidden': 'true', text: '?' }), 'Tutoriel : ' + t.title));
+    });
+    document.querySelectorAll('#help-tabs [role=tab]').forEach((b) => b.addEventListener('click', () => setHelpTab(b.dataset.tab)));
+    $('help-tabs').addEventListener('keydown', (e) => {
+      if (!/Arrow(Left|Right)/.test(e.key)) return;
+      const tabs = [...document.querySelectorAll('#help-tabs [role=tab]')], i = tabs.findIndex((b) => b.getAttribute('aria-selected') === 'true');
+      const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      setHelpTab(n.dataset.tab); n.focus(); e.preventDefault();
+    });
+    document.querySelectorAll('[data-example]').forEach((b) => b.addEventListener('click', safe(() => downloadExample(b.dataset.example))));
+    document.querySelectorAll('[data-scenario]').forEach((b) => b.addEventListener('click', () => startTour(b.dataset.scenario)));
+    $('help-dialog').addEventListener('click', (e) => { if (e.target === $('help-dialog')) $('help-dialog').close(); });   // clic sur le fond
+    document.addEventListener('keydown', (e) => {
+      if (!tour.t) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); endTour(false); }
+      else if (!/INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || '') && $('tour-pop').contains(document.activeElement)) {
+        if (e.key === 'ArrowRight') { e.preventDefault(); tourNext(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); tourPrev(); }
+      }
+    }, true);
+    window.addEventListener('resize', () => { if (tour.t) placeTour(true); });
+    if (!store.get(WELCOME_KEY)) $('welcome').hidden = false;
+  }
+  function hideWelcome() { $('welcome').hidden = true; try { store.set(WELCOME_KEY, '1'); } catch (e) { /* ignoré */ } }
+
   /* ----- Liaison des événements ----- */
   const ACTIONS = {
     'btn-theme': toggleTheme,
@@ -5397,7 +6468,10 @@ const DEM_API_KEY = '';
     'sheet-toggle': () => setSheetCollapsed(!document.body.classList.contains('sidebar-collapsed')),
     'banner-action': bannerAction, 'banner-quit': () => setMode('idle'),
     'btn-cad-start': cadToggle, 'btn-cad-parcel': cadFromParcel, 'btn-cad-undo': cadHistoryUndo, 'btn-cad-redo': cadHistoryRedo,
-    'btn-cad-dxf': exportDxf, 'btn-cad-dxf-import': () => $('file-dxf').click(), 'btn-cad-png': cadExportPng, 'btn-cad-zoomext': cadZoomExtents,
+    'btn-cad-dxf': exportDxf, 'btn-cad-dxf-import': () => $('file-dxf').click(), 'btn-cad-png': async () => { const t = startTask({ label: 'Export du plan PNG', timeoutMs: 20000 }); try { await cadExportPng(); t.done(); } catch (err) { t.fail(/security|tainted/i.test(String(err && (err.name + err.message))) ? 'le fond de carte n\'autorise pas la capture d\'image (CORS). Changez de fond ou utilisez le site publié' : err); } }, 'btn-cad-zoomext': cadZoomExtents,
+    'btn-help': () => openHelp('tutos'), 'btn-help-close': () => $('help-dialog').close(), 'btn-help-example': () => { $('help-dialog').close(); loadExample(); },
+    'btn-welcome-tour': () => { hideWelcome(); startTour('decouverte'); }, 'btn-welcome-example': () => { hideWelcome(); loadExample(); }, 'btn-welcome-hide': hideWelcome,
+    'btn-tour-prev': tourPrev, 'btn-tour-next': tourNext, 'btn-tour-demo': tourDemo, 'btn-tour-close': () => endTour(false),
     'btn-cad-clear': cadClearAll, 'btn-cad-layer-add': cadAddLayerFromUi, 'btn-cad-clear-results': cadClearResults
   };
 
@@ -5416,8 +6490,17 @@ const DEM_API_KEY = '';
       b.addEventListener('click', safe(fn));
     }
     cadBuildUi();
-    $('file-geojson').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importGeoJsonFile(f); }));
-    $('file-csv').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importCsvFile(f); }));
+    buildHelpStatic();
+    const importWithTask = (fn, kind) => safe(async (e) => {
+      const f = e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      const t = startTask({ label: `Import ${kind} : ${f.name}`, quiet: true, timeoutMs: 60000 });
+      await yieldToMain();                                  // laisse l'indicateur s'afficher avant l'analyse
+      try { await fn(f); t.finish('replaced'); } catch (err) { t.fail(err); throw err; }        // les imports affichent eux-mêmes leur bilan
+    });
+    $('file-geojson').addEventListener('change', importWithTask(importGeoJsonFile, 'GeoJSON'));
+    $('file-csv').addEventListener('change', importWithTask(importCsvFile, 'CSV'));
+    $('chk-eco').addEventListener('change', (e) => setEcoMode(e.target.checked));
     $('chk-spin').addEventListener('change', (e) => setSpin(e.target.checked));
     $('sel-filter').addEventListener('change', (e) => { state.buildingFilter = e.target.value; applyBuildingFilter(); });
     $('in-radius').addEventListener('keydown', (e) => { if (e.key === 'Enter') safe(detectBuildings)(); });
@@ -5538,6 +6621,8 @@ const DEM_API_KEY = '';
 
   async function init() {
     state.topo.surveyDate = todayIso();
+    CONFIG.contours.maxGrid = PERF.contourGrid;
+    initWorkers();
     initTheme();
     bindUi();
     renderBuildingLegend();
@@ -5550,6 +6635,7 @@ const DEM_API_KEY = '';
     updateModeBanner();
     updateReliefUi();
     updateStorageStatus();
+    renderPerfInfo();
     applyViewMode();
     setExaggeration(state.relief.exaggeration);
     if (isMobile()) setSheetCollapsed(false);
@@ -5568,7 +6654,7 @@ const DEM_API_KEY = '';
   // Poignée de débogage / tests : expose l'état et quelques fonctions internes.
   window.TopoGIS = {
     version: CONFIG.appVersion, state, config: CONFIG,
-    internals: { cad: { llToUtm, utmToLl, cadClip, cadSplitEqualArea, cadInsetConvex, cadIsConvex, offsetPath, cadOffsetEntity, cadParsePoint, buildDxf, parseDxf, cadImportDxfText, cadSubmit, cadSetTool, cadLoad, cadSerialize, cadExportFeatures, cadToXY, cadToLL, cadMetrics, cadComputeProfile, ringArea, pathLen, cadSnapAt, cadAddEntity, cadRender, cadLog, cadExportPng }, overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
+    internals: { perf: { PERF, pool, importDxfFile, startTask, runInWorker, contoursGen, setEcoMode, TASKS }, tuto: { TUTORIALS, startTour, endTour, tourNext, tourPrev, tourDemo, loadExample, exampleCsv, exampleGeoJson, exampleDxf, openHelp, tour }, cad: { llToUtm, utmToLl, cadClip, cadSplitEqualArea, cadInsetConvex, cadIsConvex, offsetPath, cadOffsetEntity, cadParsePoint, buildDxf, parseDxf, cadImportDxfText, cadSubmit, cadSetTool, cadLoad, cadSerialize, cadExportFeatures, cadToXY, cadToLL, cadMetrics, cadComputeProfile, ringArea, pathLen, cadSnapAt, cadAddEntity, cadRender, cadLog, cadExportPng }, overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
   };
 
   init().catch(handleUnexpected);

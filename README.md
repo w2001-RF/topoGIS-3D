@@ -69,6 +69,22 @@ Commandes utiles : `ligne`, `pl`, `rec`, `c`, `dim`, `t`, `m`, `co`, `ro`, `sc`,
 
 Limites : les volumes et profils reposent sur des altitudes **estimées** par un MNT mondial (précision verticale de plusieurs mètres) et ne remplacent pas un levé. L'import DXF ne gère ni les blocs, ni les splines, ni les hachures, et les DXF binaires. À l'export DXF, les accents sont retirés des noms de calques et des textes.
 
+## Aide, tutoriels et exemples
+
+Le bouton **?** en haut du panneau ouvre le centre d'aide :
+- **12 tutoriels guidés** (interface, projet d'exemple, GPS, parcelle, mesure, bâtiments, relief, plan CAO, édition, lotissement, terrassement, échanges). Chaque étape met le contrôle en évidence, donne un exemple, peut exécuter l'action (« le faire pour moi ») et se valide seule quand l'utilisateur la réalise. La progression est mémorisée.
+- **Exemples** : projet fictif prêt à l'emploi (parcelle d'environ 4 000 m² à Kénitra, fiche et plan CAO), fichiers CSV, GeoJSON et DXF à importer, et scénarios pas à pas.
+- **Aide-mémoire** des commandes CAO, de la saisie de coordonnées et des raccourcis clavier, et une **FAQ**.
+
+Chaque section du panneau propose aussi un lien « Tutoriel ». Une carte de bienvenue s'affiche à la première visite.
+
+## Performances et indicateurs
+
+- La carte est rendue par la carte graphique (WebGL). Au démarrage, l'application détecte la carte graphique, le nombre de cœurs et la mémoire, puis choisit un profil (élevé, moyen ou économe) qui règle la densité de pixels, les caches et la finesse des calculs. Si la carte saccade, elle s'allège seule. Un **mode économie** est disponible dans « Import / export ».
+- Les calculs lourds (décodage du MNT, courbes de niveau, lecture des DXF) tournent dans des **Web Workers**. Si les workers sont indisponibles, ils passent sur le fil principal, découpés en petites tranches.
+- Le plan CAO utilise un index spatial et des caches géométriques. L'accrochage reste rapide avec des milliers d'objets, et la mémoire d'annulation est plafonnée.
+- Chaque tâche longue s'affiche en haut à gauche de la carte, avec sa progression, le temps écoulé et un bouton **Annuler**. En cas d'échec ou de **délai dépassé**, un message explicite s'affiche avec **Réessayer** quand c'est possible.
+
 ## Limites
 
 Les données cartographiques et les bâtiments sont indicatifs. Ils doivent être vérifiés par un levé terrain ou par des données officielles
