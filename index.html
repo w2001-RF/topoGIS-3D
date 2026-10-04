@@ -311,6 +311,34 @@ input:invalid{border-color:var(--danger)}
   .readout{ grid-template-columns:1fr 1fr; }
 }
 .b-list li{ content-visibility:auto; contain-intrinsic-size:auto 72px; }
+/* ---------- Plan CAO ---------- */
+#cad-tools{display:flex;flex-direction:column;gap:8px}
+.cad-group-label{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.cad-tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cad-tool-grid .btn{padding:6px 4px;font-size:12.5px;min-height:36px;justify-content:center;text-align:center;line-height:1.15}
+.cad-tool[aria-pressed="true"]{background:var(--primary);color:#fff;border-color:var(--primary)}
+.cad-cmd{display:flex;gap:6px}
+.cad-cmd .btn{flex:0 0 auto;min-width:44px}
+.cad-opts{border:1px solid var(--border);border-radius:8px;padding:6px 10px 8px;display:flex;flex-wrap:wrap;gap:4px 14px}
+.cad-opts legend{font-size:12px;font-weight:650;color:var(--muted);padding:0 4px}
+.cad-mini{font-size:12.5px;min-height:38px}
+.cad-mini input{width:18px;height:18px}
+.cad-log{font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:6px 8px;max-height:112px;overflow:auto;min-height:28px}
+.cad-layers{display:flex;flex-direction:column;gap:6px}
+.cad-layer{display:flex;flex-direction:column;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:5px 8px}
+.cad-layer-top{display:flex;align-items:center;gap:8px}
+.cad-layer-opts{display:flex;flex-wrap:wrap;gap:0 16px}
+.cad-layer.cur{border-color:var(--primary);box-shadow:inset 3px 0 0 var(--primary)}
+.cad-layer input[type=color]{width:38px;min-height:38px;height:38px;padding:2px;border-radius:6px;flex:0 0 auto}
+.cad-layer-btn{flex:1 1 0;min-width:0;text-align:left;background:none;border:0;color:var(--text);font-weight:600;padding:6px 2px;min-height:38px;cursor:pointer;overflow-wrap:anywhere}
+.cad-layer-btn[aria-pressed="true"]{color:var(--primary)}
+.cad-x{min-height:38px;padding:2px 12px}
+.cad-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.cad-table th,.cad-table td{border-bottom:1px solid var(--border);padding:4px 5px;text-align:right}
+.cad-table th:first-child,.cad-table td:first-child{text-align:left}
+.cad-text,.cad-dim{font:600 12px/1.2 system-ui,sans-serif;background:rgba(255,255,255,.88);padding:1px 5px;border-radius:3px;white-space:nowrap;pointer-events:none}
+.cad-dim{border:1px solid;font-variant-numeric:tabular-nums}
+.cad-text.sel,.cad-dim.sel{outline:2px solid #ff7b00}
 </style>
 </head>
 <body>
@@ -459,6 +487,57 @@ input:invalid{border-color:var(--danger)}
           </div>
           <div id="parcel-state" class="msg msg-info" role="status">Aucune parcelle. Cliquez sur « Commencer une parcelle ».</div>
           <div id="measure-results" aria-live="polite" hidden></div>
+        </div>
+      </details>
+
+      <!-- Plan CAO -->
+      <details class="card" id="sec-cad">
+        <summary><svg class="ico"><use href="#i-ruler"/></svg><h2>Plan CAO (génie civil)</h2><svg class="ico chev"><use href="#i-chevron"/></svg></summary>
+        <div class="card-body">
+          <p class="note">Dessinez et modifiez le plan du terrain comme dans un logiciel de DAO : calques, accrochages, orthogonal, ligne de commande, poignées, annuler/rétablir. Les calculs se font en coordonnées UTM (mètres) ; l'affichage reste en longitude/latitude.</p>
+          <div class="btn-grid">
+            <button id="btn-cad-start" class="btn" type="button" aria-pressed="false" aria-label="Ouvrir ou quitter le plan CAO"><svg class="ico"><use href="#i-ruler"/></svg><span id="btn-cad-start-label">Ouvrir le plan CAO</span></button>
+            <button id="btn-cad-parcel" class="btn btn-secondary" type="button" aria-label="Copier la parcelle dessinée dans le plan CAO"><svg class="ico"><use href="#i-polygon"/></svg>Parcelle → plan</button>
+            <button id="btn-cad-undo" class="btn btn-secondary" type="button" aria-label="Annuler la dernière modification du plan" disabled><svg class="ico"><use href="#i-undo"/></svg>Annuler</button>
+            <button id="btn-cad-redo" class="btn btn-secondary" type="button" aria-label="Rétablir la modification annulée" disabled><svg class="ico"><use href="#i-undo" style="transform:scaleX(-1);transform-origin:center"/></svg>Rétablir</button>
+          </div>
+          <div id="cad-tools" role="toolbar" aria-label="Outils du plan CAO"></div>
+          <form id="cad-cmd-form" autocomplete="off">
+            <label for="cad-cmd">Ligne de commande</label>
+            <div class="cad-cmd"><input id="cad-cmd" type="text" inputmode="text" enterkeyhint="done" autocapitalize="off" spellcheck="false" aria-describedby="cad-prompt" placeholder="ex. ligne, deplacer, lots 4, aide"><button class="btn" type="submit" aria-label="Valider la commande">↵</button></div>
+          </form>
+          <div id="cad-prompt" class="msg msg-info" role="status"></div>
+          <div id="cad-coords" class="hint" aria-live="off">E — · N —</div>
+          <div id="cad-crs" class="hint"></div>
+          <fieldset class="cad-opts"><legend>Accrochages</legend>
+            <label class="check cad-mini"><input type="checkbox" id="chk-snap-end"> Extrémité</label>
+            <label class="check cad-mini"><input type="checkbox" id="chk-snap-mid"> Milieu</label>
+            <label class="check cad-mini"><input type="checkbox" id="chk-snap-cen"> Centre</label>
+            <label class="check cad-mini"><input type="checkbox" id="chk-snap-int"> Intersection</label>
+            <label class="check cad-mini"><input type="checkbox" id="chk-snap-nea"> Proche</label>
+            <label class="check cad-mini"><input type="checkbox" id="chk-ortho"> Ortho (F8)</label>
+          </fieldset>
+          <div id="cad-status" class="msg msg-info" role="status" hidden></div>
+          <div id="cad-log" class="cad-log" role="log" aria-label="Historique des commandes"></div>
+          <h3>Calques</h3>
+          <div id="cad-layers" class="cad-layers"></div>
+          <div class="cad-cmd"><input id="cad-layer-name" type="text" maxlength="40" placeholder="Nouveau calque" aria-label="Nom du nouveau calque"><button id="btn-cad-layer-add" class="btn btn-secondary" type="button" aria-label="Ajouter le calque">Ajouter</button></div>
+          <h3>Propriétés</h3>
+          <div id="cad-props"></div>
+          <div id="cad-results" hidden>
+            <h3 id="cad-results-title">Résultat</h3>
+            <div id="cad-results-body" aria-live="polite"></div>
+            <button id="btn-cad-clear-results" class="btn btn-secondary btn-block" type="button" aria-label="Effacer les résultats et la carte de déblai/remblai" disabled>Effacer les résultats</button>
+          </div>
+          <h3>Échanges</h3>
+          <div class="btn-grid">
+            <button id="btn-cad-dxf" class="btn btn-secondary" type="button" aria-label="Exporter le plan au format DXF"><svg class="ico"><use href="#i-download"/></svg>Export DXF</button>
+            <button id="btn-cad-dxf-import" class="btn btn-secondary" type="button" aria-label="Importer un fichier DXF"><svg class="ico"><use href="#i-upload"/></svg>Import DXF</button>
+            <button id="btn-cad-png" class="btn btn-secondary" type="button" aria-label="Exporter le plan en image avec cartouche"><svg class="ico"><use href="#i-download"/></svg>Plan PNG</button>
+            <button id="btn-cad-zoomext" class="btn btn-secondary" type="button" aria-label="Cadrer la vue sur le plan">Cadrer le plan</button>
+          </div>
+          <button id="btn-cad-clear" class="btn btn-danger btn-block" type="button" aria-label="Effacer tout le plan CAO"><svg class="ico"><use href="#i-trash"/></svg>Effacer le plan</button>
+          <input type="file" id="file-dxf" accept=".dxf,text/plain" hidden>
         </div>
       </details>
 
@@ -725,7 +804,7 @@ const DEM_API_KEY = '';
 
   const state = {
     map: null, mapReady: false, is3D: false,
-    mode: 'idle',                         // 'idle' | 'parcel' | 'measure' | 'profile'
+    mode: 'idle',                         // 'idle' | 'parcel' | 'measure' | 'profile' | 'cad'
     theme: 'light',
     position: null, watchId: null, tracking: false, locating: false, lastRecorded: null,
     gpsTrack: [],                         // entités Point (positions enregistrées)
@@ -744,7 +823,8 @@ const DEM_API_KEY = '';
     relief: { on: false, exaggeration: 1.5 },
     contours: { on: false, token: 0, timer: null, info: null, intervalSetting: 'auto' },
     profile: { points: [], result: null, loading: false, token: 0 },
-    globe: { on: false, spin: false }
+    globe: { on: false, spin: false },
+    cad: cadInitialState()
   };
 
   /* ========================================================================
@@ -927,7 +1007,7 @@ const DEM_API_KEY = '';
   function addSourcesAndLayers() {
     const map = state.map;
     // Sources GeoJSON (vérifie l'existence avant de créer : pas de doublon)
-    ['imported', 'contours', 'gps-accuracy', 'buildings', 'parcel', 'measures', 'profile', 'gps-points'].forEach((id) => {
+    ['imported', 'contours', 'gps-accuracy', 'buildings', 'parcel', 'measures', 'profile', 'gps-points', 'cad', 'cad-grips', 'cad-cutfill', 'cad-preview', 'cad-snap'].forEach((id) => {
       if (!map.getSource(id)) map.addSource(id, { type: 'geojson', data: EMPTY_FC() });
     });
     // Source DEM (raster-dem) pour le relief 3D et l'ombrage
@@ -982,6 +1062,16 @@ const DEM_API_KEY = '';
     // Profil altimétrique
     addLayerOnce({ id: 'profile-line', type: 'line', source: 'profile', filter: ['==', ['get', 'kind'], 'line'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#7048e8', 'line-width': 3.2, 'line-dasharray': [2, 1.5] } });
     addLayerOnce({ id: 'profile-points', type: 'circle', source: 'profile', filter: ['==', ['get', 'kind'], 'point'], paint: { 'circle-radius': 5, 'circle-color': '#7048e8', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2 } });
+    // Plan CAO : déblai/remblai, objets, sélection, poignées, prévisualisation, accrochage
+    addLayerOnce({ id: 'cad-cutfill', type: 'fill', source: 'cad-cutfill', paint: { 'fill-color': ['match', ['get', 'kind'], 'cut', '#e03131', '#1c7ed6'], 'fill-opacity': ['interpolate', ['linear'], ['get', 'dz'], 0, 0.12, 5, 0.55] } });
+    addLayerOnce({ id: 'cad-fill', type: 'fill', source: 'cad', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.16 } });
+    addLayerOnce({ id: 'cad-halo', type: 'line', source: 'cad', filter: ['==', ['get', 'selected'], true], paint: { 'line-color': '#ff7b00', 'line-width': 9, 'line-opacity': 0.35 } });
+    addLayerOnce({ id: 'cad-line', type: 'line', source: 'cad', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['case', ['==', ['get', 'selected'], true], 3, 2] } });
+    addLayerOnce({ id: 'cad-point', type: 'circle', source: 'cad', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': ['case', ['==', ['get', 'selected'], true], 6, 4.5], 'circle-color': ['get', 'color'], 'circle-stroke-color': '#fff', 'circle-stroke-width': 1.5 } });
+    addLayerOnce({ id: 'cad-preview-fill', type: 'fill', source: 'cad-preview', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': '#d6336c', 'fill-opacity': 0.12 } });
+    addLayerOnce({ id: 'cad-preview-line', type: 'line', source: 'cad-preview', paint: { 'line-color': '#d6336c', 'line-width': 2, 'line-dasharray': [2, 1.5] } });
+    addLayerOnce({ id: 'cad-grips', type: 'circle', source: 'cad-grips', paint: { 'circle-radius': coarse ? 8 : 6, 'circle-color': '#ffffff', 'circle-stroke-color': '#ff7b00', 'circle-stroke-width': 2.5 } });
+    addLayerOnce({ id: 'cad-snap', type: 'circle', source: 'cad-snap', paint: { 'circle-radius': 8, 'circle-color': 'rgba(255,255,255,0.35)', 'circle-stroke-color': '#f08c00', 'circle-stroke-width': 2.5 } });
     // Points GPS et points CSV
     addLayerOnce({ id: 'gps-points-circle', type: 'circle', source: 'gps-points',
       paint: { 'circle-radius': ['match', ['get', 'kind'], 'csv', 6.5, 4.5], 'circle-color': ['match', ['get', 'kind'], 'csv', '#d6336c', '#1d6fd6'], 'circle-stroke-color': '#fff', 'circle-stroke-width': 1.8 } });
@@ -992,6 +1082,8 @@ const DEM_API_KEY = '';
   function bindMapInteractions() {
     const map = state.map;
     map.on('click', onMapClick);
+    map.on('mousemove', cadOnMove);
+    map.on('contextmenu', cadOnContext);
     ['dragstart', 'mousedown', 'touchstart', 'wheel'].forEach((t) => map.on(t, () => { if (state.globe.spin) setSpin(false); }));
     INTERACTIVE_LAYERS.forEach((id) => {
       map.on('mouseenter', id, () => { if (state.mode === 'idle') map.getCanvas().style.cursor = 'pointer'; });
@@ -999,7 +1091,7 @@ const DEM_API_KEY = '';
     });
     // Déplacement des sommets de la parcelle (souris et tactile)
     const startDrag = (e) => {
-      if (state.mode === 'measure' || state.mode === 'profile') return;
+      if (state.mode !== 'idle' && state.mode !== 'parcel') return;
       const f = e.features && e.features[0];
       if (!f) return;
       if (e.type === 'touchstart' && e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
@@ -1010,7 +1102,7 @@ const DEM_API_KEY = '';
     };
     map.on('mousedown', 'parcel-vertices', startDrag);
     map.on('touchstart', 'parcel-vertices', startDrag);
-    map.on('mouseenter', 'parcel-vertices', () => { if (state.mode !== 'measure' && state.mode !== 'profile') map.getCanvas().style.cursor = 'grab'; });
+    map.on('mouseenter', 'parcel-vertices', () => { if (state.mode === 'idle' || state.mode === 'parcel') map.getCanvas().style.cursor = 'grab'; });
     map.on('mouseleave', 'parcel-vertices', () => { if (!state.drag) map.getCanvas().style.cursor = modeCursor(); });
     const onMove = (e) => {
       if (!state.drag) return;
@@ -1058,6 +1150,7 @@ const DEM_API_KEY = '';
     refreshMeasure();
     refreshGpsLayer();
     refreshImportedLayer();
+    cadRender();
     refreshProfileLayer();
     applyViewMode();
     updateAccuracyCircle();
@@ -1843,9 +1936,11 @@ const DEM_API_KEY = '';
       setStatus('profile-status', '', null);
     }
     state.mode = mode;
-    if (state.map) state.map.getCanvas().style.cursor = modeCursor();
+    if (prev === 'cad' && mode !== 'cad') cadLeave();
+    if (state.map) { state.map.getCanvas().style.cursor = modeCursor(); if (mode === 'cad') state.map.doubleClickZoom.disable(); else state.map.doubleClickZoom.enable(); }
     updateModeBanner();
     updateToolButtons();
+    cadRenderUi();
   }
 
   function closePopup() { if (state.popup) { state.popup.remove(); state.popup = null; } }
@@ -2035,6 +2130,10 @@ const DEM_API_KEY = '';
     } else if (state.mode === 'profile') {
       text = state.profile.points.length === 0 ? 'Profil : touchez le point de départ (A).' : 'Profil : touchez le point d\'arrivée (B).';
       actionText = '';
+    } else if (state.mode === 'cad') {
+      const t = state.cad.tool;
+      text = t ? `Plan CAO · ${CAD_TOOLS[t.name].label} : ${t.prompt}` : 'Plan CAO';
+      actionText = t && t.name !== 'select' ? 'Terminer' : '';
     }
     b.hidden = state.mode === 'idle';
     $('mode-banner-text').textContent = text;
@@ -2046,6 +2145,7 @@ const DEM_API_KEY = '';
   function bannerAction() {
     if (state.mode === 'parcel') closeParcel();
     else if (state.mode === 'measure') setMode('idle');
+    else if (state.mode === 'cad') cadEnterKey();
   }
 
   function handleParcelClick(e) {
@@ -2863,6 +2963,1758 @@ const DEM_API_KEY = '';
   }
 
   /* ========================================================================
+     7c. PLAN CAO (génie civil)
+     Les entités sont stockées et calculées dans un repère plan UTM (mètres),
+     comme dans un logiciel de DAO. Elles sont converties en longitude/latitude
+     uniquement pour l'affichage et l'export GeoJSON.
+     ======================================================================== */
+  const CAD_ACI = [[1, '#e03131'], [2, '#f59f00'], [3, '#2f9e44'], [4, '#1098ad'], [5, '#1c7ed6'], [6, '#ae3ec9'], [7, '#495057'], [8, '#868e96'], [9, '#adb5bd']];
+  const CAD_SNAP_LABELS = { end: 'Extrémité', mid: 'Milieu', cen: 'Centre', int: 'Intersection', nea: 'Proche' };
+  const CAD_ALIASES = {
+    l: 'line', line: 'line', ligne: 'line', pl: 'pline', pline: 'pline', polyligne: 'pline', pol: 'poly', poly: 'poly', polygon: 'poly', polygone: 'poly',
+    rec: 'rect', rect: 'rect', rectangle: 'rect', c: 'circle', circle: 'circle', cercle: 'circle', pt: 'point', point: 'point',
+    t: 'text', text: 'text', texte: 'text', dim: 'dim', cote: 'dim', s: 'select', select: 'select', selectionner: 'select', w: 'window', fenetre: 'window',
+    m: 'move', move: 'move', deplacer: 'move', co: 'copy', copy: 'copy', copier: 'copy', ro: 'rotate', rotate: 'rotate', pivoter: 'rotate',
+    sc: 'scale', scale: 'scale', echelle: 'scale', mi: 'mirror', mirror: 'mirror', miroir: 'mirror', o: 'offset', offset: 'offset', decaler: 'offset',
+    e: 'erase', erase: 'erase', effacer: 'erase', del: 'erase', di: 'dist', dist: 'dist', distance: 'dist', area: 'area', aire: 'area', surface: 'area',
+    id: 'id', u: 'undo', undo: 'undo', annuler: 'undo', redo: 'redo', refaire: 'redo', all: 'all', tout: 'all', ze: 'zoomext', zoom: 'zoomext',
+    ortho: 'ortho', lots: 'lots', lot: 'lots', lotir: 'lots', explode: 'explode', exploser: 'explode', deblai: 'cutfill', remblai: 'cutfill', terrassement: 'cutfill', cutfill: 'cutfill', profil: 'profile', profile: 'profile', coupe: 'section', section: 'section', parcelle: 'fromparcel', retrait: 'setback', recul: 'setback', layer: 'layer', calque: 'layer', dxf: 'dxf', png: 'png', help: 'help', aide: 'help'
+  };
+  const CAD_NEEDS_SELECTION = ['move', 'copy', 'rotate', 'scale', 'mirror', 'erase'];
+  const CAD_DRAW_TOOLS = ['line', 'pline', 'poly', 'rect', 'circle', 'point', 'text', 'dim'];
+
+  function cadDefaultLayers() {
+    const L = (name, color) => ({ id: name, name, color, visible: true, locked: false });
+    return [L('0', '#495057'), L('Limites', '#2f9e44'), L('Axes', '#e03131'), L('Bâti', '#1c7ed6'), L('Cotes', '#e8590c'), L('Textes', '#212529'), L('Lots', '#9c36b5'), L('Reculs', '#f08c00'), L('Terrassement', '#0b7285')];
+  }
+  function cadInitialState() {
+    return {
+      crs: { zone: null, south: false }, layers: cadDefaultLayers(), current: 'Limites', entities: [], nextId: 1,
+      selection: new Set(), undo: [], redo: [], tool: null, cursor: null, lastSnap: null,
+      snap: { end: true, mid: true, cen: true, int: true, nea: false }, ortho: false,
+      markers: [], log: [], cutfill: [], xs: null, render: 0, drag: null, lp: null
+    };
+  }
+
+  /* ---------- Projection UTM (WGS84, séries de Krüger, précision < 1 mm) ---------- */
+  const UTM_K0 = 0.9996;
+  function utmConsts() {
+    const a = 6378137, f = 1 / 298.257223563, n = f / (2 - f), n2 = n * n, n3 = n2 * n;
+    return { f, n, n2, n3, A: (a / (1 + n)) * (1 + n2 / 4 + (n2 * n2) / 64) };
+  }
+  function llToUtm(lng, lat, zone, south) {
+    const { f, n, n2, n3, A } = utmConsts();
+    const al = [n / 2 - (2 * n2) / 3 + (5 * n3) / 16, (13 * n2) / 48 - (3 * n3) / 5, (61 * n3) / 240];
+    const e = Math.sqrt(f * (2 - f));
+    const phi = (lat * Math.PI) / 180, dl = ((lng - (zone * 6 - 183)) * Math.PI) / 180;
+    const s = Math.sin(phi);
+    const t = Math.sinh(Math.atanh(s) - e * Math.atanh(e * s));
+    const xi0 = Math.atan2(t, Math.cos(dl)), eta0 = Math.atanh(Math.sin(dl) / Math.sqrt(1 + t * t));
+    let xi = xi0, eta = eta0;
+    for (let j = 1; j <= 3; j++) { xi += al[j - 1] * Math.sin(2 * j * xi0) * Math.cosh(2 * j * eta0); eta += al[j - 1] * Math.cos(2 * j * xi0) * Math.sinh(2 * j * eta0); }
+    return [500000 + UTM_K0 * A * eta, UTM_K0 * A * xi + (south ? 10000000 : 0)];
+  }
+  function utmToLl(E, N, zone, south) {
+    const { n, n2, n3, A } = utmConsts();
+    const be = [n / 2 - (2 * n2) / 3 + (37 * n3) / 96, n2 / 48 + n3 / 15, (17 * n3) / 480];
+    const de = [2 * n - (2 * n2) / 3 - 2 * n3, (7 * n2) / 3 - (8 * n3) / 5, (56 * n3) / 15];
+    const xi = (N - (south ? 10000000 : 0)) / (UTM_K0 * A), eta = (E - 500000) / (UTM_K0 * A);
+    let xi0 = xi, eta0 = eta;
+    for (let j = 1; j <= 3; j++) { xi0 -= be[j - 1] * Math.sin(2 * j * xi) * Math.cosh(2 * j * eta); eta0 -= be[j - 1] * Math.cos(2 * j * xi) * Math.sinh(2 * j * eta); }
+    const chi = Math.asin(Math.sin(xi0) / Math.cosh(eta0));
+    let phi = chi;
+    for (let j = 1; j <= 3; j++) phi += de[j - 1] * Math.sin(2 * j * chi);
+    const lam = Math.atan2(Math.sinh(eta0), Math.cos(xi0));
+    return [zone * 6 - 183 + (lam * 180) / Math.PI, (phi * 180) / Math.PI];
+  }
+  function cadEnsureCrs(lng, lat) {
+    const c = state.cad.crs;
+    if (!c.zone) { c.zone = clamp(Math.floor((lng + 180) / 6) + 1, 1, 60); c.south = lat < 0; }
+    return c;
+  }
+  const cadToXY = (lng, lat) => { const c = cadEnsureCrs(lng, lat); return llToUtm(lng, lat, c.zone, c.south); };
+  const cadToLL = (xy) => { const c = state.cad.crs; return utmToLl(xy[0], xy[1], c.zone || 31, c.south); };
+  const cadCrsLabel = () => { const c = state.cad.crs; return c.zone ? `UTM ${c.zone}${c.south ? 'S' : 'N'} (EPSG:${(c.south ? 32700 : 32600) + c.zone})` : 'UTM (zone définie au premier objet)'; };
+
+  /* ---------- Géométrie plane ---------- */
+  const d2 = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  /** Aire signée (formule du lacet), calculée relativement au premier sommet : évite la perte de précision avec des coordonnées UTM (≈ 10⁶ m). */
+  function ringArea(p) { const o = p[0]; let s = 0; for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += (a[0] - o[0]) * (b[1] - o[1]) - (b[0] - o[0]) * (a[1] - o[1]); } return s / 2; }
+  function pathLen(p, closed) { let s = 0; for (let i = 1; i < p.length; i++) s += d2(p[i - 1], p[i]); if (closed && p.length > 2) s += d2(p[p.length - 1], p[0]); return s; }
+  function polyCentroid(p) {
+    const A = ringArea(p), o = p[0];
+    if (Math.abs(A) < 1e-9) return [p.reduce((s, q) => s + q[0], 0) / p.length, p.reduce((s, q) => s + q[1], 0) / p.length];
+    let cx = 0, cy = 0;
+    for (let i = 0; i < p.length; i++) { const a = [p[i][0] - o[0], p[i][1] - o[1]], b = [p[(i + 1) % p.length][0] - o[0], p[(i + 1) % p.length][1] - o[1]], w = a[0] * b[1] - b[0] * a[1]; cx += (a[0] + b[0]) * w; cy += (a[1] + b[1]) * w; }
+    return [o[0] + cx / (6 * A), o[1] + cy / (6 * A)];
+  }
+  function pointInRing(pt, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const a = ring[i], b = ring[j];
+      if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < ((b[0] - a[0]) * (pt[1] - a[1])) / (b[1] - a[1]) + a[0]) inside = !inside;
+    }
+    return inside;
+  }
+  function lineIntersect(a, b, c, d) {                         // droites infinies ; null si parallèles
+    const r = [b[0] - a[0], b[1] - a[1]], s = [d[0] - c[0], d[1] - c[1]];
+    const den = r[0] * s[1] - r[1] * s[0];
+    if (Math.abs(den) < 1e-12) return null;
+    const t = ((c[0] - a[0]) * s[1] - (c[1] - a[1]) * s[0]) / den;
+    return [a[0] + t * r[0], a[1] + t * r[1]];
+  }
+  function segIntersect(a, b, c, d) {                          // segments ; null si disjoints
+    const r = [b[0] - a[0], b[1] - a[1]], s = [d[0] - c[0], d[1] - c[1]];
+    const den = r[0] * s[1] - r[1] * s[0];
+    if (Math.abs(den) < 1e-12) return null;
+    const t = ((c[0] - a[0]) * s[1] - (c[1] - a[1]) * s[0]) / den, u = ((c[0] - a[0]) * r[1] - (c[1] - a[1]) * r[0]) / den;
+    return t >= 0 && t <= 1 && u >= 0 && u <= 1 ? [a[0] + t * r[0], a[1] + t * r[1]] : null;
+  }
+  function nearestOnSeg(p, a, b) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy;
+    const t = L2 === 0 ? 0 : clamp(((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L2, 0, 1);
+    return [a[0] + t * dx, a[1] + t * dy];
+  }
+  const azimuthDeg = (a, b) => (((Math.atan2(b[0] - a[0], b[1] - a[1]) * 180) / Math.PI) + 360) % 360;      // depuis le Nord, sens horaire
+  const fmtAng = (deg) => fmtNum(deg, 4) + '° (' + fmtNum((deg * 400) / 360, 4) + ' gon)';
+
+  /* ---------- Entités : modèle, historique ---------- */
+  const cadLayerOf = (name) => state.cad.layers.find((l) => l.id === name);
+  function cadAddEntity(e) {
+    const c = state.cad;
+    e.id = c.nextId++;
+    if (!e.layer || !cadLayerOf(e.layer)) e.layer = c.current;
+    c.entities.push(e);
+    return e;
+  }
+  const cadEntity = (id) => state.cad.entities.find((e) => e.id === id);
+  const cadSelected = () => [...state.cad.selection].map(cadEntity).filter(Boolean);
+  const cadEditable = (e) => { const L = cadLayerOf(e.layer); return !!L && !L.locked; };
+  const cadVisible = (e) => { const L = cadLayerOf(e.layer); return !!L && L.visible; };
+
+  function cadPushUndo() {
+    const c = state.cad;
+    c.undo.push(JSON.stringify({ layers: c.layers, entities: c.entities, nextId: c.nextId, current: c.current }));
+    if (c.undo.length > 60) c.undo.shift();
+    c.redo = [];
+  }
+  function cadRestore(json) {
+    const c = state.cad, d = JSON.parse(json);
+    c.layers = d.layers; c.entities = d.entities; c.nextId = d.nextId; c.current = d.current;
+    c.selection = new Set([...c.selection].filter((id) => c.entities.some((e) => e.id === id)));
+    cadRender();
+  }
+  function cadHistoryUndo() {
+    const c = state.cad;
+    if (!c.undo.length) { notify('Rien à annuler dans le plan.', 'info'); return; }
+    c.redo.push(JSON.stringify({ layers: c.layers, entities: c.entities, nextId: c.nextId, current: c.current }));
+    cadRestore(c.undo.pop());
+    cadLog('Annulation.');
+  }
+  function cadHistoryRedo() {
+    const c = state.cad;
+    if (!c.redo.length) { notify('Rien à rétablir.', 'info'); return; }
+    c.undo.push(JSON.stringify({ layers: c.layers, entities: c.entities, nextId: c.nextId, current: c.current }));
+    cadRestore(c.redo.pop());
+    cadLog('Rétablissement.');
+  }
+  function cadLog(msg) {
+    const c = state.cad;
+    c.log.push(msg);
+    if (c.log.length > 40) c.log.shift();
+    const box = $('cad-log');
+    if (box) { box.replaceChildren(...c.log.slice(-6).map((m) => el('div', { text: m }))); box.scrollTop = box.scrollHeight; }
+  }
+
+  /* ---------- Géométrie des entités ---------- */
+  function cadCircleRing(e, seg) { const n = seg || 72, ring = []; for (let i = 0; i < n; i++) { const a = (2 * Math.PI * i) / n; ring.push([e.pts[0][0] + e.r * Math.cos(a), e.pts[0][1] + e.r * Math.sin(a)]); } return ring; }
+  /** Géométrie d'une cote alignée : deux traits d'attache + ligne de cote + position du libellé. */
+  function cadDimGeom(e) {
+    const [p1, p2] = e.pts, L = d2(p1, p2) || 1e-9, u = [(p2[0] - p1[0]) / L, (p2[1] - p1[1]) / L], nn = [-u[1], u[0]], off = e.off || 0;
+    const q1 = [p1[0] + nn[0] * off, p1[1] + nn[1] * off], q2 = [p2[0] + nn[0] * off, p2[1] + nn[1] * off];
+    const ext = Math.sign(off || 1) * Math.min(Math.abs(off) * 0.15 + 0.2, 1);
+    const lines = [[p1, [q1[0] + nn[0] * ext, q1[1] + nn[1] * ext]], [p2, [q2[0] + nn[0] * ext, q2[1] + nn[1] * ext]], [q1, q2]];
+    return { lines, mid: [(q1[0] + q2[0]) / 2, (q1[1] + q2[1]) / 2], length: L };
+  }
+  function cadVertices(e) {
+    if (e.type === 'circle') return [e.pts[0], [e.pts[0][0] + e.r, e.pts[0][1]]];
+    if (e.type === 'dim') { const g = cadDimGeom(e); return [e.pts[0], e.pts[1], g.mid]; }
+    return e.pts;
+  }
+  function cadSegments(e) {
+    if (e.type === 'line' || e.type === 'pline') return e.pts.slice(1).map((p, i) => [e.pts[i], p]);
+    if (e.type === 'poly') return e.pts.map((p, i) => [p, e.pts[(i + 1) % e.pts.length]]);
+    if (e.type === 'circle') { const r = cadCircleRing(e, 48); return r.map((p, i) => [p, r[(i + 1) % r.length]]); }
+    if (e.type === 'dim') return cadDimGeom(e).lines;
+    return [];
+  }
+  function cadMetrics(e) {
+    switch (e.type) {
+      case 'line': case 'pline': return { length: pathLen(e.pts, false) };
+      case 'poly': return { perimeter: pathLen(e.pts, true), area: Math.abs(ringArea(e.pts)) };
+      case 'circle': return { perimeter: 2 * Math.PI * e.r, area: Math.PI * e.r * e.r, radius: e.r };
+      case 'dim': return { length: d2(e.pts[0], e.pts[1]) };
+      default: return {};
+    }
+  }
+  function cadEntityFeatures(e, color, selected) {
+    const base = { id: e.id, color, selected, layer: e.layer, cad: e.type };
+    const F = (geometry) => ({ type: 'Feature', properties: base, geometry });
+    const LL = (pts) => pts.map(cadToLL);
+    switch (e.type) {
+      case 'line': case 'pline': return [F({ type: 'LineString', coordinates: LL(e.pts) })];
+      case 'poly': return [F({ type: 'Polygon', coordinates: [LL(e.pts.concat([e.pts[0]]))] })];
+      case 'circle': { const r = cadCircleRing(e); return [F({ type: 'Polygon', coordinates: [LL(r.concat([r[0]]))] })]; }
+      case 'point': return [F({ type: 'Point', coordinates: cadToLL(e.pts[0]) })];
+      case 'dim': return cadDimGeom(e).lines.map((l) => F({ type: 'LineString', coordinates: LL(l) }));
+      default: return [];
+    }
+  }
+
+  /* ---------- Rendu ---------- */
+  function cadRender() {
+    const c = state.cad;
+    if (c.render) return;
+    c.render = requestAnimationFrame(() => { c.render = 0; cadRenderNow(); });
+  }
+  function cadGripFeatures() {
+    const feats = [];
+    const sel = cadSelected().filter((e) => cadEditable(e) && cadVisible(e));
+    if (sel.length === 0 || sel.length > 5) return feats;
+    sel.forEach((e) => cadVertices(e).forEach((p, idx) => feats.push({ type: 'Feature', properties: { eid: e.id, idx }, geometry: { type: 'Point', coordinates: cadToLL(p) } })));
+    return feats;
+  }
+  function cadRenderNow() {
+    const c = state.cad;
+    if (requireMap(true) && c.crs.zone) {
+      const feats = [];
+      c.entities.forEach((e) => { const L = cadLayerOf(e.layer); if (L && L.visible) feats.push(...cadEntityFeatures(e, L.color, c.selection.has(e.id))); });
+      setSourceData('cad', { type: 'FeatureCollection', features: feats });
+      setSourceData('cad-grips', { type: 'FeatureCollection', features: cadGripFeatures() });
+      setSourceData('cad-cutfill', { type: 'FeatureCollection', features: c.cutfill });
+      cadRefreshLabels();
+    } else if (requireMap(true)) {
+      setSourceData('cad', EMPTY_FC()); setSourceData('cad-grips', EMPTY_FC()); cadRefreshLabels();
+    }
+    cadRenderUi();
+  }
+  /** Textes et cotes : repères HTML, nettoyés puis recréés à chaque rendu. */
+  function cadRefreshLabels() {
+    const c = state.cad;
+    c.markers.forEach((m) => m.remove());
+    c.markers = [];
+    if (!state.map || !window.maplibregl || !c.crs.zone) return;
+    let n = 0;
+    for (const e of c.entities) {
+      if (n >= 400) break;
+      const L = cadLayerOf(e.layer);
+      if (!L || !L.visible) continue;
+      let text = null, at = null, cls = 'cad-text';
+      if (e.type === 'text') { text = e.text; at = e.pts[0]; }
+      else if (e.type === 'dim') { const g = cadDimGeom(e); text = fmtNum(g.length, 2) + ' m'; at = g.mid; cls = 'cad-dim'; }
+      if (!text) continue;
+      const node = el('div', { class: cls + (c.selection.has(e.id) ? ' sel' : ''), text, style: { color: L.color, borderColor: L.color } });
+      c.markers.push(new maplibregl.Marker({ element: node, anchor: 'center' }).setLngLat(cadToLL(at)).addTo(state.map));
+      n++;
+    }
+  }
+
+  /* ---------- Accrochages, sélection ---------- */
+  const cadScreen = (xy) => state.map.project(cadToLL(xy));
+  function cadTol() { return window.matchMedia && window.matchMedia('(pointer:coarse)').matches ? 16 : 12; }
+
+  function cadSnapAt(screenPt) {
+    const c = state.cad;
+    if (!c.crs.zone) return null;
+    const tol = cadTol();
+    let best = null;
+    const consider = (pt, type) => {
+      const s = cadScreen(pt), dist = Math.hypot(s.x - screenPt.x, s.y - screenPt.y);
+      if (dist > tol) return;
+      const pr = { end: 0, int: 1, mid: 2, cen: 3, nea: 4 }[type];
+      if (!best || pr < best.pr || (pr === best.pr && dist < best.dist)) best = { pt, type, pr, dist };
+    };
+    const segs = [];
+    const feed = (verts, segList, center) => {
+      if (c.snap.end) verts.forEach((p) => consider(p, 'end'));
+      segList.forEach((s) => { if (c.snap.mid) consider([(s[0][0] + s[1][0]) / 2, (s[0][1] + s[1][1]) / 2], 'mid'); segs.push(s); });
+      if (center && c.snap.cen) consider(center, 'cen');
+    };
+    for (const e of c.entities) {
+      if (!cadVisible(e)) continue;
+      if (e.type === 'circle') { feed([[e.pts[0][0] + e.r, e.pts[0][1]], [e.pts[0][0] - e.r, e.pts[0][1]], [e.pts[0][0], e.pts[0][1] + e.r], [e.pts[0][0], e.pts[0][1] - e.r]], [], e.pts[0]); cadSegments(e).forEach((s) => segs.push(s)); }
+      else if (e.type === 'point' || e.type === 'text') feed([e.pts[0]], [], null);
+      else if (e.type === 'dim') feed([e.pts[0], e.pts[1]], [], null);
+      else feed(e.pts, cadSegments(e), e.type === 'poly' ? polyCentroid(e.pts) : null);
+    }
+    const par = state.parcel.vertices.map((v) => cadToXY(v.lng, v.lat));
+    if (par.length) feed(par, par.length > 1 ? par.slice(1).map((p, i) => [par[i], p]).concat(state.parcel.closed ? [[par[par.length - 1], par[0]]] : []) : [], null);
+    if (c.snap.int || c.snap.nea) {
+      const near = segs.filter((s) => { const a = cadScreen(s[0]), b = cadScreen(s[1]); return cadSegDistPx(screenPt, a, b) < tol * 4; }).slice(0, 24);
+      if (c.snap.int) for (let i = 0; i < near.length; i++) for (let j = i + 1; j < near.length; j++) { const p = segIntersect(near[i][0], near[i][1], near[j][0], near[j][1]); if (p) consider(p, 'int'); }
+      if (c.snap.nea && !best) { const cur = cadToXY(...Object.values(state.map.unproject([screenPt.x, screenPt.y]).toArray())); near.forEach((s) => consider(nearestOnSeg(cur, s[0], s[1]), 'nea')); }
+    }
+    return best ? { pt: best.pt, type: best.type, label: CAD_SNAP_LABELS[best.type] } : null;
+  }
+  function cadSegDistPx(p, a, b) {
+    const dx = b.x - a.x, dy = b.y - a.y, L2 = dx * dx + dy * dy;
+    const t = L2 === 0 ? 0 : clamp(((p.x - a.x) * dx + (p.y - a.y) * dy) / L2, 0, 1);
+    return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
+  }
+  function cadBasePoint(t) { return t ? (t.pts.length ? t.pts[t.pts.length - 1] : t.base) : null; }
+  function cadApplyOrtho(base, pt) {
+    if (!state.cad.ortho || !base) return pt;
+    return Math.abs(pt[0] - base[0]) >= Math.abs(pt[1] - base[1]) ? [pt[0], base[1]] : [base[0], pt[1]];
+  }
+  /** Point plan (E,N) sous le curseur, avec accrochage puis mode orthogonal. */
+  function cadResolve(lngLat, screenPt) {
+    const snap = cadSnapAt(screenPt);
+    let pt = snap ? snap.pt : cadToXY(lngLat.lng, lngLat.lat);
+    if (!snap) pt = cadApplyOrtho(cadBasePoint(state.cad.tool), pt);
+    return { pt, snap };
+  }
+
+  function cadDistToEntityPx(e, p) {
+    const sc = (xy) => cadScreen(xy);
+    if (e.type === 'point' || e.type === 'text') { const s = sc(e.pts[0]); return Math.hypot(s.x - p.x, s.y - p.y); }
+    if (e.type === 'circle') { const c0 = sc(e.pts[0]), r1 = sc([e.pts[0][0] + e.r, e.pts[0][1]]); return Math.abs(Math.hypot(c0.x - p.x, c0.y - p.y) - Math.hypot(r1.x - c0.x, r1.y - c0.y)); }
+    return cadSegments(e).reduce((m, s) => Math.min(m, cadSegDistPx(p, sc(s[0]), sc(s[1]))), Infinity);
+  }
+  function cadPickAt(screenPt) {
+    const tol = cadTol() - 4;
+    let best = null, bd = Infinity;
+    for (const e of state.cad.entities) {
+      if (!cadVisible(e) || !cadEditable(e)) continue;
+      const d = cadDistToEntityPx(e, screenPt);
+      if (d <= tol && d < bd) { bd = d; best = e.id; }
+    }
+    return best;
+  }
+  function segHitsRect(a, b, r) {                                // Liang-Barsky
+    let t0 = 0, t1 = 1;
+    const dx = b.x - a.x, dy = b.y - a.y;
+    for (const [p, q] of [[-dx, a.x - r.x0], [dx, r.x1 - a.x], [-dy, a.y - r.y0], [dy, r.y1 - a.y]]) {
+      if (p === 0) { if (q < 0) return false; }
+      else { const t = q / p; if (p < 0) { if (t > t1) return false; if (t > t0) t0 = t; } else { if (t < t0) return false; if (t < t1) t1 = t; } }
+    }
+    return true;
+  }
+  function cadWindowSelect(s1, s2, additive) {
+    const crossing = s2.x < s1.x;
+    const r = { x0: Math.min(s1.x, s2.x), x1: Math.max(s1.x, s2.x), y0: Math.min(s1.y, s2.y), y1: Math.max(s1.y, s2.y) };
+    const inside = (s) => s.x >= r.x0 && s.x <= r.x1 && s.y >= r.y0 && s.y <= r.y1;
+    const ids = [];
+    for (const e of state.cad.entities) {
+      if (!cadVisible(e) || !cadEditable(e)) continue;
+      let verts;
+      if (e.type === 'circle') verts = [[e.pts[0][0] - e.r, e.pts[0][1] - e.r], [e.pts[0][0] + e.r, e.pts[0][1] + e.r], [e.pts[0][0] - e.r, e.pts[0][1] + e.r], [e.pts[0][0] + e.r, e.pts[0][1] - e.r]];
+      else verts = e.type === 'dim' ? cadSegments(e).flat() : e.pts;
+      const sv = verts.map(cadScreen);
+      let hit = sv.every(inside);
+      if (!hit && crossing) {
+        hit = sv.some(inside) || cadSegments(e).some((s) => segHitsRect(cadScreen(s[0]), cadScreen(s[1]), r));
+      }
+      if (hit) ids.push(e.id);
+    }
+    if (!additive) state.cad.selection.clear();
+    ids.forEach((id) => state.cad.selection.add(id));
+    cadRender();
+    return ids.length;
+  }
+
+  /* ---------- Transformations ---------- */
+  function cadApply(e, T) {
+    e.pts = e.pts.map((p) => T.pt(p));
+    if (e.type === 'circle') e.r *= T.k;
+    if (e.type === 'dim') e.off = (e.off || 0) * T.k * (T.flip ? -1 : 1);
+  }
+  function cadTransform(ents, T, copy) {
+    const made = [];
+    ents.forEach((e) => {
+      if (copy) { const n = JSON.parse(JSON.stringify(e)); cadApply(n, T); delete n.id; made.push(cadAddEntity(n)); }
+      else cadApply(e, T);
+    });
+    return made;
+  }
+  const cadMoveT = (dx, dy) => ({ pt: (p) => [p[0] + dx, p[1] + dy], k: 1 });
+  function cadRotateT(c, deg) {
+    const a = (deg * Math.PI) / 180, co = Math.cos(a), si = Math.sin(a);
+    return { pt: (p) => [c[0] + (p[0] - c[0]) * co - (p[1] - c[1]) * si, c[1] + (p[0] - c[0]) * si + (p[1] - c[1]) * co], k: 1 };
+  }
+  const cadScaleT = (c, k) => ({ pt: (p) => [c[0] + (p[0] - c[0]) * k, c[1] + (p[1] - c[1]) * k], k });
+  function cadMirrorT(a, b) {
+    const L = d2(a, b) || 1e-9, u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L];
+    return { pt: (p) => { const v = [p[0] - a[0], p[1] - a[1]], pr = v[0] * u[0] + v[1] * u[1]; return [a[0] + 2 * pr * u[0] - v[0], a[1] + 2 * pr * u[1] - v[1]]; }, k: 1, flip: true };
+  }
+  /** Décalage d'une polyligne (jointures en onglet, biseau si l'angle est trop aigu). d > 0 : à gauche du sens de dessin. */
+  function offsetPath(pts, d) {
+    const segs = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1], L = d2(a, b);
+      if (L < 1e-9) continue;
+      const nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L;
+      segs.push({ a: [a[0] + nx * d, a[1] + ny * d], b: [b[0] + nx * d, b[1] + ny * d], o: b });
+    }
+    if (!segs.length) return null;
+    const out = [segs[0].a];
+    for (let i = 1; i < segs.length; i++) {
+      const p = lineIntersect(segs[i - 1].a, segs[i - 1].b, segs[i].a, segs[i].b);
+      if (p && d2(p, segs[i - 1].o) <= 4 * Math.abs(d)) out.push(p);
+      else { out.push(segs[i - 1].b); if (!p || d2(segs[i - 1].b, segs[i].a) > 1e-9) out.push(segs[i].a); }
+    }
+    out.push(segs[segs.length - 1].b);
+    return out;
+  }
+  function cadPolyToLL(pts) { return turf.polygon([pts.concat([pts[0]]).map(cadToLL)]); }
+  function cadLLPolyToXY(geom) {                                       // anneau extérieur du plus grand polygone
+    const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+    let best = null, ba = -1;
+    polys.forEach((p) => { const ring = p[0].slice(0, -1).map((c) => cadToXY(c[0], c[1])); const a = Math.abs(ringArea(ring)); if (a > ba) { ba = a; best = ring; } });
+    return best;
+  }
+  /** Agrandit (d > 0) un polygone par décalage de chaque côté, angles en onglet (biseau si trop aigu). */
+  function offsetRing(pts, d) {
+    const r = ringArea(pts) >= 0 ? pts : pts.slice().reverse(), n = r.length, lines = [];
+    for (let i = 0; i < n; i++) {
+      const a = r[i], b = r[(i + 1) % n], L = d2(a, b) || 1e-9, nx = (b[1] - a[1]) / L, ny = -(b[0] - a[0]) / L;      // normale extérieure (anneau antihoraire)
+      lines.push([[a[0] + nx * d, a[1] + ny * d], [b[0] + nx * d, b[1] + ny * d]]);
+    }
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const l0 = lines[(i + n - 1) % n], l1 = lines[i], p = lineIntersect(l0[0], l0[1], l1[0], l1[1]);
+      if (p && d2(p, r[i]) <= 4 * Math.abs(d)) out.push(p); else out.push(l0[1], l1[0]);
+    }
+    return out;
+  }
+  /** Décale une entité ; sidePt (E,N) indique le côté. Renvoie la nouvelle entité (non ajoutée) ou une chaîne d'erreur. */
+  function cadOffsetEntity(e, dist, sidePt) {
+    if (!(dist > 0)) return 'La distance de décalage doit être positive.';
+    if (e.type === 'circle') {
+      const inside = d2(sidePt, e.pts[0]) < e.r, r = e.r + (inside ? -dist : dist);
+      return r > 0 ? { type: 'circle', layer: e.layer, pts: [e.pts[0].slice()], r } : 'Le rayon résultant serait nul ou négatif.';
+    }
+    if (e.type === 'poly') {
+      const inside = pointInRing(sidePt, e.pts);
+      let pts = null;
+      if (!inside) pts = offsetRing(e.pts, dist);
+      else if (cadIsConvex(e.pts)) { const r = cadInsetConvex(e.pts, new Array(e.pts.length).fill(dist)); pts = r.length >= 3 ? r : null; }
+      else {
+        try { const res = turf.buffer(cadPolyToLL(e.pts), -dist, { units: 'meters' }); if (res && res.geometry && res.geometry.coordinates.length) pts = cadLLPolyToXY(res.geometry); } catch (err) { pts = null; }
+      }
+      return pts ? { type: 'poly', layer: e.layer, pts } : 'Le décalage est trop grand : plus aucun contour.';
+    }
+    if (e.type === 'line' || e.type === 'pline') {
+      let bestSeg = null, bd = Infinity;
+      cadSegments(e).forEach((s) => { const n = nearestOnSeg(sidePt, s[0], s[1]), dd = d2(n, sidePt); if (dd < bd) { bd = dd; bestSeg = s; } });
+      const cr = (bestSeg[1][0] - bestSeg[0][0]) * (sidePt[1] - bestSeg[0][1]) - (bestSeg[1][1] - bestSeg[0][1]) * (sidePt[0] - bestSeg[0][0]);
+      const pts = offsetPath(e.pts, (cr >= 0 ? 1 : -1) * dist);
+      return pts ? { type: e.type, layer: e.layer, pts } : 'Décalage impossible pour cet objet.';
+    }
+    return 'Ce type d\'objet ne peut pas être décalé.';
+  }
+
+  /* ---------- Moteur d'outils : saisie, commandes, prévisualisation ---------- */
+  const userError = (msg) => Object.assign(new Error(msg), { userError: true });
+  const CAD_SELECT_PROMPT = 'Cliquez un objet pour le sélectionner (Maj : ajouter), ou tapez une commande. Pointez une poignée pour déplacer un sommet.';
+
+  function cadPrompt(t, msg, aw) { t.prompt = msg; t.await = aw || null; }
+  function cadSetTool(name, opts) {
+    if (!requireMap()) return;
+    const c = state.cad;
+    if (state.mode !== 'cad') setMode('cad');
+    c.tool = { name, pts: [], base: null, stage: '', await: null, prompt: '', data: {}, preset: opts && opts.preset != null ? opts.preset : null };
+    const d = CAD_TOOLS[name];
+    c.tool.prompt = d.hint || '';
+    if (d.start) d.start(c.tool);
+    if (!['select', 'window'].includes(name)) c.lastCmd = name;
+    cadAfter();
+    if (opts && opts.fromUi) collapseSheetIfMobile();
+    if (c.tool && c.tool.await && isMobile()) { setSheetCollapsed(false); notify('Saisissez la valeur dans la ligne de commande du panneau « Plan CAO » : ' + c.tool.prompt, 'info', 6000); }
+  }
+  const cadDone = () => cadSetTool('select');
+  function cadAfter() {
+    cadUpdatePreview(null);
+    updateModeBanner();
+    cadRenderUi();
+    if (state.map) state.map.getCanvas().style.cursor = state.mode === 'cad' ? 'crosshair' : '';
+  }
+  function cadLeave() {
+    const c = state.cad;
+    c.tool = null; c.cursor = null;
+    setSourceData('cad-preview', EMPTY_FC()); setSourceData('cad-snap', EMPTY_FC());
+    cadRenderUi();
+  }
+  function cadEnterKey() {
+    const c = state.cad, t = c.tool;
+    if (!t) return;
+    const d = CAD_TOOLS[t.name];
+    if (d.enter) { d.enter(t); cadAfter(); }
+    else if (t.name === 'select' && c.lastCmd) cadSetTool(c.lastCmd);
+  }
+  function cadEscape() {
+    const c = state.cad, t = c.tool;
+    if (t && (t.name !== 'select' || t.data.grip)) cadDone();
+    else if (c.selection.size) { c.selection.clear(); cadRender(); }
+    else setMode('idle');
+  }
+
+  function cadOnClick(e) {
+    const c = state.cad, t = c.tool;
+    if (!t) return;
+    cadEnsureCrs(e.lngLat.lng, e.lngLat.lat);
+    const r = cadResolve(e.lngLat, e.point);
+    c.cursor = r.pt;
+    const oe = e.originalEvent || {};
+    const d = CAD_TOOLS[t.name];
+    if (d.click) d.click(t, r.pt, { screen: e.point, shift: !!(oe.shiftKey || oe.ctrlKey || oe.metaKey) });
+    cadAfter();
+  }
+  function cadOnContext(e) {
+    if (state.mode !== 'cad') return;
+    if (e.originalEvent && e.originalEvent.preventDefault) e.originalEvent.preventDefault();
+    cadEnterKey();
+  }
+  let cadMoveEv = null;
+  function cadOnMove(e) {
+    if (state.mode !== 'cad') return;
+    if (!cadMoveEv) requestAnimationFrame(() => { const ev = cadMoveEv; cadMoveEv = null; if (state.mode === 'cad' && ev) cadMoveNow(ev); });
+    cadMoveEv = e;
+  }
+  function cadMoveNow(e) {
+    const c = state.cad;
+    if (!c.crs.zone) { $('cad-coords').textContent = 'Zone UTM définie au premier clic.'; return; }
+    const r = cadResolve(e.lngLat, e.point);
+    c.cursor = r.pt; c.lastSnap = r.snap;
+    const ll = cadToLL(r.pt);
+    $('cad-coords').textContent = `E ${fmtNum(r.pt[0], 3)} · N ${fmtNum(r.pt[1], 3)}${r.snap ? ' · ' + r.snap.label : ''}`;
+    $('cad-coords').dataset.ll = ll.join(',');
+    setSourceData('cad-snap', r.snap ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: { type: r.snap.type }, geometry: { type: 'Point', coordinates: cadToLL(r.snap.pt) } }] } : EMPTY_FC());
+    cadUpdatePreview(r.pt);
+  }
+  function cadUpdatePreview(cur) {
+    const c = state.cad, t = c.tool;
+    if (!state.map || !state.mapReady) return;
+    const feats = [];
+    const d = t && CAD_TOOLS[t.name];
+    const pv = d && d.preview && cur ? d.preview(t, cur) : null;
+    if (pv && c.crs.zone) {
+      const LL = (a) => a.map(cadToLL);
+      if (pv.lines) pv.lines.forEach((l) => feats.push({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: LL(l) } }));
+      if (pv.poly && pv.poly.length > 2) feats.push({ type: 'Feature', properties: { fill: 1 }, geometry: { type: 'Polygon', coordinates: [LL(pv.poly.concat([pv.poly[0]]))] } });
+    }
+    setSourceData('cad-preview', { type: 'FeatureCollection', features: feats });
+  }
+
+  /* ---------- Saisie au clavier ---------- */
+  function cadNum(s) { const n = toNumberOrNull(s); return n; }
+  /** Point saisi : « E;N » (absolu), « @dx;dy » ou « @dx,dy » (relatif), « @dist<azimut » (polaire, azimut depuis le Nord), « distance » (vers le curseur). */
+  function cadParsePoint(txt, base) {
+    const s = txt.trim().replace(/\s+/g, '');
+    const sep = s.includes(';') ? ';' : ',';
+    const rel = s.startsWith('@');
+    const body = rel ? s.slice(1) : s;
+    let m;
+    if ((m = /^(\d+(?:[.,]\d+)?)<(-?\d+(?:[.,]\d+)?)$/.exec(body)) && base) {
+      const dist = cadNum(m[1]), az = (cadNum(m[2]) * Math.PI) / 180;
+      return [base[0] + dist * Math.sin(az), base[1] + dist * Math.cos(az)];
+    }
+    const parts = body.split(sep);
+    if (parts.length === 2 && parts.every((p) => /^-?\d+(?:[.,]\d+)?$/.test(p))) {
+      const a = cadNum(parts[0]), b = cadNum(parts[1]);
+      if (rel) return base ? [base[0] + a, base[1] + b] : null;
+      return [a, b];
+    }
+    if (/^\d+(?:[.,]\d+)?$/.test(body) && base && state.cad.cursor) {
+      const cur = state.cad.cursor, L = d2(base, cur);
+      if (L < 1e-9) return null;
+      const dist = cadNum(body);
+      return [base[0] + ((cur[0] - base[0]) / L) * dist, base[1] + ((cur[1] - base[1]) / L) * dist];
+    }
+    return null;
+  }
+
+  function cadSubmit(raw) {
+    const c = state.cad, t = c.tool;
+    const txt = String(raw || '').trim();
+    cadLog('› ' + (txt || '↵'));
+    if (!txt) { cadEnterKey(); return; }
+    const first = txt.toLowerCase().split(/\s+/)[0].normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const rest = txt.slice(txt.split(/\s+/)[0].length).trim();
+    if (t && t.await) {
+      const d = CAD_TOOLS[t.name];
+      if (d.input && d.input(t, txt)) { cadAfter(); return; }
+    }
+    const cmd = CAD_ALIASES[first];
+    if (cmd) { cadRunCommand(cmd, rest); return; }
+    if (t) {
+      const d = CAD_TOOLS[t.name];
+      if (d.click && !t.await) {
+        const p = cadParsePoint(txt, cadBasePoint(t));
+        if (p) { cadEnsureCrsFromPoint(p); c.cursor = p; d.click(t, p, { screen: null, shift: false }); cadAfter(); return; }
+      }
+      if (d.click && t.await && d.click.length >= 2) {
+        const p = cadParsePoint(txt, cadBasePoint(t));
+        if (p && d.acceptsPointWhileAwait) { d.click(t, p, { screen: null, shift: false }); cadAfter(); return; }
+      }
+    }
+    cadLog('Commande ou valeur non reconnue : « ' + txt + ' ». Tapez « aide ».');
+  }
+  function cadEnsureCrsFromPoint() { /* le repère est déjà défini par le premier objet ; sinon les points absolus sont ignorés */ }
+
+  function cadRunCommand(cmd, arg) {
+    const c = state.cad;
+    const toolCmds = Object.keys(CAD_TOOLS);
+    if (toolCmds.includes(cmd)) {
+      const preset = arg !== '' ? toNumberOrNull(arg) : null;
+      cadSetTool(cmd, { preset });
+      return;
+    }
+    switch (cmd) {
+      case 'undo': cadHistoryUndo(); break;
+      case 'redo': cadHistoryRedo(); break;
+      case 'all': { c.selection = new Set(c.entities.filter((e) => cadVisible(e) && cadEditable(e)).map((e) => e.id)); cadRender(); cadLog(c.selection.size + ' objet(s) sélectionné(s).'); break; }
+      case 'ortho': c.ortho = /^(off|non|0)$/i.test(arg) ? false : /^(on|oui|1)$/i.test(arg) ? true : !c.ortho; cadLog('Mode orthogonal ' + (c.ortho ? 'activé.' : 'désactivé.')); cadRenderUi(); break;
+      case 'layer': cadCmdLayer(arg); break;
+      case 'zoomext': cadZoomExtents(); break;
+      case 'dxf': exportDxf(); break;
+      case 'png': safe(cadExportPng)(); break;
+      case 'help': cadHelp(); break;
+      case 'fromparcel': cadFromParcel(); break;
+      default: cadLog('Commande non disponible : ' + cmd);
+    }
+  }
+  function cadCmdLayer(name) {
+    const c = state.cad;
+    if (!name) { cadLog('Calque courant : ' + c.current + '. Calques : ' + c.layers.map((l) => l.name).join(', ') + '.'); return; }
+    const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    let L = c.layers.find((l) => norm(l.name) === norm(name));
+    if (!L) { cadPushUndo(); L = { id: name, name, color: '#495057', visible: true, locked: false }; c.layers.push(L); cadLog('Calque « ' + name + ' » créé.'); }
+    c.current = L.id;
+    cadLog('Calque courant : ' + L.name + '.');
+    cadRender();
+  }
+  function cadHelp() {
+    [
+      'Dessin : ligne (L), polyligne (PL), polygone (POL), rectangle (REC), cercle (C), point (PT), texte (T), cote (DIM).',
+      'Édition : déplacer (M), copier (CO), pivoter (RO), echelle (SC), miroir (MI), decaler (O), effacer (E), exploser, annuler (U), refaire.',
+      'Mesure : distance (DI), aire, id (coordonnées). Sélection : tout, fenetre (W).',
+      'Génie civil : lots [n], retrait [d], deblai (volumes), profil (en long), coupe (transversale).',
+      'Saisie : « E;N » absolu, « @dx;dy » relatif, « @dist<azimut » polaire, « 12.5 » distance vers le curseur.',
+      'Réglages : ortho, layer <nom>, ze (cadrer), dxf, png. Entrée : valider / répéter ; Échap : annuler.'
+    ].forEach(cadLog);
+  }
+
+  /* ---------- Outils ---------- */
+  function cadCreate(type, pts, extra) {
+    cadPushUndo();
+    const e = cadAddEntity(Object.assign({ type, pts: pts.map((p) => [p[0], p[1]]) }, extra || {}));
+    cadRender();
+    return e;
+  }
+  function cadSetVertex(e, idx, pt) {
+    if (e.type === 'circle') { if (idx === 0) e.pts[0] = pt.slice(); else e.r = Math.max(d2(e.pts[0], pt), 0.001); }
+    else if (e.type === 'dim') {
+      if (idx < 2) e.pts[idx] = pt.slice();
+      else { const [p1, p2] = e.pts, L = d2(p1, p2) || 1e-9; e.off = ((pt[0] - p1[0]) * -(p2[1] - p1[1]) + (pt[1] - p1[1]) * (p2[0] - p1[0])) / L; }
+    } else e.pts[idx] = pt.slice();
+  }
+  function cadGripAt(screen) {
+    if (!screen) return null;
+    const sel = cadSelected().filter((e) => cadEditable(e) && cadVisible(e));
+    if (!sel.length || sel.length > 5) return null;
+    const tol = cadTol();
+    let best = null, bd = Infinity;
+    sel.forEach((e) => cadVertices(e).forEach((p, idx) => { const s = cadScreen(p), d = Math.hypot(s.x - screen.x, s.y - screen.y); if (d <= tol && d < bd) { bd = d; best = { eid: e.id, idx }; } }));
+    return best;
+  }
+  function cadPickClick(t, ev) {
+    const c = state.cad;
+    if (!ev.screen) return;
+    const id = cadPickAt(ev.screen);
+    if (id == null) { if (!ev.shift) c.selection.clear(); }
+    else if (c.selection.has(id)) c.selection.delete(id);
+    else c.selection.add(id);
+    cadRender();
+  }
+  const cadSelEditable = () => cadSelected().filter((e) => cadEditable(e) && cadVisible(e));
+
+  const CAD_TOOLS = {
+    select: {
+      label: 'Sélection', hint: CAD_SELECT_PROMPT,
+      click(t, pt, ev) {
+        const c = state.cad;
+        if (t.data.grip) {
+          const g = t.data.grip, e = cadEntity(g.eid);
+          if (e) { cadPushUndo(); cadSetVertex(e, g.idx, pt); cadLog('Sommet déplacé.'); }
+          t.data.grip = null; cadPrompt(t, CAD_SELECT_PROMPT); cadRender(); return;
+        }
+        const g = cadGripAt(ev.screen);
+        if (g) { t.data.grip = g; cadPrompt(t, 'Cliquez la nouvelle position du sommet (Échap : annuler).'); return; }
+        if (!ev.screen) return;
+        const id = cadPickAt(ev.screen);
+        if (id == null) { if (!ev.shift) c.selection.clear(); }
+        else if (ev.shift) { if (c.selection.has(id)) c.selection.delete(id); else c.selection.add(id); }
+        else { c.selection.clear(); c.selection.add(id); }
+        cadRender();
+      }
+    },
+    window: {
+      label: 'Fenêtre', hint: 'Cliquez le premier coin : vers la droite = fenêtre (objets entièrement inclus), vers la gauche = capture (objets touchés).',
+      click(t, pt, ev) {
+        if (!ev.screen) return;
+        if (!t.data.s1) { t.data.s1 = ev.screen; t.pts = [pt]; cadPrompt(t, 'Cliquez le coin opposé.'); return; }
+        const n = cadWindowSelect(t.data.s1, ev.screen, ev.shift);
+        cadLog(n + ' objet(s) sélectionné(s).');
+        cadDone();
+      }
+    },
+    line: {
+      label: 'Ligne', hint: 'Cliquez le point de départ. Entrée ou clic droit pour terminer.',
+      click(t, pt) {
+        t.pts.push(pt);
+        if (t.pts.length === 2) { cadCreate('line', t.pts); t.pts = [pt]; }
+        cadPrompt(t, t.pts.length ? 'Point suivant (Entrée : terminer).' : 'Premier point.');
+      },
+      enter() { cadDone(); },
+      preview: (t, cur) => (t.pts.length ? { lines: [[t.pts[t.pts.length - 1], cur]] } : null)
+    },
+    pline: {
+      label: 'Polyligne', hint: 'Cliquez les sommets. Entrée : terminer, « c » : fermer en polygone.',
+      click(t, pt) { t.pts.push(pt); cadPrompt(t, `Sommet ${t.pts.length + 1} (Entrée : terminer).`); },
+      input(t, txt) { if (/^c(lore?|fermer)?$/i.test(txt) && t.pts.length >= 3) { cadCreate('poly', t.pts); cadDone(); return true; } return false; },
+      enter(t) { if (t.pts.length >= 2) cadCreate('pline', t.pts); else if (t.pts.length) notify('Une polyligne demande au moins 2 sommets.', 'warn'); cadDone(); },
+      preview: (t, cur) => (t.pts.length ? { lines: [t.pts.concat([cur])] } : null)
+    },
+    poly: {
+      label: 'Polygone', hint: 'Cliquez les sommets du contour. Entrée : fermer et terminer.',
+      click(t, pt) { t.pts.push(pt); cadPrompt(t, `Sommet ${t.pts.length + 1} (Entrée : fermer).`); },
+      enter(t) { if (t.pts.length >= 3) { const e = cadCreate('poly', t.pts); cadLog('Polygone créé : ' + fmtNum(Math.abs(ringArea(e.pts)), 2) + ' m².'); } else if (t.pts.length) notify('Un polygone demande au moins 3 sommets.', 'warn'); cadDone(); },
+      preview: (t, cur) => (t.pts.length ? (t.pts.length >= 2 ? { poly: t.pts.concat([cur]), lines: [t.pts.concat([cur])] } : { lines: [[t.pts[0], cur]] }) : null)
+    },
+    rect: {
+      label: 'Rectangle', hint: 'Cliquez le premier coin.',
+      click(t, pt) {
+        if (!t.pts.length) { t.pts = [pt]; cadPrompt(t, 'Coin opposé (ou @largeur;hauteur).'); return; }
+        const a = t.pts[0];
+        if (Math.abs(pt[0] - a[0]) < 1e-6 || Math.abs(pt[1] - a[1]) < 1e-6) { notify('Rectangle dégénéré : les deux coins sont alignés.', 'warn'); return; }
+        const e = cadCreate('poly', [a, [pt[0], a[1]], pt, [a[0], pt[1]]]);
+        cadLog('Rectangle : ' + fmtNum(Math.abs(ringArea(e.pts)), 2) + ' m².');
+        cadDone();
+      },
+      preview: (t, cur) => (t.pts.length ? { poly: [t.pts[0], [cur[0], t.pts[0][1]], cur, [t.pts[0][0], cur[1]]] } : null)
+    },
+    circle: {
+      label: 'Cercle', hint: 'Cliquez le centre.',
+      click(t, pt) {
+        if (!t.pts.length) { t.pts = [pt]; cadPrompt(t, 'Rayon : cliquez un point ou saisissez la valeur en mètres.', 'Rayon'); return; }
+        const r = d2(t.pts[0], pt);
+        if (r < 0.001) { notify('Rayon nul.', 'warn'); return; }
+        cadCreate('circle', [t.pts[0]], { r }); cadLog('Cercle : rayon ' + fmtNum(r, 3) + ' m.'); cadDone();
+      },
+      input(t, txt) {
+        const r = cadNum(txt);
+        if (!(r > 0) || !t.pts.length) return false;
+        cadCreate('circle', [t.pts[0]], { r }); cadLog('Cercle : rayon ' + fmtNum(r, 3) + ' m.'); cadDone(); return true;
+      },
+      preview: (t, cur) => (t.pts.length ? { poly: cadCircleRing({ pts: [t.pts[0]], r: d2(t.pts[0], cur) }, 48) } : null)
+    },
+    point: {
+      label: 'Point', hint: 'Cliquez pour poser un point (Entrée : terminer).',
+      click(t, pt) { const e = cadCreate('point', [pt]); cadLog(`Point : E ${fmtNum(e.pts[0][0], 3)} · N ${fmtNum(e.pts[0][1], 3)}`); },
+      enter() { cadDone(); }
+    },
+    text: {
+      label: 'Texte', hint: 'Cliquez l\'emplacement du texte.',
+      click(t, pt) { if (t.stage === 'text') return; t.pts = [pt]; t.stage = 'text'; cadPrompt(t, 'Saisissez le texte dans la ligne de commande.', 'Texte'); },
+      input(t, txt) { if (t.stage !== 'text') return false; cadCreate('text', t.pts, { text: txt.slice(0, 120) }); cadSetTool('text'); return true; },
+      enter() { cadDone(); }
+    },
+    dim: {
+      label: 'Cote', hint: 'Cliquez le premier point à coter.',
+      click(t, pt) {
+        t.pts.push(pt);
+        if (t.pts.length === 1) cadPrompt(t, 'Second point.');
+        else if (t.pts.length === 2) cadPrompt(t, 'Position de la ligne de cote (clic, ou valeur du décalage en m).', 'Décalage');
+        else { const [p1, p2] = t.pts, L = d2(p1, p2) || 1e-9, off = ((pt[0] - p1[0]) * -(p2[1] - p1[1]) + (pt[1] - p1[1]) * (p2[0] - p1[0])) / L; cadCreate('dim', [p1, p2], { off }); cadLog('Cote : ' + fmtNum(L, 3) + ' m.'); cadSetTool('dim'); }
+      },
+      input(t, txt) {
+        if (t.pts.length !== 2) return false;
+        const off = cadNum(txt);
+        if (off == null) return false;
+        cadCreate('dim', t.pts, { off }); cadSetTool('dim'); return true;
+      },
+      preview: (t, cur) => {
+        if (t.pts.length === 1) return { lines: [[t.pts[0], cur]] };
+        if (t.pts.length === 2) { const [p1, p2] = t.pts, L = d2(p1, p2) || 1e-9, off = ((cur[0] - p1[0]) * -(p2[1] - p1[1]) + (cur[1] - p1[1]) * (p2[0] - p1[0])) / L; return { lines: cadDimGeom({ pts: t.pts, off }).lines }; }
+        return null;
+      }
+    },
+    erase: cadTransformTool({
+      label: 'Effacer', base: false,
+      run(t, sel) { cadPushUndo(); const ids = new Set(sel.map((e) => e.id)); state.cad.entities = state.cad.entities.filter((e) => !ids.has(e.id)); state.cad.selection.clear(); cadRender(); cadLog(ids.size + ' objet(s) effacé(s).'); cadDone(); }
+    }),
+    move: cadTransformTool({
+      label: 'Déplacer', basePrompt: 'Point de base.', targetPrompt: 'Point de destination (ou @dx;dy).',
+      target(t, pt, sel) { cadPushUndo(); cadTransform(sel, cadMoveT(pt[0] - t.base[0], pt[1] - t.base[1]), false); cadRender(); cadLog(`Déplacé de ΔE ${fmtNum(pt[0] - t.base[0], 3)} · ΔN ${fmtNum(pt[1] - t.base[1], 3)} m.`); cadDone(); },
+      preview: (t, cur) => ({ lines: [[t.base, cur]] })
+    }),
+    copy: cadTransformTool({
+      label: 'Copier', basePrompt: 'Point de base.', targetPrompt: 'Point de destination (Entrée : terminer).',
+      target(t, pt, sel) { cadPushUndo(); cadTransform(sel, cadMoveT(pt[0] - t.base[0], pt[1] - t.base[1]), true); cadRender(); cadLog('Copie créée.'); },
+      repeat: true, preview: (t, cur) => ({ lines: [[t.base, cur]] })
+    }),
+    rotate: cadTransformTool({
+      label: 'Pivoter', basePrompt: 'Point de base (centre de rotation).', targetPrompt: 'Angle : cliquez la direction ou saisissez les degrés (anti-horaire).', awaitTarget: 'Angle',
+      target(t, pt, sel) { cadRotate(t, Math.atan2(pt[1] - t.base[1], pt[0] - t.base[0]) * 180 / Math.PI, sel); },
+      input(t, txt, sel) { const a = cadNum(txt); if (a == null) return false; cadRotate(t, a, sel); return true; },
+      preview: (t, cur) => ({ lines: [[t.base, cur]] })
+    }),
+    scale: cadTransformTool({
+      label: 'Échelle', basePrompt: 'Point de base.', targetPrompt: 'Facteur d\'échelle (valeur) ou cliquez la longueur de référence puis la nouvelle longueur.', awaitTarget: 'Facteur',
+      target(t, pt, sel) {
+        if (!t.data.ref) { t.data.ref = pt; cadPrompt(t, 'Cliquez la nouvelle longueur.', 'Facteur'); return; }
+        cadScale(t, d2(t.base, pt) / (d2(t.base, t.data.ref) || 1e-9), sel);
+      },
+      input(t, txt, sel) { const k = cadNum(txt); if (!(k > 0)) return false; cadScale(t, k, sel); return true; },
+      preview: (t, cur) => ({ lines: [[t.base, cur]] })
+    }),
+    mirror: cadTransformTool({
+      label: 'Miroir', basePrompt: 'Premier point de l\'axe de symétrie.', targetPrompt: 'Second point de l\'axe (les originaux sont conservés).',
+      target(t, pt, sel) {
+        if (d2(t.base, pt) < 1e-6) { notify('Axe de symétrie dégénéré.', 'warn'); return; }
+        cadPushUndo(); cadTransform(sel, cadMirrorT(t.base, pt), true); cadRender(); cadLog('Symétrique créé (originaux conservés).'); cadDone();
+      },
+      preview: (t, cur) => ({ lines: [[t.base, cur]] })
+    }),
+    explode: cadTransformTool({
+      label: 'Exploser', base: false,
+      run(t, sel) {
+        const out = sel.filter((e) => ['pline', 'poly', 'dim'].includes(e.type));
+        if (!out.length) { notify('Rien à exploser : sélectionnez des polylignes, polygones ou cotes.', 'warn'); cadDone(); return; }
+        cadPushUndo();
+        const c = state.cad;
+        out.forEach((e) => { cadSegments(e).forEach((s) => cadAddEntity({ type: 'line', layer: e.layer, pts: [s[0].slice(), s[1].slice()] })); });
+        const ids = new Set(out.map((e) => e.id));
+        c.entities = c.entities.filter((e) => !ids.has(e.id)); c.selection.clear();
+        cadRender(); cadLog(out.length + ' objet(s) explosé(s) en segments.'); cadDone();
+      }
+    }),
+    offset: {
+      label: 'Décaler', hint: 'Distance de décalage en mètres.',
+      start(t) { const last = state.cad.lastOffset; t.stage = 'dist'; cadPrompt(t, 'Distance de décalage (m)' + (last ? ' — Entrée : ' + fmtNum(last, 2) : '') + '.', 'Distance'); if (t.preset > 0) { t.data.dist = t.preset; state.cad.lastOffset = t.preset; t.stage = 'pick'; cadPrompt(t, 'Cliquez l\'objet à décaler.'); } },
+      input(t, txt) { if (t.stage !== 'dist') return false; const d = cadNum(txt); if (!(d > 0)) return false; t.data.dist = d; state.cad.lastOffset = d; t.stage = 'pick'; cadPrompt(t, 'Cliquez l\'objet à décaler.'); return true; },
+      enter(t) { if (t.stage === 'dist' && state.cad.lastOffset) { t.data.dist = state.cad.lastOffset; t.stage = 'pick'; cadPrompt(t, 'Cliquez l\'objet à décaler.'); } else cadDone(); },
+      click(t, pt, ev) {
+        if (t.stage === 'dist') return;
+        if (t.stage === 'pick') {
+          const id = ev.screen ? cadPickAt(ev.screen) : null;
+          if (id == null) { notify('Aucun objet à cet endroit.', 'info', 2500); return; }
+          t.data.eid = id; t.stage = 'side'; state.cad.selection = new Set([id]); cadRender(); cadPrompt(t, 'Cliquez du côté où décaler.'); return;
+        }
+        const e = cadEntity(t.data.eid);
+        const res = e ? cadOffsetEntity(e, t.data.dist, pt) : 'Objet introuvable.';
+        if (typeof res === 'string') notify(res, 'warn');
+        else { cadPushUndo(); cadAddEntity(res); cadRender(); cadLog('Décalage de ' + fmtNum(t.data.dist, 3) + ' m.'); }
+        t.stage = 'pick'; cadPrompt(t, 'Cliquez l\'objet suivant (Entrée : terminer).');
+      }
+    },
+    dist: {
+      label: 'Distance', hint: 'Cliquez le premier point.',
+      click(t, pt) {
+        t.pts.push(pt);
+        if (t.pts.length === 1) { cadPrompt(t, 'Second point.'); return; }
+        const [a, b] = t.pts, la = cadToLL(a), lb = cadToLL(b);
+        const geo = turf.distance(la, lb, { units: 'meters' });
+        const az = azimuthDeg(a, b);
+        cadShowResult('Distance', [['Distance plane (UTM)', fmtDistance(d2(a, b))], ['Distance géodésique (WGS84)', fmtDistance(geo)], ['ΔE / ΔN', `${fmtNum(b[0] - a[0], 3)} / ${fmtNum(b[1] - a[1], 3)} m`], ['Azimut (depuis le Nord)', fmtAng(az)]]);
+        cadLog(`Distance ${fmtNum(d2(a, b), 3)} m · azimut ${fmtNum(az, 4)}°`);
+        t.pts = []; cadPrompt(t, 'Premier point de la mesure suivante (Entrée : terminer).');
+      },
+      enter() { cadDone(); },
+      preview: (t, cur) => (t.pts.length ? { lines: [[t.pts[0], cur]] } : null)
+    },
+    id: {
+      label: 'Coordonnées', hint: 'Cliquez un point pour lire ses coordonnées.',
+      click(t, pt) {
+        const ll = cadToLL(pt);
+        cadShowResult('Coordonnées', [['Est (E)', fmtNum(pt[0], 3) + ' m'], ['Nord (N)', fmtNum(pt[1], 3) + ' m'], ['Longitude', fmtCoord(ll[0])], ['Latitude', fmtCoord(ll[1])], ['Repère', cadCrsLabel()]]);
+        cadLog(`E ${fmtNum(pt[0], 3)} · N ${fmtNum(pt[1], 3)}`);
+      },
+      enter() { cadDone(); }
+    },
+    area: {
+      label: 'Aire', hint: 'Cliquez un polygone/cercle existant, ou les sommets d\'un contour (Entrée : calculer).',
+      click(t, pt, ev) {
+        if (!t.pts.length && ev.screen) {
+          const id = cadPickAt(ev.screen), e = id != null ? cadEntity(id) : null;
+          if (e && (e.type === 'poly' || e.type === 'circle')) { cadReportArea(e.pts, e); cadPrompt(t, 'Autre objet, ou sommets d\'un contour (Entrée : terminer).'); return; }
+        }
+        t.pts.push(pt); cadPrompt(t, `${t.pts.length} sommet(s) (Entrée : calculer l'aire).`);
+      },
+      enter(t) { if (t.pts.length >= 3) { cadReportArea(t.pts); t.pts = []; cadPrompt(t, 'Autre contour (Entrée : terminer).'); } else cadDone(); },
+      preview: (t, cur) => (t.pts.length ? { poly: t.pts.concat([cur]), lines: [t.pts.concat([cur])] } : null)
+    }
+  };
+
+  function cadReportArea(pts, e) {
+    const m = e ? cadMetrics(e) : { perimeter: pathLen(pts, true), area: Math.abs(ringArea(pts)) };
+    cadShowResult('Aire', [['Surface', `${fmtNum(m.area, 2)} m²`], ['Surface', `${fmtNum(m.area / 10000, 4)} ha`], ['Périmètre', fmtDistance(m.perimeter)], ['Sommets', e && e.type === 'circle' ? 'cercle' : String(pts.length)]]);
+    cadLog('Aire ' + fmtNum(m.area, 2) + ' m².');
+  }
+  function cadRotate(t, deg, sel) { cadPushUndo(); cadTransform(sel, cadRotateT(t.base, deg), false); cadRender(); cadLog('Rotation de ' + fmtNum(deg, 3) + '°.'); cadDone(); }
+  function cadScale(t, k, sel) { cadPushUndo(); cadTransform(sel, cadScaleT(t.base, k), false); cadRender(); cadLog('Échelle ×' + fmtNum(k, 4) + '.'); cadDone(); }
+
+  /** Fabrique les outils de modification : sélection préalable, point de base, puis action. */
+  function cadTransformTool(spec) {
+    const goBase = (t) => { t.stage = 'base'; cadPrompt(t, spec.basePrompt || ''); };
+    const afterSelection = (t) => {
+      const sel = cadSelEditable();
+      if (!sel.length) return false;
+      if (spec.base === false) { spec.run(t, sel); return true; }
+      goBase(t); return true;
+    };
+    return {
+      label: spec.label, hint: 'Sélectionnez les objets (clic), puis Entrée.',
+      start(t) { if (!afterSelection(t)) { t.stage = 'pick'; cadPrompt(t, 'Sélectionnez les objets (clic ; Maj pour ajouter), puis Entrée.'); } },
+      click(t, pt, ev) {
+        if (t.stage === 'pick') { cadPickClick(t, ev); return; }
+        const sel = cadSelEditable();
+        if (!sel.length) { cadDone(); return; }
+        if (t.stage === 'base') { t.base = pt; t.stage = 'target'; cadPrompt(t, spec.targetPrompt, spec.awaitTarget || null); return; }
+        if (t.stage === 'target') { spec.target(t, pt, sel); }
+      },
+      input(t, txt) {
+        if (t.stage !== 'target' || !spec.input) return false;
+        const sel = cadSelEditable();
+        return sel.length ? !!spec.input(t, txt, sel) : false;
+      },
+      acceptsPointWhileAwait: true,
+      enter(t) {
+        if (t.stage === 'pick') { if (!afterSelection(t)) notify('Aucun objet sélectionné.', 'warn'); return; }
+        cadDone();
+      },
+      preview: spec.preview ? (t, cur) => (t.stage === 'target' && t.base ? spec.preview(t, cur) : null) : null
+    };
+  }
+
+  /* ---------- Génie civil : lots, reculs, terrassement, profils ---------- */
+  /** Découpe un anneau par un demi-plan (Sutherland-Hodgman) : garde les points où n·p >= off. */
+  function cadClip(ring, n, off) {
+    const out = [];
+    for (let i = 0; i < ring.length; i++) {
+      const a = ring[i], b = ring[(i + 1) % ring.length];
+      const sa = n[0] * a[0] + n[1] * a[1] - off, sb = n[0] * b[0] + n[1] * b[1] - off;
+      if (sa >= 0) out.push(a);
+      if ((sa >= 0) !== (sb >= 0)) { const k = sa / (sa - sb); out.push([a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]); }
+    }
+    return out;
+  }
+  const cadCcw = (ring) => (ringArea(ring) >= 0 ? ring.slice() : ring.slice().reverse());
+  function cadIsConvex(ring) {
+    let sign = 0;
+    for (let i = 0; i < ring.length; i++) {
+      const a = ring[i], b = ring[(i + 1) % ring.length], c = ring[(i + 2) % ring.length];
+      const cr = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
+      if (Math.abs(cr) < 1e-9) continue;
+      if (sign === 0) sign = Math.sign(cr); else if (Math.sign(cr) !== sign) return false;
+    }
+    return true;
+  }
+  /** Divise un polygone en n lots de surfaces égales par des coupes parallèles à `cutDir` (vecteur unitaire). */
+  function cadSplitEqualArea(ring, n, cutDir) {
+    const nrm = [-cutDir[1], cutDir[0]];
+    const proj = ring.map((p) => nrm[0] * p[0] + nrm[1] * p[1]);
+    const lo = Math.min(...proj), hi = Math.max(...proj), total = Math.abs(ringArea(ring));
+    const areaBelow = (t) => Math.abs(ringArea(cadClip(ring, [-nrm[0], -nrm[1]], -t)));
+    const cuts = [lo];
+    for (let k = 1; k < n; k++) {
+      const target = (total * k) / n;
+      let a = lo, b = hi;
+      for (let it = 0; it < 60; it++) { const m = (a + b) / 2; if (areaBelow(m) < target) a = m; else b = m; }
+      cuts.push((a + b) / 2);
+    }
+    cuts.push(hi);
+    const lots = [];
+    for (let k = 0; k < n; k++) {
+      let piece = cadClip(ring, nrm, cuts[k]);
+      piece = cadClip(piece, [-nrm[0], -nrm[1]], -cuts[k + 1]);
+      if (piece.length >= 3) lots.push(piece);
+    }
+    return lots;
+  }
+  /** Recul intérieur d'un polygone convexe, distance propre à chaque côté (d[i] pour le côté i → i+1). */
+  function cadInsetConvex(ring, d) {
+    const n = ring.length, ccw = ringArea(ring) >= 0;
+    const r0 = ccw ? ring.slice() : ring.slice().reverse();
+    let r = r0.slice();
+    for (let j = 0; j < n && r.length >= 3; j++) {
+      const a = r0[j], b = r0[(j + 1) % n], L = d2(a, b);
+      if (L < 1e-9) continue;
+      const dj = d[ccw ? j : (((n - 2 - j) % n) + n) % n] || 0;       // côté d'origine correspondant (anneau retourné si horaire)
+      const nrm = [-(b[1] - a[1]) / L, (b[0] - a[0]) / L];
+      r = cadClip(r, nrm, nrm[0] * a[0] + nrm[1] * a[1] + dj);
+    }
+    return r;
+  }
+
+  function cadPickPolygon(t, pt, ev) {
+    const id = ev && ev.screen ? cadPickAt(ev.screen) : null;
+    const e = id != null ? cadEntity(id) : null;
+    if (e && e.type === 'poly') return e;
+    // à défaut : polygone contenant le point cliqué
+    const inside = state.cad.entities.filter((x) => x.type === 'poly' && cadVisible(x) && pointInRing(pt, x.pts));
+    return inside.length ? inside.sort((a, b) => Math.abs(ringArea(a.pts)) - Math.abs(ringArea(b.pts)))[0] : null;
+  }
+  const cadLabelAt = (pts, text, layer) => cadAddEntity({ type: 'text', layer, pts: [polyCentroid(pts)], text });
+
+  function cadLotsRun(t, n, dirPts) {
+    const e = cadEntity(t.data.eid);
+    if (!e) return;
+    const ring = cadCcw(e.pts), total = Math.abs(ringArea(ring));
+    let dir;
+    if (dirPts) dir = [dirPts[1][0] - dirPts[0][0], dirPts[1][1] - dirPts[0][1]];
+    else { let best = 0; dir = [1, 0]; ring.forEach((p, i) => { const q = ring[(i + 1) % ring.length], L = d2(p, q); if (L > best) { best = L; dir = [q[0] - p[0], q[1] - p[1]]; } }); }
+    const L = Math.hypot(dir[0], dir[1]);
+    if (L < 1e-9) { notify('Direction de la voie indéterminée.', 'warn'); return; }
+    // les limites séparatives sont perpendiculaires à la voie : chaque lot a une façade
+    const cutDir = [-dir[1] / L, dir[0] / L];
+    const lots = cadSplitEqualArea(ring, n, cutDir);
+    if (lots.length < n) { notify('Le découpage a échoué (forme trop complexe).', 'error'); return; }
+    cadPushUndo();
+    const rows = [];
+    let sum = 0;
+    lots.forEach((p, i) => {
+      const a = Math.abs(ringArea(p)); sum += a;
+      cadAddEntity({ type: 'poly', layer: 'Lots', pts: p });
+      cadLabelAt(p, `Lot ${i + 1} · ${fmtNum(a, 1)} m²`, 'Lots');
+      rows.push([`Lot ${i + 1}`, `${fmtNum(a, 2)} m² · périmètre ${fmtNum(pathLen(p, true), 2)} m`]);
+    });
+    rows.push(['Somme des lots', `${fmtNum(sum, 2)} m² (parcelle ${fmtNum(total, 2)} m², écart ${fmtNum(sum - total, 3)} m²)`]);
+    cadShowResult(`Lotissement en ${n} lots de surfaces égales`, rows);
+    if (!cadIsConvex(ring)) notify('Parcelle non convexe : vérifiez visuellement chaque lot (les surfaces restent exactes).', 'warn', 7000);
+    cadRender();
+    cadLog(`${n} lots créés (calque Lots).`);
+    cadDone();
+  }
+
+  CAD_TOOLS.lots = {
+    label: 'Lots', hint: 'Cliquez le polygone à lotir (ou dans son intérieur).',
+    start(t) {
+      if (t.preset >= 2) t.data.n = Math.floor(t.preset);
+      const s = cadSelected().find((e) => e.type === 'poly');
+      if (s) { t.data.eid = s.id; if (t.data.n) cadLotsAskDir(t); else cadLotsAskCount(t); }
+    },
+    click(t, pt, ev) {
+      if (t.stage === 'count') return;
+      if (t.stage === 'dir') {
+        t.pts.push(pt);
+        if (t.pts.length === 1) { cadPrompt(t, 'Second point de l\'alignement de la voie.'); return; }
+        cadLotsRun(t, t.data.n, t.pts); return;
+      }
+      const e = cadPickPolygon(t, pt, ev);
+      if (!e) { notify('Cliquez un polygone (dessinez-le d\'abord avec « Polygone » ou « Parcelle → plan »).', 'warn'); return; }
+      t.data.eid = e.id; state.cad.selection = new Set([e.id]); cadRender();
+      if (t.data.n) cadLotsAskDir(t); else cadLotsAskCount(t);
+    },
+    input(t, txt) {
+      if (t.stage !== 'count') return false;
+      const e = cadEntity(t.data.eid);
+      let n = null;
+      const m = /^(\d+(?:[.,]\d+)?)\s*m2?$/i.exec(txt.trim());
+      if (m && e) n = Math.max(2, Math.round(Math.abs(ringArea(e.pts)) / cadNum(m[1])));
+      else if (/^\d+$/.test(txt.trim())) n = parseInt(txt, 10);
+      if (!(n >= 2 && n <= 60)) { notify('Saisissez un nombre de lots entre 2 et 60 (ou une surface cible, ex. « 300 m2 »).', 'warn'); return true; }
+      t.data.n = n; cadLotsAskDir(t); return true;
+    },
+    enter(t) { if (t.stage === 'dir') cadLotsRun(t, t.data.n, null); else cadDone(); }
+  };
+  function cadLotsAskCount(t) { t.stage = 'count'; cadPrompt(t, 'Nombre de lots (ou surface cible, ex. « 300 m2 »).', 'Lots'); }
+  function cadLotsAskDir(t) { t.stage = 'dir'; t.pts = []; cadPrompt(t, 'Alignement de la voie : cliquez 2 points, ou Entrée pour utiliser le plus long côté.'); }
+
+  CAD_TOOLS.setback = {
+    label: 'Reculs', hint: 'Cliquez la parcelle (polygone).',
+    start(t) { const s = cadSelected().find((e) => e.type === 'poly'); if (s) { t.data.eid = s.id; if (t.preset > 0) { t.data.d = [t.preset]; cadSetbackRun(t, -1); } else cadSetbackAsk(t); } },
+    click(t, pt, ev) {
+      if (t.stage === 'front') {
+        const e = cadEntity(t.data.eid);
+        const sc = state.map.project(cadToLL(pt));
+        let bi = 0, bd = Infinity;
+        e.pts.forEach((p, i) => { const q = e.pts[(i + 1) % e.pts.length], dd = cadSegDistPx(sc, cadScreen(p), cadScreen(q)); if (dd < bd) { bd = dd; bi = i; } });
+        cadSetbackRun(t, bi); return;
+      }
+      if (t.stage === 'dist') return;
+      const e = cadPickPolygon(t, pt, ev);
+      if (!e) { notify('Cliquez un polygone.', 'warn'); return; }
+      t.data.eid = e.id; state.cad.selection = new Set([e.id]); cadRender();
+      if (t.preset > 0) { t.data.d = [t.preset]; cadSetbackRun(t, -1); return; }
+      cadSetbackAsk(t);
+    },
+    input(t, txt) {
+      if (t.stage !== 'dist') return false;
+      const t3 = txt.trim();
+      const d = t3.includes(';') ? t3.split(';').map(cadNum) : (/^\d+(\.\d+)?(\s*,\s*\d+(\.\d+)?){2}$/.test(t3) ? t3.split(',').map(cadNum) : [cadNum(t3)]);
+      if (d.some((v) => v == null)) return false;
+      if (!(d.length === 1 || d.length === 3) || d.some((v) => !(v >= 0))) { notify('Saisissez un recul uniforme (ex. 5) ou « avant;côtés;fond » (ex. 5;3;4).', 'warn'); return true; }
+      t.data.d = d;
+      if (d.length === 1) { cadSetbackRun(t, -1); return true; }
+      t.stage = 'front'; cadPrompt(t, 'Cliquez le côté donnant sur la voie (limite avant).'); return true;
+    }
+  };
+  function cadSetbackAsk(t) { t.stage = 'dist'; cadPrompt(t, 'Recul en mètres : uniforme (ex. 5) ou « avant;côtés;fond » (ex. 5;3;4).', 'Recul'); }
+  function cadSetbackRun(t, frontIdx) {
+    const e = cadEntity(t.data.eid);
+    if (!e) return;
+    const n = e.pts.length, d = t.data.d;
+    let ring = null;
+    if (d.length === 1 || d.every((v) => v === d[0])) {
+      if (cadIsConvex(e.pts)) ring = cadInsetConvex(e.pts, new Array(n).fill(d[0]));
+      else { const r = cadOffsetEntity(e, d[0], polyCentroid(e.pts)); ring = typeof r === 'string' ? null : (pointInRing(polyCentroid(e.pts), e.pts) ? r.pts : null); }
+    } else {
+      if (!cadIsConvex(e.pts)) { notify('Reculs différenciés : disponibles pour les polygones convexes seulement. Utilisez un recul uniforme.', 'warn', 7000); cadDone(); return; }
+      const fi = frontIdx, fa = e.pts[fi], fb = e.pts[(fi + 1) % n], fl = d2(fa, fb) || 1e-9;
+      const dist = (p) => Math.abs(((p[0] - fa[0]) * (fb[1] - fa[1]) - (p[1] - fa[1]) * (fb[0] - fa[0])) / fl);
+      let rear = -1, rd = -1;
+      e.pts.forEach((p, i) => { if (i === fi) return; const q = e.pts[(i + 1) % n], md = dist([(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]); if (md > rd) { rd = md; rear = i; } });
+      const per = e.pts.map((_, i) => (i === fi ? d[0] : i === rear ? d[2] : d[1]));
+      ring = cadInsetConvex(e.pts, per);
+    }
+    const A = Math.abs(ringArea(e.pts));
+    if (!ring || ring.length < 3 || Math.abs(ringArea(ring)) < 0.01) {
+      cadShowResult('Reculs', [['Résultat', 'Les reculs consomment toute la parcelle : aucune surface constructible.']]);
+      cadLog('Reculs : plus aucune surface constructible.');
+      cadDone(); return;
+    }
+    cadPushUndo();
+    const nb = cadAddEntity({ type: 'poly', layer: 'Reculs', pts: ring });
+    cadLabelAt(ring, `Constructible · ${fmtNum(Math.abs(ringArea(ring)), 1)} m²`, 'Reculs');
+    const B = Math.abs(ringArea(nb.pts));
+    cadShowResult('Reculs et surface constructible', [
+      ['Reculs', d.length === 1 ? `${fmtNum(d[0], 2)} m (uniforme)` : `avant ${fmtNum(d[0], 2)} m · côtés ${fmtNum(d[1], 2)} m · fond ${fmtNum(d[2], 2)} m`],
+      ['Surface de la parcelle', `${fmtNum(A, 2)} m²`], ['Surface constructible', `${fmtNum(B, 2)} m²`], ['Part constructible', `${fmtNum((B / A) * 100, 1)} %`]
+    ]);
+    cadRender();
+    cadLog('Zone constructible créée (calque Reculs).');
+    cadDone();
+  }
+
+  /* ----- Altimétrie : lecture du MNT le long d'un tracé ou sur une grille ----- */
+  async function cadSampleXY(xyPts, spacing) {
+    if (!(await ensureDemAvailable())) throw userError('Aucune source d\'altitude disponible : les profils et volumes ne peuvent pas être calculés (aucune altitude n\'est inventée).');
+    const ll = xyPts.map((p) => { const g = cadToLL(p); return { lng: g[0], lat: g[1] }; });
+    const lat = ll[0].lat, zMax = CONFIG.dem.sampleMaxZoom;
+    const z = clamp(Math.floor(Math.log2((156543.03392 * Math.cos((lat * Math.PI) / 180)) / Math.max(spacing, 0.5))), 8, zMax);
+    const elevs = await sampleElevations(ll, z);
+    if (elevs.some((v) => !isNum(v))) throw userError('Altitudes illisibles dans le MNT.');
+    return { elevs, ll, z, res: demResolution(lat, z) };
+  }
+  /** Points régulièrement espacés le long d'une polyligne, en conservant chaque sommet. */
+  function cadAlongPath(pts, maxN) {
+    const L = pathLen(pts, false), step = Math.max(L / (maxN - 1), 0.5);
+    const out = [{ p: pts[0], d: 0, vertex: 0 }];
+    let acc = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i], sl = d2(a, b), k = Math.max(1, Math.round(sl / step));
+      for (let j = 1; j <= k; j++) { const f = j / k; out.push({ p: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], d: acc + sl * f, vertex: j === k ? i : null }); }
+      acc += sl;
+    }
+    return out;
+  }
+  async function cadComputeProfile(pts, title) {
+    const L = pathLen(pts, false);
+    if (L < 1) throw userError('Tracé trop court (moins de 1 m).');
+    const path = cadAlongPath(pts, CONFIG.profile.maxSamples);
+    const spacing = L / (path.length - 1);
+    const r = await cadSampleXY(path.map((q) => q.p), spacing);
+    const samples = path.map((q, i) => ({ d: q.d, elev: r.elevs[i], lng: r.ll[i].lng, lat: r.ll[i].lat, vertex: q.vertex, E: q.p[0], N: q.p[1] }));
+    const stats = computeProfileStats(samples, L);
+    const verts = samples.filter((s) => s.vertex != null);
+    const segs = [];
+    for (let i = 1; i < verts.length; i++) {
+      const dl = verts[i].d - verts[i - 1].d;
+      segs.push({ from: i, to: i + 1, length: dl, dz: verts[i].elev - verts[i - 1].elev, slope: dl > 0 ? ((verts[i].elev - verts[i - 1].elev) / dl) * 100 : 0 });
+    }
+    return { title, length: L, samples, stats, segs, zoom: r.z, resolutionM: r.res };
+  }
+  function cadShowProfile(res) {
+    const st = res.stats;
+    cadShowResult(res.title, [
+      ['Longueur (plan)', fmtDistance(res.length)], ['Altitude de départ', fmtNum(st.startElev, 1) + ' m (estimée)'], ['Altitude d\'arrivée', fmtNum(st.endElev, 1) + ' m (estimée)'],
+      ['Minimum / maximum', `${fmtNum(st.minElev, 1)} / ${fmtNum(st.maxElev, 1)} m`], ['Dénivelé cumulé', `+${fmtNum(st.gain, 1)} m / −${fmtNum(st.loss, 1)} m`],
+      ['Pente moyenne', `${fmtNum(st.netSlopePct, 2)} % (${fmtNum(st.slopeDeg, 2)}°)`], ['Résolution du MNT', `≈ ${fmtNum(res.resolutionM, 0)} m (altitudes estimées, non mesurées)`]
+    ], { chart: res });
+    const tbl = el('table', { class: 'cad-table' }, el('thead', null, el('tr', null, ...['Tronçon', 'Long. (m)', 'Δ alt. (m)', 'Pente'].map((h) => el('th', { text: h, scope: 'col' })))),
+      el('tbody', null, ...res.segs.slice(0, 40).map((s) => el('tr', null, el('td', { text: `${s.from}→${s.to}` }), el('td', { text: fmtNum(s.length, 1) }), el('td', { text: fmtNum(s.dz, 1) }), el('td', { text: fmtNum(s.slope, 1) + ' %' })))));
+    if (res.segs.length > 1) $('cad-results-body').append(tbl);
+    state.cad.lp = res;
+  }
+  function cadExportProfileCsv() {
+    const r = state.cad.lp;
+    if (!r) { notify('Calculez d\'abord un profil.', 'warn'); return; }
+    const lines = ['station_m,E,N,altitude_estimee_m,pente_pct'];
+    r.samples.forEach((s, i) => lines.push([s.d.toFixed(2), s.E.toFixed(3), s.N.toFixed(3), s.elev.toFixed(2), i ? (((s.elev - r.samples[i - 1].elev) / (s.d - r.samples[i - 1].d || 1)) * 100).toFixed(2) : ''].join(',')));
+    downloadFile('topogis-profil.csv', '﻿' + lines.join('\r\n') + '\r\n', 'text/csv;charset=utf-8');
+    notify('Profil exporté : topogis-profil.csv (altitudes estimées par le MNT).', 'ok');
+  }
+  CAD_TOOLS.profile = {
+    label: 'Profil en long', hint: 'Cliquez une polyligne ou une ligne : le profil en long est calculé sur son tracé.',
+    start(t) { const s = cadSelected().find((e) => e.type === 'pline' || e.type === 'line'); if (s) cadProfileFor(t, s); },
+    click(t, pt, ev) {
+      const id = ev.screen ? cadPickAt(ev.screen) : null, e = id != null ? cadEntity(id) : null;
+      if (!e || !(e.type === 'pline' || e.type === 'line')) { notify('Cliquez une ligne ou une polyligne.', 'warn'); return; }
+      cadProfileFor(t, e);
+    }
+  };
+  function cadProfileFor(t, e) {
+    state.cad.selection = new Set([e.id]); cadRender();
+    cadRunAsync('cad-status', 'Lecture des altitudes du MNT…', async () => { cadShowProfile(await cadComputeProfile(e.pts, 'Profil en long')); });
+    cadDone();
+  }
+  CAD_TOOLS.section = {
+    label: 'Coupe', hint: 'Cliquez les deux extrémités de la coupe transversale.',
+    click(t, pt) {
+      t.pts.push(pt);
+      if (t.pts.length === 1) { cadPrompt(t, 'Second point de la coupe.'); return; }
+      const pts = t.pts.slice();
+      cadPushUndo();
+      cadAddEntity({ type: 'line', layer: 'Axes', pts });
+      cadAddEntity({ type: 'text', layer: 'Textes', pts: [pts[0]], text: 'A' });
+      cadAddEntity({ type: 'text', layer: 'Textes', pts: [pts[1]], text: 'B' });
+      cadRender();
+      cadRunAsync('cad-status', 'Lecture des altitudes du MNT…', async () => { cadShowProfile(await cadComputeProfile(pts, 'Coupe A-B')); });
+      cadDone();
+    },
+    preview: (t, cur) => (t.pts.length ? { lines: [[t.pts[0], cur]] } : null)
+  };
+
+  /** Exécute une opération asynchrone avec message d'attente et gestion d'erreur homogène. */
+  async function cadRunAsync(statusId, waitMsg, fn) {
+    setStatus(statusId, waitMsg, 'loading');
+    try { await fn(); setStatus(statusId, '', null); }
+    catch (err) {
+      const m = err.userError ? err.message : 'Calcul impossible : ' + describeNetworkFailure(err) + '. Aucune altitude n\'est inventée.';
+      setStatus(statusId, m, 'error');
+      if (!err.userError) notify(m, 'error', 9000);
+    }
+  }
+
+  /* ----- Déblai / remblai ----- */
+  CAD_TOOLS.cutfill = {
+    label: 'Déblai/remblai', hint: 'Cliquez le polygone de la plateforme (ou son intérieur).',
+    start(t) { const s = cadSelected().find((e) => e.type === 'poly'); if (s) { t.data.eid = s.id; cadCutAsk(t); } },
+    click(t, pt, ev) {
+      if (t.stage === 'level') return;
+      const e = cadPickPolygon(t, pt, ev);
+      if (!e) { notify('Cliquez un polygone.', 'warn'); return; }
+      t.data.eid = e.id; state.cad.selection = new Set([e.id]); cadRender(); cadCutAsk(t);
+    },
+    input(t, txt) {
+      if (t.stage !== 'level') return false;
+      const z = /^(eq|equilibre|équilibre)$/i.test(txt.trim()) ? 'eq' : cadNum(txt);
+      if (z == null) return false;
+      cadCutRun(t, z); return true;
+    },
+    enter(t) { if (t.stage === 'level') cadCutRun(t, 'eq'); else cadDone(); }
+  };
+  function cadCutAsk(t) { t.stage = 'level'; cadPrompt(t, 'Altitude de la plateforme projetée en m (ou Entrée : niveau d\'équilibre déblai = remblai).', 'Altitude'); }
+  function cadCutRun(t, level) {
+    const e = cadEntity(t.data.eid);
+    if (!e) return;
+    const ring = e.pts.slice();
+    cadDone();
+    cadRunAsync('cad-status', 'Lecture du MNT et calcul des volumes…', async () => {
+      const A = Math.abs(ringArea(ring));
+      const xs = ring.map((p) => p[0]), ys = ring.map((p) => p[1]);
+      const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      const demRes = demResolution(cadToLL(polyCentroid(ring))[1], CONFIG.dem.sampleMaxZoom);
+      let s = Math.max(Math.sqrt(A / 900), demRes * 0.6, 1);
+      const cells = [];
+      for (let y = y0 + s / 2; y < y1; y += s) for (let x = x0 + s / 2; x < x1; x += s) if (pointInRing([x, y], ring)) cells.push([x, y]);
+      if (cells.length < 6) throw userError(`Surface trop petite (${fmtNum(A, 0)} m²) pour la résolution du MNT (≈ ${fmtNum(demRes, 0)} m) : volumes non significatifs.`);
+      const r = await cadSampleXY(cells, s);
+      const z = r.elevs, n = z.length, mean = z.reduce((a, b) => a + b, 0) / n;
+      const target = level === 'eq' ? mean : level;
+      const k = A / (n * s * s);                         // recale la grille sur la surface exacte
+      let cut = 0, fill = 0;
+      z.forEach((v) => { const dz = v - target; if (dz > 0) cut += dz * s * s * k; else fill -= dz * s * s * k; });
+      const feats = cells.map((c, i) => { const dz = z[i] - target, h = s / 2; return { type: 'Feature', properties: { kind: dz > 0 ? 'cut' : 'fill', dz: Math.abs(dz) }, geometry: { type: 'Polygon', coordinates: [[[c[0] - h, c[1] - h], [c[0] + h, c[1] - h], [c[0] + h, c[1] + h], [c[0] - h, c[1] + h], [c[0] - h, c[1] - h]].map(cadToLL)] } }; });
+      state.cad.cutfill = feats;
+      cadRender();
+      cadShowResult('Déblai / remblai (estimation)', [
+        ['Surface de la plateforme', `${fmtNum(A, 2)} m²`], ['Altitude du projet', `${fmtNum(target, 2)} m${level === 'eq' ? ' (niveau d\'équilibre)' : ''}`],
+        ['Terrain naturel moyen', `${fmtNum(mean, 2)} m · min ${fmtNum(Math.min(...z), 1)} · max ${fmtNum(Math.max(...z), 1)}`],
+        ['Déblai', `${fmtNum(cut, 0)} m³`], ['Remblai', `${fmtNum(fill, 0)} m³`], ['Solde (déblai − remblai)', `${fmtNum(cut - fill, 0)} m³`],
+        ['Maille de calcul', `${fmtNum(s, 1)} m (${n} cellules) · MNT ≈ ${fmtNum(r.res, 0)} m`], ['Niveau d\'équilibre', `${fmtNum(mean, 2)} m`]
+      ], { warn: 'Volumes indicatifs : altitudes estimées par un MNT mondial (précision verticale de plusieurs mètres). Ne remplacent pas un levé topographique pour un métré contractuel.' });
+      cadLog(`Déblai ${fmtNum(cut, 0)} m³ · remblai ${fmtNum(fill, 0)} m³ (estimation).`);
+    });
+  }
+
+  /* ---------- Résultats et graphique ---------- */
+  function cadShowResult(title, rows, opts) {
+    const box = $('cad-results'), body = $('cad-results-body');
+    if (!box) return;
+    box.hidden = false;
+    $('cad-results-title').textContent = title;
+    const dl = el('dl', { class: 'readout' }, rows.map(([k, v]) => el('div', { class: 'wide' }, el('dt', { text: k }), el('dd', { text: v }))));
+    body.replaceChildren(dl);
+    if (opts && opts.warn) body.append(el('div', { class: 'msg msg-warn', text: opts.warn }));
+    if (opts && opts.chart) { const host = el('div', { class: 'chart-host', 'aria-label': 'Graphique du profil' }); body.append(host); cadDrawChart(host, opts.chart); body.append(el('button', { class: 'btn btn-secondary btn-block', type: 'button', text: 'Exporter le profil (CSV)', onclick: safe(cadExportProfileCsv) })); }
+    $('btn-cad-clear-results').disabled = false;
+  }
+  function cadClearResults() {
+    state.cad.cutfill = []; state.cad.lp = null;
+    $('cad-results').hidden = true; $('cad-results-body').replaceChildren();
+    cadRender();
+  }
+  function cadDrawChart(host, r) {
+    const W = Math.max(260, Math.floor(host.clientWidth) || 320), H = 210, m = { l: 48, r: 12, t: 12, b: 32 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b, s = r.samples, st = r.stats;
+    const pad = Math.max((st.maxElev - st.minElev) * 0.12, 1), y0 = st.minElev - pad, y1 = st.maxElev + pad;
+    const X = (d) => m.l + (d / r.length) * iw, Y = (e) => m.t + (1 - (e - y0) / (y1 - y0)) * ih;
+    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${r.title} sur ${fmtDistance(r.length)} : altitudes estimées de ${fmtNum(st.minElev, 1)} à ${fmtNum(st.maxElev, 1)} mètres.` });
+    const yt = niceTicks(y0, y1, 4);
+    yt.ticks.forEach((tk) => { svg.append(svgEl('line', { class: 'chart-grid', x1: m.l, x2: W - m.r, y1: Y(tk), y2: Y(tk) })); const tx = svgEl('text', { class: 'chart-text', x: m.l - 6, y: Y(tk) + 4, 'text-anchor': 'end' }); tx.textContent = fmtNum(tk, yt.step < 1 ? 1 : 0); svg.append(tx); });
+    const xt = niceTicks(0, r.length, 5);
+    xt.ticks.forEach((tk) => { const tx = svgEl('text', { class: 'chart-text', x: X(tk), y: m.t + ih + 15, 'text-anchor': 'middle' }); tx.textContent = fmtNum(tk, 0); svg.append(tx); });
+    svg.append(svgEl('line', { class: 'chart-axis', x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih }), svgEl('line', { class: 'chart-axis', x1: m.l, x2: m.l, y1: m.t, y2: m.t + ih }));
+    const xl = svgEl('text', { class: 'chart-text', x: m.l + iw / 2, y: H - 3, 'text-anchor': 'middle' }); xl.textContent = 'Station (m) · altitude estimée (m)'; svg.append(xl);
+    const line = s.map((p, i) => (i ? 'L' : 'M') + X(p.d).toFixed(1) + ',' + Y(p.elev).toFixed(1)).join(' ');
+    svg.append(svgEl('path', { class: 'chart-area', d: `${line} L${X(r.length).toFixed(1)},${m.t + ih} L${X(0)},${m.t + ih} Z` }), svgEl('path', { class: 'chart-line', d: line }));
+    s.filter((p) => p.vertex != null).forEach((p) => svg.append(svgEl('circle', { class: 'chart-dot', r: 3, cx: X(p.d), cy: Y(p.elev) })));
+    host.replaceChildren(svg);
+  }
+
+  /* ---------- Parcelle → plan, cadrage, effacement ---------- */
+  function cadFromParcel() {
+    if (!requireMap()) return;
+    const v = state.parcel.vertices;
+    if (v.length < 3) { notify('Dessinez ou fermez d\'abord une parcelle (au moins 3 sommets) dans « Outils de mesure ».', 'warn'); return; }
+    cadEnsureCrs(v[0].lng, v[0].lat);
+    cadPushUndo();
+    const e = cadAddEntity({ type: 'poly', layer: 'Limites', pts: v.map((p) => cadToXY(p.lng, p.lat)), parcel: true });
+    cadRender();
+    const a = Math.abs(ringArea(e.pts));
+    cadLog(`Parcelle importée dans le plan : ${fmtNum(a, 2)} m², ${v.length} sommets (${cadCrsLabel()}).`);
+    notify('Parcelle ajoutée au plan CAO (calque Limites).', 'ok');
+  }
+  function cadZoomExtents() {
+    const c = state.cad;
+    const pts = [];
+    c.entities.forEach((e) => { if (cadVisible(e)) cadVertices(e).forEach((p) => pts.push(cadToLL(p))); });
+    if (!pts.length) { notify('Le plan est vide.', 'info'); return; }
+    fitToFeatures([{ type: 'Feature', properties: {}, geometry: { type: 'MultiPoint', coordinates: pts } }]);
+  }
+  function cadClearAll() {
+    const c = state.cad;
+    if (!c.entities.length) { notify('Le plan est déjà vide.', 'info'); return; }
+    if (!window.confirm('Effacer tout le plan CAO (' + c.entities.length + ' objets) ? Vous pourrez annuler avec « Annuler ».')) return;
+    cadPushUndo();
+    c.entities = []; c.selection.clear(); c.cutfill = [];
+    cadRender(); cadLog('Plan effacé.');
+  }
+
+  /* ---------- Persistance et export GeoJSON ---------- */
+  function cadSerialize() {
+    const c = state.cad;
+    return { crs: c.crs, layers: c.layers, current: c.current, entities: c.entities, nextId: c.nextId, snap: c.snap, ortho: c.ortho };
+  }
+  const CAD_TYPES = ['line', 'pline', 'poly', 'circle', 'point', 'text', 'dim'];
+  function cadLoad(d) {
+    const keepSnap = state.cad.snap, keepOrtho = state.cad.ortho;
+    state.cad = cadInitialState();
+    const c = state.cad;
+    c.snap = keepSnap; c.ortho = keepOrtho;
+    if (!d || typeof d !== 'object') { cadRender(); return; }
+    if (d.crs && Number.isInteger(d.crs.zone) && d.crs.zone >= 1 && d.crs.zone <= 60) c.crs = { zone: d.crs.zone, south: !!d.crs.south };
+    if (Array.isArray(d.layers)) {
+      const ls = d.layers.filter((l) => l && typeof l.name === 'string' && l.name).map((l) => ({ id: String(l.id || l.name), name: String(l.name), color: /^#[0-9a-f]{6}$/i.test(l.color) ? l.color : '#495057', visible: l.visible !== false, locked: !!l.locked }));
+      if (ls.length) c.layers = ls;
+    }
+    c.current = c.layers.some((l) => l.id === d.current) ? d.current : c.layers[0].id;
+    const okPt = (p) => Array.isArray(p) && isNum(p[0]) && isNum(p[1]);
+    if (Array.isArray(d.entities)) {
+      c.entities = d.entities.filter((e) => e && CAD_TYPES.includes(e.type) && Array.isArray(e.pts) && e.pts.length && e.pts.every(okPt) && (e.type !== 'circle' || isNum(e.r))).map((e) => {
+        if (!c.layers.some((l) => l.id === e.layer)) e.layer = c.current;
+        return e;
+      });
+    }
+    c.nextId = Math.max(c.entities.reduce((m, e) => Math.max(m, Number(e.id) || 0), 0) + 1, Number(d.nextId) || 1);
+    cadRender();
+  }
+  function cadExportFeatures() {
+    const c = state.cad, out = [];
+    if (!c.crs.zone) return out;
+    c.entities.forEach((e) => {
+      const base = { topogisType: 'cad', cadType: e.type, layer: e.layer, entityId: e.id, crs: cadCrsLabel() };
+      const m = cadMetrics(e);
+      Object.keys(m).forEach((k) => { base[k + 'M'] = round(m[k], 3); });
+      let geometry = null;
+      const LL = (a) => a.map(cadToLL);
+      if (e.type === 'line' || e.type === 'pline') geometry = { type: 'LineString', coordinates: LL(e.pts) };
+      else if (e.type === 'poly') geometry = { type: 'Polygon', coordinates: [LL(e.pts.concat([e.pts[0]]))] };
+      else if (e.type === 'circle') { const r = cadCircleRing(e); base.radiusM = round(e.r, 3); geometry = { type: 'Polygon', coordinates: [LL(r.concat([r[0]]))] }; }
+      else if (e.type === 'point') geometry = { type: 'Point', coordinates: cadToLL(e.pts[0]) };
+      else if (e.type === 'text') { base.text = e.text; geometry = { type: 'Point', coordinates: cadToLL(e.pts[0]) }; }
+      else if (e.type === 'dim') { base.distanceM = round(d2(e.pts[0], e.pts[1]), 3); geometry = { type: 'LineString', coordinates: LL(e.pts) }; }
+      if (geometry) out.push({ type: 'Feature', properties: base, geometry });
+    });
+    return out;
+  }
+
+  /* ---------- DXF (R12, ASCII) : export et import ---------- */
+  const dxfAscii = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\x20-\x7e]/g, '?').replace(/[<>/\\":;?*|,=`]/g, '_');
+  function aciOf(hex) {
+    const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    const a = rgb(hex);
+    let best = 7, bd = Infinity;
+    CAD_ACI.forEach(([n, h]) => { const b = rgb(h), dd = (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2; if (dd < bd) { bd = dd; best = n; } });
+    return best;
+  }
+  function buildDxf() {
+    const c = state.cad, o = [];
+    const g = (code, val) => o.push(String(code), String(val));
+    const num = (v) => (Math.round(v * 1e6) / 1e6).toString();
+    const layerName = (n) => (n === '0' ? '0' : dxfAscii(n).toUpperCase());
+    g(0, 'SECTION'); g(2, 'HEADER'); g(9, '$ACADVER'); g(1, 'AC1009'); g(9, '$INSUNITS'); g(70, 6); g(0, 'ENDSEC');
+    g(0, 'SECTION'); g(2, 'TABLES');
+    g(0, 'TABLE'); g(2, 'LTYPE'); g(70, 1); g(0, 'LTYPE'); g(2, 'CONTINUOUS'); g(70, 0); g(3, 'Solid line'); g(72, 65); g(73, 0); g(40, 0); g(0, 'ENDTAB');
+    g(0, 'TABLE'); g(2, 'LAYER'); g(70, c.layers.length);
+    c.layers.forEach((l) => { g(0, 'LAYER'); g(2, layerName(l.name)); g(70, 0); g(62, (l.visible ? 1 : -1) * aciOf(l.color)); g(6, 'CONTINUOUS'); });
+    g(0, 'ENDTAB'); g(0, 'ENDSEC');
+    g(0, 'SECTION'); g(2, 'ENTITIES');
+    const pt = (p, i) => { g(10 + (i || 0), num(p[0])); g(20 + (i || 0), num(p[1])); g(30 + (i || 0), 0); };
+    const line = (p, q, ly) => { g(0, 'LINE'); g(8, ly); pt(p); pt(q, 1); };
+    const text = (p, t, h, ly) => { g(0, 'TEXT'); g(8, ly); pt(p); g(40, h); g(1, dxfAscii(t)); };
+    let count = 0;
+    c.entities.forEach((e) => {
+      const ly = layerName(e.layer);
+      count++;
+      if (e.type === 'line') line(e.pts[0], e.pts[1], ly);
+      else if (e.type === 'pline' || e.type === 'poly') {
+        g(0, 'POLYLINE'); g(8, ly); g(66, 1); g(70, e.type === 'poly' ? 1 : 0);
+        e.pts.forEach((p) => { g(0, 'VERTEX'); g(8, ly); pt(p); });
+        g(0, 'SEQEND'); g(8, ly);
+      } else if (e.type === 'circle') { g(0, 'CIRCLE'); g(8, ly); pt(e.pts[0]); g(40, num(e.r)); }
+      else if (e.type === 'point') { g(0, 'POINT'); g(8, ly); pt(e.pts[0]); }
+      else if (e.type === 'text') text(e.pts[0], e.text || '', 2, ly);
+      else if (e.type === 'dim') { const dg = cadDimGeom(e); dg.lines.forEach((l) => line(l[0], l[1], ly)); text(dg.mid, fmtNum(dg.length, 2).replace(/ | /g, ''), 1.5, ly); }
+    });
+    g(0, 'ENDSEC'); g(0, 'EOF');
+    return { text: o.join('\r\n') + '\r\n', count };
+  }
+  function exportDxf() {
+    const c = state.cad;
+    if (!c.entities.length) { notify('Le plan est vide : dessinez ou importez des objets avant l\'export DXF.', 'warn'); return; }
+    const r = buildDxf();
+    downloadFile('topogis-plan.dxf', r.text, 'application/dxf');
+    notify(`Export DXF : ${r.count} objet(s). Coordonnées ${cadCrsLabel()}, unité : mètre. Accents retirés (DXF R12).`, 'ok', 8000);
+  }
+
+  function parseDxf(text) {
+    const L = text.split(/\r?\n/);
+    const pairs = [];
+    for (let i = 0; i + 1 < L.length; i += 2) { const code = parseInt(L[i].trim(), 10); if (Number.isNaN(code)) continue; pairs.push([code, L[i + 1].replace(/\s+$/, '')]); }
+    const layers = new Map(), ents = [], skipped = {};
+    let section = '', i = 0, cur = null, poly = null;
+    const flush = () => { if (cur) { ents.push(cur); cur = null; } };
+    for (; i < pairs.length; i++) {
+      const [code, val] = pairs[i];
+      if (code === 0) {
+        if (val === 'SECTION') { flush(); const nx = pairs[i + 1]; section = nx && nx[0] === 2 ? nx[1] : ''; continue; }
+        if (val === 'ENDSEC') { flush(); section = ''; continue; }
+        if (val === 'EOF') break;
+        if (section === 'TABLES' && val === 'LAYER') { flush(); cur = { kind: 'LAYERDEF', g: [] }; continue; }
+        if (section === 'ENTITIES') {
+          flush();
+          if (val === 'VERTEX' && poly) { cur = { kind: 'VERTEX', g: [] }; (poly.verts = poly.verts || []).push(cur); continue; }
+          if (val === 'SEQEND') { poly = null; continue; }
+          cur = { kind: val, g: [] };
+          if (val === 'POLYLINE') poly = cur;
+          continue;
+        }
+        flush();
+        continue;
+      }
+      if (!cur) continue;
+      cur.g.push([code, val]);
+    }
+    flush();
+    const first = (e, code) => { const f = e.g.find((x) => x[0] === code); return f ? f[1] : null; };
+    const numv = (e, code) => { const v = first(e, code); return v == null ? null : parseFloat(v); };
+    ents.filter((e) => e.kind === 'LAYERDEF').forEach((e) => { const n = first(e, 2); if (n != null) layers.set(n, parseInt(first(e, 62) || '7', 10)); });
+    const out = [];
+    for (const e of ents) {
+      const ly = first(e, 8) || '0';
+      const P = (a, b) => { const x = numv(e, a), y = numv(e, b); return x != null && y != null ? [x, y] : null; };
+      if (e.kind === 'LINE') { const a = P(10, 20), b = P(11, 21); if (a && b) out.push({ type: 'line', layer: ly, pts: [a, b] }); }
+      else if (e.kind === 'LWPOLYLINE') {
+        const pts = []; let x = null;
+        e.g.forEach(([cd, v]) => { if (cd === 10) x = parseFloat(v); else if (cd === 20 && x != null) { pts.push([x, parseFloat(v)]); x = null; } });
+        const closed = (parseInt(first(e, 70) || '0', 10) & 1) === 1;
+        if (pts.length >= 2) out.push({ type: closed && pts.length >= 3 ? 'poly' : 'pline', layer: ly, pts });
+      } else if (e.kind === 'POLYLINE') {
+        const pts = (e.verts || []).map((v) => { const x = parseFloat((v.g.find((q) => q[0] === 10) || [0, 'NaN'])[1]), y = parseFloat((v.g.find((q) => q[0] === 20) || [0, 'NaN'])[1]); return [x, y]; }).filter((p) => isNum(p[0]) && isNum(p[1]));
+        const closed = (parseInt(first(e, 70) || '0', 10) & 1) === 1;
+        if (pts.length >= 2) out.push({ type: closed && pts.length >= 3 ? 'poly' : 'pline', layer: ly, pts });
+      } else if (e.kind === 'CIRCLE') { const c0 = P(10, 20), r = numv(e, 40); if (c0 && r > 0) out.push({ type: 'circle', layer: ly, pts: [c0], r }); }
+      else if (e.kind === 'ARC') {
+        const c0 = P(10, 20), r = numv(e, 40);
+        let a0 = numv(e, 50), a1 = numv(e, 51);
+        if (c0 && r > 0 && a0 != null && a1 != null) { if (a1 <= a0) a1 += 360; const n = Math.max(4, Math.ceil((a1 - a0) / 7.5)), pts = []; for (let k = 0; k <= n; k++) { const a = ((a0 + ((a1 - a0) * k) / n) * Math.PI) / 180; pts.push([c0[0] + r * Math.cos(a), c0[1] + r * Math.sin(a)]); } out.push({ type: 'pline', layer: ly, pts }); }
+      } else if (e.kind === 'POINT') { const p = P(10, 20); if (p) out.push({ type: 'point', layer: ly, pts: [p] }); }
+      else if (e.kind === 'TEXT' || e.kind === 'MTEXT') {
+        const p = P(10, 20); let t = e.g.filter((q) => q[0] === 3 || q[0] === 1).map((q) => q[1]).join('');
+        t = t.replace(/\\P/g, ' ').replace(/\\[A-Za-z][^;]*;/g, '').replace(/[{}]/g, '').trim();
+        if (p && t) out.push({ type: 'text', layer: ly, pts: [p], text: t.slice(0, 120) });
+      } else if (e.kind !== 'VERTEX') skipped[e.kind] = (skipped[e.kind] || 0) + 1;
+    }
+    return { entities: out, layers, skipped };
+  }
+  function cadImportDxfText(text) {
+    if (!/\b(SECTION|ENTITIES)\b/.test(text.slice(0, 4000))) throw userError('Ce fichier ne ressemble pas à un DXF au format texte (les DXF binaires ne sont pas pris en charge).');
+    const r = parseDxf(text);
+    if (!r.entities.length) throw userError('Aucune entité reconnue dans ce DXF (LIGNE, POLYLIGNE, CERCLE, ARC, POINT, TEXTE sont pris en charge).');
+    const MAX = 20000;
+    let ents = r.entities;
+    let truncated = false;
+    if (ents.length > MAX) { ents = ents.slice(0, MAX); truncated = true; }
+    const c = state.cad, center = state.map.getCenter();
+    let dx = 0, dy = 0, how;
+    const all = ents.flatMap((e) => e.pts);
+    const minX = Math.min(...all.map((p) => p[0])), maxX = Math.max(...all.map((p) => p[0])), minY = Math.min(...all.map((p) => p[1])), maxY = Math.max(...all.map((p) => p[1]));
+    if (!all.every((p) => isNum(p[0]) && isNum(p[1]))) throw userError('Coordonnées DXF invalides.');
+    cadEnsureCrs(center.lng, center.lat);
+    const looksUtm = minX >= 100000 && maxX <= 900000 && minY >= 0 && maxY <= 10000000;
+    if (looksUtm) how = `Coordonnées interprétées comme UTM ${c.crs.zone}${c.crs.south ? 'S' : 'N'} (E ${fmtNum(minX, 0)}…, N ${fmtNum(minY, 0)}…).`;
+    else {
+      const [ce, cn] = cadToXY(center.lng, center.lat);
+      dx = ce - (minX + maxX) / 2; dy = cn - (minY + maxY) / 2;
+      how = 'Coordonnées locales (hors UTM) : le dessin a été centré sur la vue actuelle, sans changement d\'échelle (unité = mètre).';
+    }
+    cadPushUndo();
+    const aci = new Map(CAD_ACI);
+    for (const [name, col] of r.layers) {
+      if (c.layers.some((l) => l.id === name)) continue;
+      c.layers.push({ id: name, name, color: aci.get(Math.abs(col)) || '#495057', visible: col >= 0, locked: false });
+    }
+    ents.forEach((e) => {
+      if (!c.layers.some((l) => l.id === e.layer)) c.layers.push({ id: e.layer, name: e.layer, color: '#495057', visible: true, locked: false });
+      e.pts = e.pts.map((p) => [p[0] + dx, p[1] + dy]);
+      cadAddEntity(e);
+    });
+    cadRender();
+    const sk = Object.entries(r.skipped).map(([k, v]) => `${v} ${k}`).join(', ');
+    cadLog(`DXF importé : ${ents.length} objet(s). ${how}`);
+    notify(`DXF importé : ${ents.length} objet(s).${sk ? ' Non pris en charge (ignorés) : ' + sk + '.' : ''}${truncated ? ' Limite de ' + MAX + ' objets atteinte.' : ''} ${how}`, sk || truncated || !looksUtm ? 'warn' : 'ok', 11000);
+    cadZoomExtents();
+  }
+  async function importDxfFile(file) {
+    if (!file) return;
+    if (!requireMap()) return;
+    if (file.size > CONFIG.maxFileBytes) { notify('Fichier trop volumineux (' + fmtNum(file.size / 1048576, 1) + ' Mo, limite ' + CONFIG.maxFileBytes / 1048576 + ' Mo).', 'error'); return; }
+    try { cadImportDxfText(await file.text()); }
+    catch (err) { if (err.userError) notify(err.message, 'error', 9000); else reportError('Import DXF impossible.', err); }
+  }
+
+  /* ---------- Plan imprimable (PNG avec cartouche) ---------- */
+  async function cadExportPng() {
+    if (!requireMap()) return;
+    if (state.globe.on) { notify('Quittez la vue globe pour exporter un plan.', 'warn'); return; }
+    const map = state.map;
+    const snap = await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('rendu de la carte trop long')), 8000);
+      map.once('render', () => {
+        clearTimeout(timer);
+        try { const src = map.getCanvas(), cv = document.createElement('canvas'); cv.width = src.width; cv.height = src.height; cv.getContext('2d').drawImage(src, 0, 0); resolve(cv); }
+        catch (e) { reject(e); }
+      });
+      map.triggerRepaint();
+    });
+    const css = map.getContainer().clientWidth || snap.width, k = snap.width / css;
+    const band = Math.round(120 * k), W = snap.width, H = snap.height + band;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(snap, 0, 0);
+    const font = (px, w) => `${w || 400} ${Math.round(px * k)}px system-ui, "Segoe UI", Arial, sans-serif`;
+    // textes et cotes (repères HTML non présents dans le canvas)
+    const c = state.cad;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    c.entities.forEach((e) => {
+      const L = cadLayerOf(e.layer);
+      if (!L || !L.visible || (e.type !== 'text' && e.type !== 'dim')) return;
+      const p = e.type === 'text' ? e.pts[0] : cadDimGeom(e).mid, s = cadScreen(p);
+      const t = e.type === 'text' ? e.text : fmtNum(cadDimGeom(e).length, 2) + ' m';
+      ctx.font = font(12, 600); ctx.lineWidth = 3 * k; ctx.strokeStyle = '#fff'; ctx.strokeText(t, s.x * k, s.y * k); ctx.fillStyle = L.color; ctx.fillText(t, s.x * k, s.y * k);
+    });
+    // échelle (vue non inclinée)
+    const y = map.getContainer().clientHeight / 2, p1 = map.unproject([0, y]), p2 = map.unproject([100, y]);
+    const mpp = turf.distance([p1.lng, p1.lat], [p2.lng, p2.lat], { units: 'meters' }) / 100;
+    const flat = map.getPitch() < 1;
+    const denom = Math.round(mpp / (0.0254 / 96));
+    if (flat) {
+      const nice = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
+      let len = nice[0]; nice.forEach((n) => { if (n / mpp <= 150) len = n; });
+      const px = (len / mpp) * k, x0 = 16 * k, y0 = snap.height - 22 * k;
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(x0 - 8 * k, y0 - 22 * k, px + 16 * k, 38 * k);
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 2 * k; ctx.beginPath(); ctx.moveTo(x0, y0 - 6 * k); ctx.lineTo(x0, y0); ctx.lineTo(x0 + px, y0); ctx.lineTo(x0 + px, y0 - 6 * k); ctx.stroke();
+      ctx.fillStyle = '#111'; ctx.font = font(12, 600); ctx.textAlign = 'left'; ctx.fillText(len >= 1000 ? len / 1000 + ' km' : len + ' m', x0, y0 + 11 * k);
+    }
+    // flèche du Nord
+    ctx.save(); ctx.translate(W - 34 * k, 42 * k); ctx.rotate((-map.getBearing() * Math.PI) / 180);
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.arc(0, 0, 26 * k, 0, 7); ctx.fill();
+    ctx.fillStyle = '#111'; ctx.beginPath(); ctx.moveTo(0, -20 * k); ctx.lineTo(8 * k, 8 * k); ctx.lineTo(0, 2 * k); ctx.lineTo(-8 * k, 8 * k); ctx.closePath(); ctx.fill();
+    ctx.font = font(12, 700); ctx.textAlign = 'center'; ctx.fillText('N', 0, 18 * k); ctx.restore();
+    // cartouche
+    const topo = state.topo, by = snap.height;
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 2 * k; ctx.strokeRect(k, k, W - 2 * k, H - 2 * k); ctx.beginPath(); ctx.moveTo(0, by); ctx.lineTo(W, by); ctx.stroke();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#111';
+    const colW = (W - 24 * k) / 3;
+    const rows = [
+      [['Projet', topo.projectName || '—'], ['Référence foncière', topo.landReference || '—'], ['Client', topo.clientName || '—']],
+      [['Levé / dessiné par', topo.surveyorName || '—'], ['Date', topo.surveyDate || todayIso()], ['Repère', cadCrsLabel()]],
+      [['Échelle', flat ? `1 : ${denom.toLocaleString('fr-FR')} (à 96 dpi)` : 'non applicable (vue inclinée)'], ['Fond', 'OpenStreetMap et contributeurs'], ['Document', 'TopoGIS 3D — indicatif, non contractuel']]
+    ];
+    rows.forEach((col, ci) => col.forEach(([lab, v], ri) => {
+      const x = 12 * k + ci * colW, yy = by + (28 + ri * 34) * k;
+      ctx.font = font(10.5, 600); ctx.fillStyle = '#555'; ctx.fillText(lab, x, yy - 12 * k);
+      ctx.font = font(13, 600); ctx.fillStyle = '#111';
+      let s = String(v); while (ctx.measureText(s).width > colW - 14 * k && s.length > 4) s = s.slice(0, -2);
+      ctx.fillText(s === String(v) ? s : s + '…', x, yy + 2 * k);
+    }));
+    const blob = await new Promise((res, rej) => { try { cv.toBlob((b) => (b ? res(b) : rej(new Error('image vide'))), 'image/png'); } catch (e) { rej(e); } });
+    downloadFile('topogis-plan.png', blob, 'image/png');
+    notify('Plan exporté : topogis-plan.png (carte + cartouche).', 'ok');
+  }
+
+  /* ---------- Interface du plan CAO ---------- */
+  const CAD_GROUPS = [
+    ['Dessin', ['line', 'pline', 'poly', 'rect', 'circle', 'point', 'text', 'dim']],
+    ['Modification', ['select', 'window', 'move', 'copy', 'rotate', 'scale', 'mirror', 'offset', 'explode', 'erase']],
+    ['Mesure', ['dist', 'area', 'id']],
+    ['Génie civil', ['lots', 'setback', 'cutfill', 'profile', 'section']]
+  ];
+  const CAD_HISTORY = { list: [], pos: 0 };
+
+  function cadBuildUi() {
+    const host = $('cad-tools');
+    host.replaceChildren(...CAD_GROUPS.map(([title, names]) => el('div', { class: 'cad-group', role: 'group', 'aria-label': title },
+      el('div', { class: 'cad-group-label', text: title }),
+      el('div', { class: 'cad-tool-grid' }, ...names.map((n) => el('button', {
+        class: 'btn btn-secondary cad-tool', type: 'button', 'data-cad': n, 'aria-pressed': 'false', text: CAD_TOOLS[n].label,
+        title: CAD_TOOLS[n].hint, onclick: safe(() => cadSetTool(n, { fromUi: true }))
+      }))))));
+    $('cad-cmd-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inp = $('cad-cmd'), v = inp.value;
+      inp.value = '';
+      if (v.trim()) { CAD_HISTORY.list.push(v); CAD_HISTORY.pos = CAD_HISTORY.list.length; }
+      safe(() => { if (!state.map || !state.mapReady) { notify('La carte n\'est pas encore prête.', 'warn'); return; } if (state.mode !== 'cad') { if (!v.trim()) return; cadSetTool('select'); } cadSubmit(v); })();
+    });
+    $('cad-cmd').addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); $('cad-cmd').value = ''; $('cad-cmd').blur(); if (state.mode === 'cad') cadEscape(); }
+      else if (e.key === 'ArrowUp' && CAD_HISTORY.list.length) { e.preventDefault(); CAD_HISTORY.pos = Math.max(0, CAD_HISTORY.pos - 1); $('cad-cmd').value = CAD_HISTORY.list[CAD_HISTORY.pos]; }
+      else if (e.key === 'ArrowDown' && CAD_HISTORY.list.length) { e.preventDefault(); CAD_HISTORY.pos = Math.min(CAD_HISTORY.list.length, CAD_HISTORY.pos + 1); $('cad-cmd').value = CAD_HISTORY.list[CAD_HISTORY.pos] || ''; }
+    });
+    ['end', 'mid', 'cen', 'int', 'nea'].forEach((k) => $('chk-snap-' + k).addEventListener('change', (e) => { state.cad.snap[k] = e.target.checked; }));
+    $('chk-ortho').addEventListener('change', (e) => { state.cad.ortho = e.target.checked; });
+    $('file-dxf').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importDxfFile(f); }));
+    $('btn-cad-layer-add').addEventListener('click', safe(cadAddLayerFromUi));
+    $('cad-layer-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); cadAddLayerFromUi(); } });
+    document.addEventListener('keydown', (e) => {
+      if (state.mode !== 'cad') return;
+      const typing = /INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || '');
+      const mod = e.ctrlKey || e.metaKey;
+      if (typing) return;
+      if (mod && /^z$/i.test(e.key)) { e.preventDefault(); if (e.shiftKey) cadHistoryRedo(); else cadHistoryUndo(); }
+      else if (mod && /^y$/i.test(e.key)) { e.preventDefault(); cadHistoryRedo(); }
+      else if (e.key === 'Delete') { e.preventDefault(); safe(() => cadRunCommand('erase', ''))(); }
+      else if (e.key === 'Enter') { e.preventDefault(); cadEnterKey(); }
+      else if (e.key === 'F8') { e.preventDefault(); cadRunCommand('ortho', ''); }
+      else if (!mod && !e.altKey && e.key.length === 1 && /[\p{L}\d@<.;-]/u.test(e.key) && document.activeElement && document.activeElement.tagName !== 'BUTTON') $('cad-cmd').focus();
+    });
+    cadRenderUi();
+  }
+  function cadAddLayerFromUi() {
+    const inp = $('cad-layer-name'), name = inp.value.trim().slice(0, 40);
+    if (!name) { notify('Saisissez un nom de calque.', 'warn'); return; }
+    if (state.cad.layers.some((l) => l.name.toLowerCase() === name.toLowerCase())) { notify('Ce calque existe déjà.', 'warn'); return; }
+    cadPushUndo();
+    const color = CAD_ACI[state.cad.layers.length % CAD_ACI.length][1];
+    state.cad.layers.push({ id: name, name, color, visible: true, locked: false });
+    state.cad.current = name;
+    inp.value = '';
+    cadRender(); cadLog('Calque « ' + name + ' » créé et défini comme courant.');
+  }
+
+  function cadRenderLayers() {
+    const c = state.cad, host = $('cad-layers');
+    const counts = {};
+    c.entities.forEach((e) => { counts[e.layer] = (counts[e.layer] || 0) + 1; });
+    const sig = JSON.stringify([c.layers, c.current, counts]);
+    if (host.dataset.sig === sig) return;
+    host.dataset.sig = sig;
+    host.replaceChildren(...c.layers.map((l) => {
+      const n = counts[l.id] || 0;
+      const change = (fn) => (ev) => { cadPushUndo(); fn(ev.target); cadRender(); };
+      return el('div', { class: 'cad-layer' + (l.id === c.current ? ' cur' : '') },
+        el('div', { class: 'cad-layer-top' },
+          el('input', { type: 'color', value: l.color, 'aria-label': 'Couleur du calque ' + l.name, onchange: change((t) => { l.color = t.value; }) }),
+          el('button', { type: 'button', class: 'cad-layer-btn', text: l.name + (n ? ` (${n})` : ''), 'aria-pressed': l.id === c.current ? 'true' : 'false', title: 'Définir comme calque courant', onclick: () => { c.current = l.id; cadLog('Calque courant : ' + l.name + '.'); cadRender(); } }),
+          l.id !== '0' && n === 0 ? el('button', { type: 'button', class: 'btn btn-secondary cad-x', 'aria-label': 'Supprimer le calque vide ' + l.name, text: '×', onclick: () => { cadPushUndo(); c.layers = c.layers.filter((x) => x.id !== l.id); if (c.current === l.id) c.current = c.layers[0].id; cadRender(); } }) : null),
+        el('div', { class: 'cad-layer-opts' },
+          el('label', { class: 'check cad-mini' }, el('input', { type: 'checkbox', checked: l.visible, onchange: change((t) => { l.visible = t.checked; }) }), 'Visible'),
+          el('label', { class: 'check cad-mini' }, el('input', { type: 'checkbox', checked: l.locked, onchange: change((t) => { l.locked = t.checked; }) }), 'Verrouillé')));
+    }));
+  }
+  function cadRenderProps() {
+    const c = state.cad, host = $('cad-props'), sel = cadSelected();
+    if (!sel.length) { host.replaceChildren(el('p', { class: 'hint', text: c.entities.length ? `${c.entities.length} objet(s) dans le plan, aucun sélectionné.` : 'Plan vide : choisissez un outil de dessin.' })); return; }
+    const names = { line: 'Ligne', pline: 'Polyligne', poly: 'Polygone', circle: 'Cercle', point: 'Point', text: 'Texte', dim: 'Cote' };
+    let len = 0, area = 0;
+    sel.forEach((e) => { const m = cadMetrics(e); len += m.length || m.perimeter || 0; area += m.area || 0; });
+    const rows = [['Sélection', sel.length === 1 ? names[sel[0].type] : `${sel.length} objets`]];
+    if (len) rows.push([sel.some((e) => e.type === 'poly' || e.type === 'circle') ? 'Périmètre / longueur' : 'Longueur', fmtDistance(len)]);
+    if (area) rows.push(['Surface', `${fmtNum(area, 2)} m² (${fmtNum(area / 10000, 4)} ha)`]);
+    if (sel.length === 1) {
+      const e = sel[0];
+      if (e.type === 'circle') rows.push(['Rayon', fmtNum(e.r, 3) + ' m']);
+      if (e.type === 'point' || e.type === 'text') rows.push(['Position', `E ${fmtNum(e.pts[0][0], 3)} · N ${fmtNum(e.pts[0][1], 3)}`]);
+      else if (e.type === 'line' || e.type === 'dim') rows.push(['Azimut', fmtAng(azimuthDeg(e.pts[0], e.pts[1]))]);
+      if (e.type === 'text') rows.push(['Texte', e.text]);
+      if (['pline', 'poly'].includes(e.type)) rows.push(['Sommets', String(e.pts.length)]);
+    }
+    const layers = new Set(sel.map((e) => e.layer));
+    const dl = el('dl', { class: 'readout' }, rows.map(([k, v]) => el('div', { class: 'wide' }, el('dt', { text: k }), el('dd', { text: v }))));
+    const select = el('select', { 'aria-label': 'Calque des objets sélectionnés', onchange: (ev) => { const v = ev.target.value; if (!v) return; cadPushUndo(); sel.forEach((e) => { e.layer = v; }); cadRender(); } },
+      layers.size > 1 ? el('option', { value: '', text: 'Calques multiples…' }) : null,
+      ...c.layers.map((l) => el('option', { value: l.id, text: 'Calque : ' + l.name, selected: layers.size === 1 && layers.has(l.id) })));
+    host.replaceChildren(dl, select);
+  }
+  function cadRenderUi() {
+    const host = $('cad-tools');
+    if (!host || !host.children.length) return;
+    const c = state.cad, t = c.tool, active = state.mode === 'cad';
+    document.querySelectorAll('.cad-tool').forEach((b) => b.setAttribute('aria-pressed', active && t && t.name === b.dataset.cad ? 'true' : 'false'));
+    $('btn-cad-start').setAttribute('aria-pressed', active ? 'true' : 'false');
+    $('btn-cad-start-label').textContent = active ? 'Quitter le plan CAO' : 'Ouvrir le plan CAO';
+    $('btn-cad-undo').disabled = !c.undo.length; $('btn-cad-redo').disabled = !c.redo.length;
+    ['end', 'mid', 'cen', 'int', 'nea'].forEach((k) => { $('chk-snap-' + k).checked = !!c.snap[k]; });
+    $('chk-ortho').checked = !!c.ortho;
+    $('cad-crs').textContent = 'Repère : ' + cadCrsLabel();
+    $('cad-prompt').textContent = active && t ? `${CAD_TOOLS[t.name].label} — ${t.prompt}` : 'Plan fermé : ouvrez-le pour dessiner. Vos objets restent affichés.';
+    $('cad-cmd').placeholder = t && t.await ? t.await + '…' : 'ex. ligne, deplacer, lots 4, aide';
+    cadRenderLayers();
+    cadRenderProps();
+  }
+  function cadToggle() {
+    if (state.mode === 'cad') { setMode('idle'); return; }
+    if (!requireMap()) return;
+    $('sec-cad').open = true;
+    cadSetTool('select', { fromUi: false });
+  }
+
+  /* ========================================================================
      Données communes : entités du projet (export, ajustement de la vue)
      ======================================================================== */
   function buildMeasureFeature() {
@@ -2906,6 +4758,7 @@ const DEM_API_KEY = '';
     const prof = buildProfileFeature();
     if (prof) feats.push(prof);
     state.imported.forEach((f) => feats.push(f));
+    cadExportFeatures().forEach((f) => feats.push(f));
     return feats;
   }
 
@@ -3070,6 +4923,7 @@ const DEM_API_KEY = '';
     applyBuildingFilter();
     refreshGpsLayer();
     refreshImportedLayer();
+    cadRender();
     fitToFeatures(parsed.features);
     const parts = [];
     if (c.parcel) parts.push('1 parcelle');
@@ -3247,6 +5101,7 @@ const DEM_API_KEY = '';
       buildings: includeBuildings ? state.buildings : [],
       gpsTrack: state.gpsTrack, csvPoints: state.csvPoints, imported: state.imported,
       measure: { points: state.measure.points },
+      cad: cadSerialize(),
       profile: { points: state.profile.points, result: state.profile.result },
       view: Object.assign({ mode3d: state.is3D, globe: state.globe.on }, view || {}),
       ui: { radius: Number($('in-radius').value) || CONFIG.defaultRadius, filter: state.buildingFilter }
@@ -3311,6 +5166,7 @@ const DEM_API_KEY = '';
       $('sel-filter').value = state.buildingFilter;
       clearBuildingSelection();
       applyTopoToForm();
+      cadLoad(data.cad);
       refreshAll();
       applyBuildingFilter();
       refreshProfileLayer();
@@ -3349,6 +5205,7 @@ const DEM_API_KEY = '';
     clearProfile();
     clearBuildingSelection();
     applyTopoToForm();
+    cadLoad(null);
     refreshAll();
     applyBuildingFilter();
     setStatus('buildings-status', '', null);
@@ -3519,6 +5376,7 @@ const DEM_API_KEY = '';
     if (state.mode === 'parcel') handleParcelClick(e);
     else if (state.mode === 'measure') addMeasurePoint(e.lngLat);
     else if (state.mode === 'profile') handleProfileClick(e);
+    else if (state.mode === 'cad') cadOnClick(e);
     else showFeaturePopup(e);
   }
 
@@ -3537,7 +5395,10 @@ const DEM_API_KEY = '';
     'btn-export-geojson': exportGeoJson, 'btn-export-csv': exportCsv,
     'btn-save': saveProject, 'btn-load': loadProject, 'btn-clear-storage': clearLocalData, 'btn-new-project': newProject,
     'sheet-toggle': () => setSheetCollapsed(!document.body.classList.contains('sidebar-collapsed')),
-    'banner-action': bannerAction, 'banner-quit': () => setMode('idle')
+    'banner-action': bannerAction, 'banner-quit': () => setMode('idle'),
+    'btn-cad-start': cadToggle, 'btn-cad-parcel': cadFromParcel, 'btn-cad-undo': cadHistoryUndo, 'btn-cad-redo': cadHistoryRedo,
+    'btn-cad-dxf': exportDxf, 'btn-cad-dxf-import': () => $('file-dxf').click(), 'btn-cad-png': cadExportPng, 'btn-cad-zoomext': cadZoomExtents,
+    'btn-cad-clear': cadClearAll, 'btn-cad-layer-add': cadAddLayerFromUi, 'btn-cad-clear-results': cadClearResults
   };
 
   /** Exécute un gestionnaire en capturant toute erreur (sync ou async). */
@@ -3554,6 +5415,7 @@ const DEM_API_KEY = '';
       if (!b) { console.warn('Bouton introuvable :', id); continue; }
       b.addEventListener('click', safe(fn));
     }
+    cadBuildUi();
     $('file-geojson').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importGeoJsonFile(f); }));
     $('file-csv').addEventListener('change', safe(async (e) => { const f = e.target.files[0]; e.target.value = ''; await importCsvFile(f); }));
     $('chk-spin').addEventListener('change', (e) => setSpin(e.target.checked));
@@ -3565,6 +5427,7 @@ const DEM_API_KEY = '';
     $('topo-form').addEventListener('change', onTopoInput);
     $('topo-form').addEventListener('submit', safe(onTopoSubmit));
     document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && state.mode === 'cad' && !/INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || '')) { cadEscape(); return; }
       if (e.key === 'Escape' && state.mode !== 'idle' && !/INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || '')) { setMode('idle'); notify('Mode quitté.', 'info', 2500); }
     });
     // Panneau mobile : revient à l'état normal quand l'écran s'élargit
@@ -3705,7 +5568,7 @@ const DEM_API_KEY = '';
   // Poignée de débogage / tests : expose l'état et quelques fonctions internes.
   window.TopoGIS = {
     version: CONFIG.appVersion, state, config: CONFIG,
-    internals: { overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
+    internals: { cad: { llToUtm, utmToLl, cadClip, cadSplitEqualArea, cadInsetConvex, cadIsConvex, offsetPath, cadOffsetEntity, cadParsePoint, buildDxf, parseDxf, cadImportDxfText, cadSubmit, cadSetTool, cadLoad, cadSerialize, cadExportFeatures, cadToXY, cadToLL, cadMetrics, cadComputeProfile, ringArea, pathLen, cadSnapAt, cadAddEntity, cadRender, cadLog, cadExportPng }, overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
   };
 
   init().catch(handleUnexpected);
