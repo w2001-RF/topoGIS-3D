@@ -427,6 +427,20 @@ input:invalid{border-color:var(--danger)}
 @media (max-width:860px){ #tasks{left:8px;width:calc(100% - 64px)} }
 @media (max-height:500px) and (orientation:landscape){ #tasks{top:62px;width:min(300px,50%)} }
 @media (prefers-reduced-motion: reduce){ #busy-bar i,.task-bar.indeterminate i{animation-duration:3s} }
+/* ---------- Collaboration ---------- */
+.collab-peers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.collab-peers li{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.collab-peers .dot,#collab-chip .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 10px}
+#collab-manual{display:flex;flex-direction:column;gap:6px}
+#collab-manual textarea{min-height:52px;font:11.5px ui-monospace,Consolas,monospace;word-break:break-all}
+#collab-chip{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--panel);color:var(--text);box-shadow:var(--shadow);font-size:12.5px;font-weight:600;max-width:calc(100% - 140px);white-space:nowrap;overflow:hidden}
+#collab-chip .dot{background:var(--success)}
+#collab-chip.warn .dot{background:var(--warn)}
+#collab-chip .sub{font-weight:500;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.peer-cursor{pointer-events:none;position:relative}
+.peer-cursor i{position:absolute;left:-1px;top:-1px;width:0;height:0;border-left:7px solid var(--c);border-right:7px solid transparent;border-bottom:13px solid transparent;transform:rotate(-12deg)}
+.peer-cursor span{position:absolute;left:12px;top:10px;background:var(--c);color:#fff;font:600 11.5px system-ui,sans-serif;padding:2px 7px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+@media (max-width:860px){ #collab-chip{bottom:auto;top:62px;max-width:calc(100% - 80px)} }
 </style>
 </head>
 <body>
@@ -459,6 +473,7 @@ input:invalid{border-color:var(--danger)}
     <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c3 3 3 16 0 19M12 2.5c-3 3-3 16 0 19"/></symbol>
     <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.3-2.7 4.2"/><path d="M12 17.6h.01"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/></symbol>
   </defs>
 </svg>
@@ -642,6 +657,54 @@ input:invalid{border-color:var(--danger)}
         </div>
       </details>
 
+      <!-- Collaboration -->
+      <details class="card" id="sec-collab">
+        <summary><svg class="ico"><use href="#i-users"/></svg><h2>Collaboration</h2><svg class="ico chev"><use href="#i-chevron"/></svg></summary>
+        <div class="card-body">
+          <p class="note">Travaillez à plusieurs sur le même projet, en temps réel : plan CAO, parcelle, fiche, imports et points sont synchronisés, et les curseurs des participants s'affichent sur la carte. Pour chaque objet, la modification la plus récente est retenue.</p>
+          <div class="field-row">
+            <div class="field"><label for="collab-name">Votre nom</label><input type="text" id="collab-name" maxlength="32" autocomplete="nickname" placeholder="ex. Équipe terrain"></div>
+            <div class="field"><label for="collab-mode">Mode</label>
+              <select id="collab-mode">
+                <option value="p2p">Pair-à-pair (code de session)</option>
+                <option value="manual">Pair-à-pair manuel (sans serveur)</option>
+                <option value="hybrid">Hybride : pair-à-pair + serveur</option>
+                <option value="central">Centralisé : serveur de données</option>
+                <option value="tabs">Cet appareil (onglets)</option>
+              </select>
+            </div>
+          </div>
+          <div id="collab-server-box" class="field" hidden>
+            <label for="collab-server">Adresse du serveur de données</label>
+            <input type="url" id="collab-server" placeholder="https://collab.mon-cabinet.fr" inputmode="url" spellcheck="false">
+            <div class="cad-cmd"><input type="password" id="collab-token" placeholder="Jeton d'accès (facultatif)" aria-label="Jeton d'accès au serveur" autocomplete="off"><button id="btn-collab-test" class="btn btn-secondary" type="button">Tester</button></div>
+            <p class="hint">Serveur de référence fourni : <code>node server/relay.mjs</code> (WebSocket + REST, données enregistrées sur disque). Tout serveur respectant le même protocole convient.</p>
+          </div>
+          <div class="field">
+            <label for="collab-room">Code de session</label>
+            <div class="cad-cmd"><input type="text" id="collab-room" maxlength="20" placeholder="vide = nouveau code" autocapitalize="characters" spellcheck="false"><button id="btn-collab-newcode" class="btn btn-secondary" type="button">Générer</button></div>
+          </div>
+          <div class="btn-grid">
+            <button id="btn-collab-start" class="btn" type="button"><svg class="ico"><use href="#i-users"/></svg>Démarrer / rejoindre</button>
+            <button id="btn-collab-leave" class="btn btn-danger" type="button" disabled>Quitter la session</button>
+          </div>
+          <button id="btn-collab-invite" class="btn btn-secondary btn-block" type="button" disabled>Copier le lien d'invitation</button>
+          <div id="collab-manual" hidden>
+            <p class="hint">Sans aucun serveur de mise en relation : l'hôte crée un code d'invitation et l'envoie (messagerie, courriel) ; l'invité colle ce code et renvoie le code de réponse ; l'hôte colle la réponse. Une invitation par participant.</p>
+            <label class="check"><input type="checkbox" id="chk-collab-stun" checked> Utiliser un serveur STUN public (connexion entre réseaux différents)</label>
+            <button id="btn-collab-offer" class="btn btn-secondary btn-block" type="button">Créer un code d'invitation</button>
+            <label for="collab-code-out">Code à envoyer</label>
+            <div class="cad-cmd"><textarea id="collab-code-out" rows="2" readonly placeholder="Le code apparaîtra ici"></textarea><button id="btn-collab-copy-code" class="btn btn-secondary" type="button">Copier</button></div>
+            <label for="collab-code-in">Code reçu (invitation ou réponse)</label>
+            <div class="cad-cmd"><textarea id="collab-code-in" rows="2" placeholder="Collez le code ici"></textarea><button id="btn-collab-use-code" class="btn btn-secondary" type="button">Utiliser</button></div>
+          </div>
+          <div id="collab-status" class="msg msg-info" role="status">Hors session.</div>
+          <h3>Participants</h3>
+          <ul id="collab-peers" class="collab-peers" aria-live="polite"></ul>
+          <p class="hint">Pair-à-pair : les données circulent directement entre navigateurs (chiffrement WebRTC) ; le mode « code de session » utilise le service public PeerJS uniquement pour la mise en relation. Hybride : le serveur conserve le projet, accueille les retardataires et prend le relais si une liaison directe échoue.</p>
+        </div>
+      </details>
+
       <!-- Relief et altimétrie -->
       <details class="card" id="sec-relief" open>
         <summary><svg class="ico"><use href="#i-mountain"/></svg><h2>Relief et altimétrie</h2><svg class="ico chev"><use href="#i-chevron"/></svg></summary>
@@ -786,6 +849,7 @@ input:invalid{border-color:var(--danger)}
     <div id="contour-legend" hidden aria-label="Légende des courbes de niveau"></div>
     <div id="toasts" aria-live="polite" aria-atomic="false"></div>
     <div id="busy-bar" hidden aria-hidden="true"><i></i></div>
+    <div id="collab-chip" hidden></div>
     <div id="tasks" aria-label="Tâches en cours"></div>
     <div id="sr-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <noscript><div id="fatal"><div class="msg msg-error">TopoGIS 3D nécessite JavaScript.</div></div></noscript>
@@ -1682,6 +1746,7 @@ const DEM_API_KEY = '';
     const map = state.map;
     map.on('click', onMapClick);
     map.on('mousemove', cadOnMove);
+    map.on('mousemove', (e) => sendPresence(e.lngLat));
     map.on('contextmenu', cadOnContext);
     ['dragstart', 'mousedown', 'touchstart', 'wheel'].forEach((t) => map.on(t, () => { if (state.globe.spin) setSpin(false); }));
     INTERACTIVE_LAYERS.forEach((id) => {
@@ -1977,6 +2042,7 @@ const DEM_API_KEY = '';
   }
 
   function refreshGpsLayer() {
+    collabTouch();
     setSourceData('gps-points', { type: 'FeatureCollection', features: state.gpsTrack.concat(state.csvPoints) });
   }
 
@@ -2269,9 +2335,9 @@ const DEM_API_KEY = '';
 
   function resolveSearchCenter() {
     const wantGps = $('sel-center').value === 'gps';
-    if (wantGps && state.position) return { lat: state.position.lat, lng: state.position.lng, label: 'position GPS' };
+    if (wantGps && state.position) return { lat: state.position.lat, lng: state.position.lng, label: 'de la position GPS' };
     const c = state.map.getCenter();
-    return { lat: c.lat, lng: c.lng, label: wantGps ? 'centre de la carte (aucune position GPS disponible)' : 'centre de la carte' };
+    return { lat: c.lat, lng: c.lng, label: wantGps ? 'du centre de la carte (aucune position GPS disponible)' : 'du centre de la carte' };
   }
 
   function toggleDetectUi(loading) {
@@ -2296,7 +2362,7 @@ const DEM_API_KEY = '';
     state.overpassAbort = ctrl;
     state.loadingBuildings = true;
     toggleDetectUi(true);
-    setStatus('buildings-status', `Recherche des bâtiments autour de la ${center.label} (rayon ${radius} m)…`, 'loading');
+    setStatus('buildings-status', `Recherche des bâtiments autour ${center.label} (rayon ${radius} m)…`, 'loading');
     let timedOut = false;
     const maxMs = CONFIG.overpass.endpoints.length * CONFIG.overpass.clientTimeoutMs + 5000;
     const task = startTask({ key: 'buildings', label: `Bâtiments OSM (rayon ${radius} m)`, timeoutMs: maxMs, onCancel: (why) => { timedOut = why === 'timeout'; ctrl.abort(); } });
@@ -2688,6 +2754,7 @@ const DEM_API_KEY = '';
   }
 
   function refreshParcel() {
+    collabTouch();
     const m = computeParcelMetrics();
     state.parcelMetrics = m;
     const v = state.parcel.vertices;
@@ -2835,6 +2902,7 @@ const DEM_API_KEY = '';
   }
 
   function refreshMeasure() {
+    collabTouch();
     const pts = state.measure.points;
     const { segments, total } = measureSegments();
     const feats = [];
@@ -3814,6 +3882,7 @@ const DEM_API_KEY = '';
   function cadRender() {
     const c = state.cad;
     c.ver = (c.ver || 0) + 1;                             // le plan a changé : l'index spatial sera reconstruit
+    collabTouch();
     if (c.render) return;
     c.render = requestAnimationFrame(() => { c.render = 0; cadRenderNow(); });
   }
@@ -5459,6 +5528,7 @@ const DEM_API_KEY = '';
   }
 
   function refreshImportedLayer() {
+    collabTouch();
     setSourceData('imported', { type: 'FeatureCollection', features: state.imported });
   }
 
@@ -5874,7 +5944,7 @@ const DEM_API_KEY = '';
   }
 
   function newProject() {
-    if (!window.confirm('Démarrer un nouveau projet ? Parcelle, bâtiments, points et mesures affichés seront retirés (les données enregistrées localement restent intactes).')) return;
+    if (!window.confirm('Démarrer un nouveau projet ? Parcelle, bâtiments, points et mesures affichés seront retirés (les données enregistrées localement restent intactes).' + (collab.active ? '\n\nAttention : vous êtes en session collaborative, le projet sera aussi vidé chez les autres participants.' : ''))) return;
     setMode('idle');
     closePopup();
     state.parcel = { vertices: [], closed: false };
@@ -5988,6 +6058,7 @@ const DEM_API_KEY = '';
   }
 
   function onTopoInput(e) {
+    collabTouch();
     readTopoFromForm();
     if (e && ELEVATION_IDS.includes(e.target.id)) {
       const t = state.topo;
@@ -6245,7 +6316,14 @@ const DEM_API_KEY = '';
       { target: '#btn-cad-png', title: 'Éditer un plan', body: ['Image de la vue avec flèche du nord, barre d\'échelle et cartouche (projet, client, topographe, date, repère). Remplissez la fiche topographique avant l\'export.'] }
     ] }
   ];
-  const SECTION_TUTORIAL = { 'sec-gps': 'gps', 'sec-buildings': 'batiments', 'sec-measure': 'parcelle', 'sec-cad': 'cao-dessin', 'sec-relief': 'relief', 'sec-topo': 'exemple', 'sec-io': 'echanges' };
+  TUTORIALS.push({ id: 'collab', title: 'Travailler à plusieurs', level: 'Intermédiaire', minutes: 3, summary: 'Partager un projet en temps réel : pair-à-pair, serveur de données ou hybride.', steps: [
+    { target: '#collab-name', title: 'Votre nom', body: ['Il s’affiche à côté de votre curseur sur la carte des autres participants, et dans la liste des participants.'] },
+    { target: '#collab-mode', title: 'Choisir le mode', body: ['Pair-à-pair (code de session) : le plus simple, les données vont directement de navigateur à navigateur.', 'Manuel : aucun service tiers, on échange deux codes par messagerie. Hybride : pair-à-pair plus un serveur qui conserve le projet et accueille les retardataires. Centralisé : tout passe par votre serveur (base de données, intranet).', 'Onglets : pour essayer seul, dans deux onglets de cet appareil.'] },
+    { target: '#btn-collab-start', title: 'Démarrer ou rejoindre', body: ['Le même bouton crée la session (code vide = nouveau code) ou rejoint une session existante (code reçu).', 'Vos objets du plan CAO et vos imports sont ajoutés à la session ; la parcelle et la fiche de la session sont conservées.'], task: 'Démarrez une session.', check: () => collab.active, demo: { label: 'Session d’essai (onglets)', run: () => { if (collab.active) return; $('collab-mode').value = 'tabs'; collabRenderUi(); return collabStart(); } } },
+    { target: '#btn-collab-invite', title: 'Inviter', body: ['Le lien d’invitation pré-remplit le code, le mode et l’adresse du serveur (jamais le jeton).', 'Essayez : ouvrez le lien dans un second onglet, dessinez dans l’un, regardez l’autre.'] },
+    { target: '#collab-peers', title: 'Participants et fusion', body: ['Chaque objet garde la modification la plus récente ; deux personnes peuvent travailler en même temps sur des objets différents sans conflit.', 'Conseil : répartissez le travail par calque (ex. Limites pour l’un, Bâti pour l’autre). Le bandeau de session en bas de la carte indique l’état de la connexion.'] }
+  ] });
+  const SECTION_TUTORIAL = { 'sec-collab': 'collab', 'sec-gps': 'gps', 'sec-buildings': 'batiments', 'sec-measure': 'parcelle', 'sec-cad': 'cao-dessin', 'sec-relief': 'relief', 'sec-topo': 'exemple', 'sec-io': 'echanges' };
 
   /* ----- Moteur de visite guidée ----- */
   const tour = { t: null, i: 0, raf: 0, sig: '', lastCheck: 0, done: false, target: null };
@@ -6451,6 +6529,610 @@ const DEM_API_KEY = '';
   }
   function hideWelcome() { $('welcome').hidden = true; try { store.set(WELCOME_KEY, '1'); } catch (e) { /* ignoré */ } }
 
+
+  /* ========================================================================
+     12b. COLLABORATION EN TEMPS RÉEL
+     Modes : pair-à-pair (WebRTC, signalisation PeerJS ou échange manuel de codes),
+     onglets d'un même appareil (BroadcastChannel), centralisé (serveur WebSocket/REST)
+     et hybride (pair-à-pair + serveur pour la persistance et le relais).
+     Modèle : chaque élément partagé (objet CAO, calque, parcelle, champ de la fiche,
+     import, point) a une horodatation logique hybride ; la dernière écriture gagne
+     élément par élément. Les modifications locales sont détectées par différence.
+     ======================================================================== */
+  const COLLAB_KEY = 'topogis3d.collab';
+  const COLLAB_PALETTE = ['#e03131', '#1c7ed6', '#2f9e44', '#f08c00', '#ae3ec9', '#0c8599', '#d6336c', '#5c940d'];
+  const PEERJS_URLS = ['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js', 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
+  const COLLAB_STUN = [{ urls: 'stun:stun.l.google.com:19302' }];
+  const COLLAB_CHUNK = 14000;
+  const COLLAB_MODES = { p2p: 'Pair-à-pair', manual: 'Pair-à-pair manuel', hybrid: 'Hybride (pair-à-pair + serveur)', central: 'Centralisé (serveur)', tabs: 'Onglets de cet appareil' };
+  const TOPO_SHARED = ['projectName', 'landReference', 'clientName', 'surveyorName', 'surveyDate', 'averageElevation', 'minimumElevation', 'maximumElevation', 'averageSlope', 'soilType', 'landUse', 'notes', 'elevationSource'];
+  const ROLE_LABELS = { host: 'hôte', guest: 'invité', member: 'membre' };
+  const COLLECTION_KEY = /^(cad:e|imp|csv|gps):/;
+
+  function randomCode(n) { const a = new Uint8Array(n); crypto.getRandomValues(a); return [...a].map((x) => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x % 32]).join(''); }
+  const normRoom = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+  const fmtRoom = (r) => (r.length === 8 ? r.slice(0, 4) + '-' + r.slice(4) : r);
+
+  const collab = {
+    active: false, mode: null, room: null, role: null, peer: randomCode(10), name: '', color: '', seq: 0,
+    links: new Map(), peers: new Map(), known: new Map(), clock: 0, seen: new Set(), seenQ: [],
+    timer: 0, applying: false, cursors: new Map(), presAt: 0, bc: null, peerjs: null, ws: null, wsTries: 0, wsTimer: 0,
+    rest: null, manual: new Map(), serverUrl: '', token: '', hb: 0, stats: { sent: 0, recv: 0, conflicts: 0 }, lastSync: 0
+  };
+
+  /* ----- Horloge logique hybride ----- */
+  const hlc = () => (collab.clock = Math.max(Date.now(), collab.clock + 1));
+  const isNewer = (a, b) => !b || a.ts > b.ts || (a.ts === b.ts && String(a.p) > String(b.p));
+
+  /* ----- Éléments partagés ----- */
+  const featKey = (f) => hashString(JSON.stringify(f.geometry) + JSON.stringify(f.properties));
+  function collectItems() {
+    const m = new Map(), c = state.cad;
+    if (c.crs.zone) m.set('cad:crs', { zone: c.crs.zone, south: !!c.crs.south });
+    c.layers.forEach((l) => m.set('cad:l:' + l.id, l));
+    c.entities.forEach((e) => m.set('cad:e:' + e.id, e));
+    m.set('parcel', { vertices: state.parcel.vertices, closed: state.parcel.closed });
+    TOPO_SHARED.forEach((f) => m.set('topo:' + f, state.topo[f] == null ? null : state.topo[f]));
+    state.imported.forEach((f) => m.set('imp:' + featKey(f), f));
+    state.csvPoints.forEach((f) => m.set('csv:' + featKey(f), f));
+    state.gpsTrack.forEach((f) => m.set('gps:' + featKey(f), f));
+    m.set('meas', state.measure.points);
+    return m;
+  }
+  const valHash = (v) => (v == null ? 'nul' : hashString(JSON.stringify(v)));
+
+  /** Détection des modifications locales (différée) puis diffusion. */
+  function collabTouch() {
+    if (!collab.active || collab.applying) return;
+    if (!collab.timer) collab.timer = setTimeout(collabFlush, 160);
+  }
+  function collabFlush() {
+    clearTimeout(collab.timer); collab.timer = 0;
+    if (!collab.active) return [];
+    const items = collectItems(), ops = [];
+    for (const [k, v] of items) {
+      const h = valHash(v), cur = collab.known.get(k);
+      if (!cur || cur.h !== h) { const ts = hlc(); collab.known.set(k, { ts, p: collab.peer, h }); ops.push({ k, v, ts, p: collab.peer }); }
+    }
+    for (const [k, cur] of collab.known) {
+      if (!items.has(k) && cur.h !== 'del') { const ts = hlc(); collab.known.set(k, { ts, p: collab.peer, h: 'del' }); ops.push({ k, v: null, ts, p: collab.peer }); }
+    }
+    if (ops.length) collabBroadcast({ t: 'ops', ops });
+    return ops;
+  }
+  /** Applique des modifications reçues (la plus récente gagne, élément par élément). */
+  function collabApply(ops) {
+    if (!Array.isArray(ops) || !ops.length) return [];
+    collabFlush();                                   // les modifications locales en attente reçoivent d'abord leur horodatage
+    const c = state.cad, touched = new Set();
+    let ents = null, lays = null, arrays = {}, n = 0, conflict = null;
+    const accepted = [];
+    const arr = (kind) => {
+      if (!arrays[kind]) { const src = kind === 'imp' ? state.imported : kind === 'csv' ? state.csvPoints : state.gpsTrack; arrays[kind] = new Map(src.map((f) => [featKey(f), f])); }
+      return arrays[kind];
+    };
+    collab.applying = true;
+    try {
+      for (const op of ops) {
+        if (!op || typeof op.k !== 'string' || !isNum(op.ts)) continue;
+        collab.clock = Math.max(collab.clock, op.ts);
+        if (!isNewer(op, collab.known.get(op.k))) continue;
+        const v = op.v == null ? null : JSON.parse(JSON.stringify(op.v));
+        const k = op.k;
+        if (k === 'cad:crs') { if (v && Number.isInteger(v.zone)) c.crs = { zone: v.zone, south: !!v.south }; touched.add('cad'); }
+        else if (k.startsWith('cad:e:')) {
+          if (!ents) ents = new Map(c.entities.map((e) => [String(e.id), e]));
+          const id = k.slice(6);
+          if (v && CAD_TYPES.includes(v.type) && Array.isArray(v.pts)) ents.set(id, v); else ents.delete(id);
+          if (c.selection.has(id) || c.selection.has(Number(id))) conflict = id;
+          touched.add('cad');
+        } else if (k.startsWith('cad:l:')) {
+          if (!lays) lays = new Map(c.layers.map((l) => [String(l.id), l]));
+          if (v && v.name) lays.set(k.slice(6), v); else if (k.slice(6) !== '0') lays.delete(k.slice(6));
+          touched.add('cad');
+        } else if (k === 'parcel') { state.parcel = v && Array.isArray(v.vertices) ? { vertices: v.vertices, closed: !!v.closed } : { vertices: [], closed: false }; touched.add('parcel'); }
+        else if (k.startsWith('topo:')) { const f = k.slice(5); if (TOPO_SHARED.includes(f)) { state.topo[f] = v; touched.add('topo'); } }
+        else if (/^(imp|csv|gps):/.test(k)) { const kind = k.slice(0, 3), m = arr(kind); if (v && v.type === 'Feature') m.set(k.slice(4), v); else m.delete(k.slice(4)); touched.add(kind); }
+        else if (k === 'meas') { state.measure.points = Array.isArray(v) ? v : []; touched.add('meas'); }
+        else continue;
+        collab.known.set(k, { ts: op.ts, p: op.p, h: valHash(v) });
+        accepted.push(op);
+        n++;
+      }
+      if (ents) c.entities = [...ents.values()];
+      if (lays) { c.layers = [...lays.values()]; if (!c.layers.some((l) => l.id === c.current)) c.current = c.layers[0] ? c.layers[0].id : '0'; }
+      if (ents) c.selection = new Set([...c.selection].filter((id) => ents.has(String(id))));
+      if (arrays.imp) state.imported = [...arrays.imp.values()];
+      if (arrays.csv) state.csvPoints = [...arrays.csv.values()];
+      if (arrays.gps) state.gpsTrack = [...arrays.gps.values()];
+      if (touched.has('cad')) cadRender();
+      if (touched.has('parcel')) { refreshParcel(); updateToolButtons(); }
+      if (touched.has('topo')) { const a = document.activeElement; applyTopoToForm(); if (a && a.focus) a.focus(); }
+      if (touched.has('imp')) refreshImportedLayer();
+      if (touched.has('csv') || touched.has('gps')) refreshGpsLayer();
+      if (touched.has('meas')) refreshMeasure();
+    } finally { collab.applying = false; }
+    if (n) { collab.lastSync = Date.now(); collab.stats.recv += n; }
+    if (conflict) { collab.stats.conflicts++; notify('Un participant vient de modifier un objet que vous aviez sélectionné : sa version la plus récente est affichée.', 'warn', 5000); }
+    collabRenderUi();
+    return accepted;
+  }
+  function snapshotItems() {
+    collabFlush();
+    const items = collectItems(), out = [];
+    for (const [k, meta] of collab.known) out.push({ k, v: meta.h === 'del' ? null : (items.has(k) ? items.get(k) : null), ts: meta.ts, p: meta.p });
+    return out;
+  }
+
+  /* ----- Messages : diffusion par inondation avec déduplication ----- */
+  function remember(mid) { collab.seen.add(mid); collab.seenQ.push(mid); if (collab.seenQ.length > 6000) collab.seen.delete(collab.seenQ.shift()); }
+  function collabBroadcast(msg, exceptId) {
+    msg.mid = msg.mid || collab.peer + '-' + (++collab.seq);
+    msg.from = msg.from || collab.peer; msg.room = collab.room;
+    remember(msg.mid);
+    if (msg.t === 'ops') collab.stats.sent += msg.ops.length;
+    for (const [id, l] of collab.links) if (id !== exceptId && l.open) { try { l.send(msg); } catch (e) { console.warn('Envoi impossible', e); } }
+  }
+  function sendDirect(link, msg) {
+    msg.mid = collab.peer + '-' + (++collab.seq); msg.from = collab.peer; msg.room = collab.room;
+    remember(msg.mid);
+    try { link.send(msg); } catch (e) { console.warn('Envoi impossible', e); }
+  }
+  function helloMsg() { return { t: 'hello', name: collab.name, color: collab.color, role: collab.role, mode: collab.mode }; }
+  function onLinkOpen(link) {
+    link.open = true;
+    sendDirect(link, helloMsg());
+    sendDirect(link, { t: 'snap', items: snapshotItems() });
+    collabRenderUi();
+  }
+  function collabReceive(msg, link) {
+    if (!msg || typeof msg !== 'object' || !collab.active) return;
+    if (msg.room !== collab.room || msg.from === collab.peer) return;
+    if (msg.mid) { if (collab.seen.has(msg.mid)) return; remember(msg.mid); }
+    if (msg.from && msg.from !== 'server') {
+      const p = collab.peers.get(msg.from) || { id: msg.from, name: 'Participant', color: '#868e96', via: new Set() };
+      if (msg.name) p.name = String(msg.name).slice(0, 32);
+      if (msg.color && /^#[0-9a-f]{6}$/i.test(msg.color)) p.color = msg.color;
+      if (msg.role) p.role = msg.role;
+      p.via.add(link.kind); p.last = Date.now();
+      const isNew = !collab.peers.has(msg.from);
+      collab.peers.set(msg.from, p);
+      if (isNew && msg.t === 'hello') notify(`${p.name} a rejoint la session.`, 'info', 3500);
+      // nouveau participant sur une liaison partagée (onglets, serveur) : on se présente et on lui envoie l'état
+      if (isNew && (msg.t === 'hello' || msg.t === 'ping')) { sendDirect(link, helloMsg()); sendDirect(link, { t: 'snap', items: snapshotItems() }); }
+    }
+    switch (msg.t) {
+      case 'ops': collabApply(msg.ops); break;
+      case 'snap': { const acc = collabApply(msg.items); if (acc.length) collabBroadcast({ t: 'ops', ops: acc }, link.id); collabRenderUi(); return; }   // nouveautés relayées aux autres liaisons
+      case 'pres': showRemoteCursor(msg); break;
+      case 'bye': removePeer(msg.from, true); break;
+      default: break;
+    }
+    for (const [id, l] of collab.links) if (l !== link && l.open) { try { l.send(msg); } catch (e) { /* liaison fermée */ } }   // relais vers les autres liaisons
+    collabRenderUi();
+  }
+  /** Liaison générique. Les canaux WebRTC découpent les gros messages (instantanés de plans). */
+  function makeLink(kind, rawSend, opts) {
+    const id = kind + '-' + randomCode(6);
+    const link = { id, kind, open: false, parts: new Map(), label: opts && opts.label };
+    link.send = (msg) => {
+      if (!(opts && opts.chunk)) { rawSend(msg); return; }
+      const s = JSON.stringify(msg);
+      if (s.length <= COLLAB_CHUNK) { rawSend(s); return; }
+      const cid = randomCode(6), n = Math.ceil(s.length / COLLAB_CHUNK);
+      for (let i = 0; i < n; i++) rawSend(JSON.stringify({ t: 'chunk', c: cid, i, n, d: s.slice(i * COLLAB_CHUNK, (i + 1) * COLLAB_CHUNK) }));
+    };
+    link.receive = (data) => {
+      let m = data;
+      if (typeof data === 'string') { try { m = JSON.parse(data); } catch (e) { return; } }
+      if (m && m.t === 'chunk') {
+        const buf = link.parts.get(m.c) || new Array(m.n);
+        buf[m.i] = m.d; link.parts.set(m.c, buf);
+        if (buf.filter((x) => x != null).length < m.n) return;
+        link.parts.delete(m.c);
+        try { m = JSON.parse(buf.join('')); } catch (e) { return; }
+      }
+      collabReceive(m, link);
+    };
+    collab.links.set(id, link);
+    return link;
+  }
+  function dropLink(link) {
+    if (!collab.links.has(link.id)) return;
+    collab.links.delete(link.id);
+    collab.peers.forEach((p) => p.via.delete(link.kind));      // les participants muets disparaissent après 35 s (battement de cœur)
+    collabRenderUi();
+  }
+  function removePeer(pid, announce) {
+    const p = collab.peers.get(pid);
+    if (!p) return;
+    collab.peers.delete(pid);
+    const m = collab.cursors.get(pid);
+    if (m) { m.marker.remove(); collab.cursors.delete(pid); }
+    if (announce) notify(`${p.name} a quitté la session.`, 'info', 3500);
+    collabRenderUi();
+  }
+
+  /* ----- Présence : curseurs des participants ----- */
+  function sendPresence(lngLat) {
+    if (!collab.active || !collab.links.size) return;
+    const now = Date.now();
+    if (now - collab.presAt < 150) return;
+    collab.presAt = now;
+    collabBroadcast({ t: 'pres', ll: [round(lngLat.lng, 7), round(lngLat.lat, 7)], name: collab.name, color: collab.color, tool: state.mode === 'cad' && state.cad.tool ? CAD_TOOLS[state.cad.tool.name].label : state.mode });
+  }
+  function showRemoteCursor(msg) {
+    if (!state.map || !window.maplibregl || !Array.isArray(msg.ll)) return;
+    let m = collab.cursors.get(msg.from);
+    const p = collab.peers.get(msg.from) || {};
+    const label = (p.name || msg.name || 'Participant') + (msg.tool && msg.tool !== 'idle' ? ' · ' + msg.tool : '');
+    if (!m) {
+      const node = el('div', { class: 'peer-cursor', 'aria-hidden': 'true' }, el('i'), el('span'));
+      m = { marker: new maplibregl.Marker({ element: node, anchor: 'top-left' }).setLngLat(msg.ll).addTo(state.map), node };
+      collab.cursors.set(msg.from, m);
+    } else m.marker.setLngLat(msg.ll);
+    m.node.style.setProperty('--c', p.color || msg.color || '#868e96');
+    m.node.lastChild.textContent = label;
+    m.at = Date.now();
+  }
+
+  /* ----- Transport : onglets d'un même appareil ----- */
+  function startTabs() {
+    if (!window.BroadcastChannel || collab.noTabs) return;          // noTabs : tests des autres transports
+    const bc = new BroadcastChannel('topogis3d-collab-' + collab.room);
+    collab.bc = bc;
+    const link = makeLink('tab', (m) => bc.postMessage(m));
+    bc.onmessage = (ev) => link.receive(ev.data);
+    onLinkOpen(link);
+  }
+
+  /* ----- Transport : pair-à-pair avec code de session (signalisation PeerJS) ----- */
+  async function loadPeerJs() {
+    if (window.Peer) return;
+    for (const url of PEERJS_URLS) { try { await loadScript(url); if (window.Peer) return; } catch (e) { /* miroir suivant */ } }
+    throw userError('La bibliothèque PeerJS n\'a pas pu être chargée (réseau ou CDN bloqué). Utilisez le mode « pair-à-pair manuel » ou un serveur.');
+  }
+  async function startPeerJs() {
+    const task = startTask({ key: 'collab-p2p', label: 'Connexion pair-à-pair', timeoutMs: 25000, timeoutMessage: 'Le service de mise en relation PeerJS ne répond pas (réseau filtré ?). Essayez le mode manuel ou un serveur.', onCancel: () => { if (collab.peerjs) collab.peerjs.destroy(); } });
+    try { await loadPeerJs(); } catch (err) { task.fail(err.message); setCollabStatus(err.message, 'error'); return; }
+    const hostId = 'topogis3d-' + collab.room.toLowerCase();
+    const attach = (conn) => {
+      const link = makeLink('p2p', (m) => conn.send(m), { chunk: true });
+      conn.on('open', () => { onLinkOpen(link); task.done('Connecté en pair-à-pair.'); });
+      conn.on('data', (d) => link.receive(d));
+      conn.on('close', () => { dropLink(link); if (collab.active && collab.role !== 'host' && collab.mode !== 'manual') reclaimHost(); });
+      conn.on('error', () => dropLink(link));
+      if (conn.open) onLinkOpen(link);
+    };
+    const asGuest = () => {
+      const p = new Peer(undefined, { debug: 0 });
+      collab.peerjs = p;
+      p.on('open', () => { if (!collab.active) return; collab.role = 'guest'; task.detail('Connexion à l\'hôte de la session'); attach(p.connect(hostId, { reliable: true, serialization: 'json' })); collabRenderUi(); });
+      p.on('error', (err) => { if (err.type === 'peer-unavailable') { task.detail('Hôte absent : reprise de l\'hébergement'); reclaimHost(); } else { const m = peerJsErrorText(err); task.fail(m); setCollabStatus(m, collab.mode === 'hybrid' ? 'warn' : 'error'); } });
+      p.on('disconnected', () => { if (collab.active && !p.destroyed) setTimeout(() => { try { p.reconnect(); } catch (e) { /* ignoré */ } }, 2000); });
+    };
+    const p = new Peer(hostId, { debug: 0 });
+    collab.peerjs = p;
+    p.on('open', () => { if (!collab.active) return; collab.role = 'host'; task.done('Session hébergée : en attente de participants.'); collabRenderUi(); });
+    p.on('connection', (conn) => attach(conn));
+    p.on('error', (err) => {
+      if (err.type === 'unavailable-id') { p.destroy(); asGuest(); }
+      else if (err.type !== 'peer-unavailable') { const m = peerJsErrorText(err); task.fail(m); setCollabStatus(m, collab.mode === 'hybrid' ? 'warn' : 'error'); }
+    });
+    p.on('disconnected', () => { if (collab.active && !p.destroyed) setTimeout(() => { try { p.reconnect(); } catch (e) { /* ignoré */ } }, 2000); });
+  }
+  function peerJsErrorText(err) {
+    const t = err && err.type;
+    if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed') {
+      return 'Service de mise en relation PeerJS injoignable (réseau filtré ou hors ligne)' + (collab.mode === 'hybrid' ? ' : la session continue via le serveur de données.' : '. Utilisez le mode « pair-à-pair manuel », les onglets ou un serveur de données.');
+    }
+    if (t === 'browser-incompatible') return 'Ce navigateur ne prend pas en charge WebRTC : utilisez le mode centralisé (serveur).';
+    return 'Erreur pair-à-pair (' + (t || (err && err.message) || 'inconnue') + ').';
+  }
+  /** L'hôte est parti : un invité reprend l'hébergement, les autres s'y reconnectent. */
+  function reclaimHost() {
+    if (!collab.active || collab.reclaiming) return;
+    collab.reclaiming = true;
+    setTimeout(() => {
+      collab.reclaiming = false;
+      if (!collab.active) return;
+      if (collab.peerjs) collab.peerjs.destroy();
+      startPeerJs();
+    }, 400 + Math.random() * 1600);
+  }
+
+  /* ----- Transport : pair-à-pair manuel (échange de codes, aucun serveur de mise en relation) ----- */
+  async function packCode(obj) {
+    const json = JSON.stringify(obj);
+    if (window.CompressionStream) {
+      const cs = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      const buf = new Uint8Array(await new Response(cs).arrayBuffer());
+      let bin = ''; buf.forEach((b) => { bin += String.fromCharCode(b); });
+      return 'TGz.' + btoa(bin);
+    }
+    return 'TG.' + btoa(unescape(encodeURIComponent(json)));
+  }
+  async function unpackCode(text) {
+    const s = String(text || '').trim().replace(/\s+/g, '');
+    try {
+      if (s.startsWith('TGz.')) {
+        const bin = atob(s.slice(4)), buf = Uint8Array.from(bin, (ch) => ch.charCodeAt(0));
+        const ds = new Blob([buf]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+        return JSON.parse(await new Response(ds).text());
+      }
+      if (s.startsWith('TG.')) return JSON.parse(decodeURIComponent(escape(atob(s.slice(3)))));
+    } catch (e) { /* code abîmé */ }
+    throw userError('Code non reconnu : copiez le code complet (il commence par « TG »).');
+  }
+  function iceGathered(pc, ms) {
+    return new Promise((resolve) => {
+      if (pc.iceGatheringState === 'complete') { resolve(); return; }
+      const t = setTimeout(resolve, ms);
+      pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); resolve(); } });
+    });
+  }
+  function attachChannel(dc, pc) {
+    const link = makeLink('manual', (m) => dc.send(m), { chunk: true });
+    dc.onopen = () => { onLinkOpen(link); notify('Liaison pair-à-pair directe établie.', 'ok', 4000); };
+    dc.onmessage = (ev) => link.receive(ev.data);
+    dc.onclose = () => dropLink(link);
+    pc.onconnectionstatechange = () => { if (['failed', 'closed'].includes(pc.connectionState)) { dropLink(link); if (pc.connectionState === 'failed') setCollabStatus('Liaison directe impossible (pare-feu ou réseaux différents sans STUN).', 'error'); } };
+    return link;
+  }
+  const rtcConfig = () => ({ iceServers: $('chk-collab-stun') && !$('chk-collab-stun').checked ? [] : COLLAB_STUN });
+  /** Hôte : crée un code d'invitation (offre WebRTC). */
+  async function manualCreateOffer() {
+    if (!collab.active) { if (!(await collabStart({ mode: 'manual', role: 'host' }))) return null; }
+    const pc = new RTCPeerConnection(rtcConfig());
+    const dc = pc.createDataChannel('topogis', { ordered: true });
+    const id = randomCode(6);
+    collab.manual.set(id, { pc, dc });
+    attachChannel(dc, pc);
+    await pc.setLocalDescription(await pc.createOffer());
+    await iceGathered(pc, 5000);
+    const code = await packCode({ k: 'offer', id, room: collab.room, from: collab.peer, name: collab.name, sdp: pc.localDescription.sdp });
+    $('collab-code-out').value = code;
+    setCollabStatus('Code d\'invitation créé : envoyez-le au participant (messagerie, courriel…), puis collez ici sa réponse.', 'info');
+    return code;
+  }
+  /** Utilise un code reçu : une invitation (on répond) ou une réponse (on finalise la liaison). */
+  async function manualUseCode(text) {
+    const o = await unpackCode(text);
+    if (o.k === 'offer') {
+      if (!collab.active || collab.room !== o.room) { if (collab.active) collabLeave(true); if (!(await collabStart({ mode: 'manual', role: 'guest', room: o.room }))) return null; }
+      const pc = new RTCPeerConnection(rtcConfig());
+      pc.ondatachannel = (ev) => attachChannel(ev.channel, pc);
+      collab.manual.set(o.id, { pc });
+      await pc.setRemoteDescription({ type: 'offer', sdp: o.sdp });
+      await pc.setLocalDescription(await pc.createAnswer());
+      await iceGathered(pc, 5000);
+      const code = await packCode({ k: 'answer', id: o.id, room: o.room, from: collab.peer, name: collab.name, sdp: pc.localDescription.sdp });
+      $('collab-code-out').value = code;
+      setCollabStatus(`Invitation de ${o.name || 'l\'hôte'} acceptée. Renvoyez-lui le code de réponse affiché ci-dessus.`, 'info');
+      return code;
+    }
+    if (o.k === 'answer') {
+      const m = collab.manual.get(o.id);
+      if (!m) throw userError('Cette réponse ne correspond à aucune invitation en cours : créez une nouvelle invitation.');
+      await m.pc.setRemoteDescription({ type: 'answer', sdp: o.sdp });
+      setCollabStatus(`Réponse de ${o.name || 'l\'invité'} reçue : connexion directe en cours…`, 'loading');
+      return null;
+    }
+    throw userError('Code non reconnu.');
+  }
+
+  /* ----- Transport : serveur de données (WebSocket, repli REST) ----- */
+  const serverBase = () => collab.serverUrl.replace(/\/+$/, '');
+  const authHeaders = () => (collab.token ? { Authorization: 'Bearer ' + collab.token } : {});
+  async function testServer(url, token) {
+    const base = String(url || '').replace(/\/+$/, '');
+    if (!/^https?:\/\//i.test(base)) throw userError('Adresse de serveur invalide : elle doit commencer par http:// ou https://.');
+    if (location.protocol === 'https:' && /^http:/i.test(base) && !/localhost|127\.0\.0\.1/.test(base)) throw userError('Page en HTTPS : le navigateur bloque un serveur en http://. Utilisez une adresse https://.');
+    const r = await fetchJson(base + '/api/health', { headers: token ? { Authorization: 'Bearer ' + token } : {} }, 6000);
+    if (!r || r.ok !== true) throw userError('Le serveur a répondu, mais pas avec le protocole TopoGIS (/api/health).');
+    return r;
+  }
+  function startServer() {
+    if (!collab.active || !collab.serverUrl) return;
+    clearTimeout(collab.wsTimer);
+    const url = serverBase().replace(/^http/i, 'ws') + '/ws?room=' + encodeURIComponent(collab.room) + '&peer=' + collab.peer + (collab.token ? '&token=' + encodeURIComponent(collab.token) : '');
+    let ws;
+    try { ws = new WebSocket(url); } catch (e) { startRest(); return; }
+    collab.ws = ws;
+    const link = makeLink('server', (m) => { if (ws.readyState === 1) ws.send(JSON.stringify(m)); });
+    const opened = setTimeout(() => { if (ws.readyState !== 1) ws.close(); }, 8000);
+    ws.onopen = () => { clearTimeout(opened); collab.wsTries = 0; stopRest(); onLinkOpen(link); setCollabStatus('Serveur connecté : les modifications sont enregistrées et relayées.', 'ok'); };
+    ws.onmessage = (ev) => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } link.receive(m); };
+    ws.onclose = () => {
+      clearTimeout(opened);
+      dropLink(link);
+      if (!collab.active || collab.ws !== ws) return;
+      collab.wsTries++;
+      const wait = Math.min(30, 2 ** collab.wsTries);
+      if (collab.wsTries >= 2) startRest();
+      setCollabStatus(`Serveur injoignable en temps réel : nouvelle tentative dans ${wait} s${collab.rest ? ' (synchronisation périodique HTTP en attendant)' : ''}. Vos modifications sont conservées.`, 'warn');
+      collab.wsTimer = setTimeout(startServer, wait * 1000);
+    };
+  }
+  /** Repli : synchronisation périodique par HTTP (le serveur garde un journal numéroté). */
+  function startRest() {
+    if (collab.rest || !collab.active) return;
+    const st = { since: 0, timer: 0, link: null, busy: false };
+    collab.rest = st;
+    st.link = makeLink('server-rest', (m) => {
+      if (m.t !== 'ops' && m.t !== 'snap') return;
+      fetchJson(serverBase() + '/api/rooms/' + encodeURIComponent(collab.room) + '/ops', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify({ from: collab.peer, ops: m.ops || m.items }) }, 15000)
+        .catch((err) => setCollabStatus('Envoi au serveur impossible (' + describeNetworkFailure(err) + '). Nouvel essai à la prochaine synchronisation.', 'warn'));
+    });
+    st.link.open = true;
+    const poll = async () => {
+      if (!collab.active || collab.rest !== st) return;
+      if (!st.busy) {
+        st.busy = true;
+        try {
+          const base = serverBase() + '/api/rooms/' + encodeURIComponent(collab.room);
+          const r = await fetchJson(base + '/ops?since=' + st.since, { headers: authHeaders() }, 10000);
+          if (r.reset || st.since === 0) { const snap = await fetchJson(base, { headers: authHeaders() }, 15000); collabApply(snap.items); st.since = snap.seq || 0; st.link.send({ t: 'snap', items: snapshotItems() }); }
+          else { collabApply(r.ops); st.since = r.seq; }
+          collab.lastSync = Date.now();
+        } catch (err) { setCollabStatus('Serveur injoignable (' + describeNetworkFailure(err) + ') : vos modifications restent sur cet appareil et seront envoyées au retour du réseau.', 'warn'); }
+        st.busy = false;
+        collabRenderUi();
+      }
+      st.timer = setTimeout(poll, 3000);
+    };
+    poll();
+  }
+  function stopRest() { if (!collab.rest) return; clearTimeout(collab.rest.timer); dropLink(collab.rest.link); collab.rest = null; }
+
+  /* ----- Démarrage / arrêt ----- */
+  function readCollabForm() {
+    collab.name = ($('collab-name').value.trim() || 'Participant ' + collab.peer.slice(0, 3)).slice(0, 32);
+    collab.serverUrl = $('collab-server').value.trim();
+    collab.token = $('collab-token').value.trim();
+    try { localStorage.setItem(COLLAB_KEY, JSON.stringify({ name: $('collab-name').value.trim(), mode: $('collab-mode').value, server: collab.serverUrl })); } catch (e) { /* ignoré */ }
+  }
+  /** Démarre ou rejoint une session. o : { mode, room, role } (valeurs du formulaire par défaut). */
+  async function collabStart(o) {
+    const opts = o || {};
+    if (!requireMap()) return false;
+    if (collab.active) { notify('Une session est déjà active : quittez-la avant d\'en démarrer une autre.', 'warn'); return false; }
+    readCollabForm();
+    const mode = opts.mode || $('collab-mode').value;
+    let room = normRoom(opts.room || $('collab-room').value);
+    if (!room) { room = randomCode(8); $('collab-room').value = fmtRoom(room); }
+    if (room.length < 4) { notify('Code de session trop court (4 caractères minimum).', 'error'); return false; }
+    if ((mode === 'hybrid' || mode === 'central') && !collab.serverUrl) { notify('Indiquez l\'adresse du serveur de données pour ce mode.', 'error'); $('collab-server').focus(); return false; }
+    if (mode === 'central' || mode === 'hybrid') {
+      const t = startTask({ label: 'Connexion au serveur de données', timeoutMs: 8000 });
+      try { await testServer(collab.serverUrl, collab.token); t.done('Serveur joignable.'); }
+      catch (err) {
+        t.fail(err.userError ? err.message : err);
+        if (mode === 'central') { setCollabStatus('Serveur injoignable : ' + (err.userError ? err.message : describeNetworkFailure(err)) + '. Vérifiez l\'adresse, ou utilisez le mode pair-à-pair.', 'error'); return false; }
+        notify('Serveur injoignable : la session démarre en pair-à-pair seul et réessaiera le serveur en arrière-plan.', 'warn', 8000);
+      }
+    }
+    Object.assign(collab, { active: true, mode, room, role: opts.role || 'member', color: COLLAB_PALETTE[Math.abs(parseInt(hashString(collab.peer), 10) || 0) % COLLAB_PALETTE.length], wsTries: 0 });
+    collab.known.clear(); collab.peers.clear(); collab.seen.clear(); collab.seenQ = [];
+    // identifiants d'objets uniques entre participants
+    const c = state.cad;
+    let renamed = 0;
+    c.entities.forEach((e) => { if (typeof e.id === 'number') { e.id = collab.peer + '.' + e.id; renamed++; } });
+    if (renamed) { c.selection.clear(); c.undo = []; c.redo = []; }
+    // horodatage initial : un invité ne remplace pas la parcelle et la fiche de la session
+    const guest = opts.role === 'guest';
+    for (const [k, v] of collectItems()) collab.known.set(k, { ts: guest && !COLLECTION_KEY.test(k) ? 1 : hlc(), p: collab.peer, h: valHash(v) });
+    startTabs();
+    if (mode === 'p2p' || mode === 'hybrid') startPeerJs();
+    if ((mode === 'hybrid' || mode === 'central') && collab.serverUrl) startServer();
+    clearInterval(collab.hb);
+    collab.hb = setInterval(collabHeartbeat, 10000);
+    history.replaceState(null, '', location.pathname + location.search + '#collab=' + room + '&mode=' + mode + (collab.serverUrl ? '&srv=' + encodeURIComponent(collab.serverUrl) : ''));
+    setCollabStatus(`Session ${fmtRoom(room)} démarrée (${COLLAB_MODES[mode]}). Partagez le code ou le lien d'invitation.`, 'ok');
+    cadRender();
+    collabRenderUi();
+    return true;
+  }
+  function collabHeartbeat() {
+    if (!collab.active) return;
+    collabBroadcast({ t: 'ping', name: collab.name, color: collab.color, role: collab.role });
+    const now = Date.now();
+    for (const [pid, p] of collab.peers) if (now - (p.last || 0) > 35000) removePeer(pid, true);
+    for (const [pid, m] of collab.cursors) if (now - (m.at || 0) > 30000) { m.marker.remove(); collab.cursors.delete(pid); }
+    collabFlush();
+    collabRenderUi();
+  }
+  function collabLeave(silent) {
+    if (!collab.active) return;
+    collabFlush();
+    collabBroadcast({ t: 'bye' });
+    collab.active = false;
+    clearInterval(collab.hb); clearTimeout(collab.wsTimer); clearTimeout(collab.timer); collab.timer = 0;
+    if (collab.bc) { collab.bc.close(); collab.bc = null; }
+    if (collab.peerjs) { try { collab.peerjs.destroy(); } catch (e) { /* ignoré */ } collab.peerjs = null; }
+    if (collab.ws) { const ws = collab.ws; collab.ws = null; try { ws.close(); } catch (e) { /* ignoré */ } }
+    stopRest();
+    collab.manual.forEach((m) => { try { m.pc.close(); } catch (e) { /* ignoré */ } });
+    collab.manual.clear(); collab.links.clear(); collab.peers.clear();
+    collab.cursors.forEach((m) => m.marker.remove()); collab.cursors.clear();
+    history.replaceState(null, '', location.pathname + location.search);
+    if (!silent) setCollabStatus('Session quittée. Votre copie du projet reste sur cet appareil (pensez à l\'enregistrer).', 'info');
+    collabRenderUi();
+  }
+
+  /* ----- Interface ----- */
+  function setCollabStatus(msg, type) { setStatus('collab-status', msg, type); }
+  function collabRenderUi() {
+    if (!$('collab-peers')) return;
+    const on = collab.active, mode = $('collab-mode').value;
+    $('btn-collab-start').disabled = on;
+    $('btn-collab-leave').disabled = !on;
+    $('btn-collab-invite').disabled = !on;
+    $('collab-mode').disabled = on;
+    $('collab-room').readOnly = on;
+    $('collab-server-box').hidden = !(mode === 'hybrid' || mode === 'central');
+    $('collab-manual').hidden = mode !== 'manual';
+    const kinds = {};
+    collab.links.forEach((l) => { if (l.open) kinds[l.kind] = (kinds[l.kind] || 0) + 1; });
+    const via = { p2p: 'pair-à-pair', manual: 'direct', tab: 'onglet', server: 'serveur', 'server-rest': 'serveur (HTTP)' };
+    const me = el('li', null, el('i', { class: 'dot', style: { background: collab.color || '#868e96' } }), el('strong', { text: (collab.name || 'Vous') + ' (vous)' }), on ? el('span', { class: 'hint', text: ' · ' + ROLE_LABELS[collab.role] }) : null);
+    const others = [...collab.peers.values()].map((p) => el('li', null, el('i', { class: 'dot', style: { background: p.color } }), el('span', { text: p.name }), el('span', { class: 'hint', text: ' · ' + [...p.via].map((k) => via[k] || k).join(', ') })));
+    $('collab-peers').replaceChildren(me, ...(on ? others : []));
+    const chip = $('collab-chip');
+    chip.hidden = !on;
+    if (on) {
+      const n = collab.peers.size + 1;
+      const links = Object.entries(kinds).map(([k, v]) => (via[k] || k) + (v > 1 ? ' ×' + v : '')).join(', ');
+      const offline = !Object.keys(kinds).some((k) => k !== 'tab') && collab.mode !== 'tabs';
+      chip.className = offline ? 'warn' : '';
+      chip.replaceChildren(el('i', { class: 'dot' }), el('span', { text: `Session ${fmtRoom(collab.room)} · ${n} participant${n > 1 ? 's' : ''}` }), el('span', { class: 'sub', text: offline ? 'en attente de connexion' : (links || 'connecté') }));
+      chip.title = `Mode : ${COLLAB_MODES[collab.mode]}. Éléments partagés : ${collab.known.size}. Reçus : ${collab.stats.recv}, envoyés : ${collab.stats.sent}.`;
+    }
+  }
+  function inviteLink() {
+    return location.origin + location.pathname + '#collab=' + collab.room + '&mode=' + collab.mode + (collab.serverUrl ? '&srv=' + encodeURIComponent(collab.serverUrl) : '');
+  }
+  async function copyText(text, okMsg) {
+    try { await navigator.clipboard.writeText(text); notify(okMsg, 'ok', 4000); }
+    catch (e) { window.prompt('Copiez ce texte :', text); }
+  }
+  function bindCollabUi() {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(COLLAB_KEY) || '{}') || {}; } catch (e) { saved = {}; }
+    $('collab-name').value = saved.name || '';
+    if (saved.mode && COLLAB_MODES[saved.mode]) $('collab-mode').value = saved.mode;
+    $('collab-server').value = saved.server || '';
+    $('collab-mode').addEventListener('change', collabRenderUi);
+    // invitation reçue par lien
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (h.get('collab')) {
+      $('collab-room').value = fmtRoom(normRoom(h.get('collab')));
+      if (COLLAB_MODES[h.get('mode')]) $('collab-mode').value = h.get('mode');
+      if (h.get('srv')) $('collab-server').value = h.get('srv');
+      $('sec-collab').open = true;
+      setCollabStatus('Invitation à la session ' + fmtRoom(normRoom(h.get('collab'))) + ' : saisissez votre nom puis cliquez « Démarrer / rejoindre ».', 'info');
+    }
+    window.addEventListener('beforeunload', () => { if (collab.active) collabBroadcast({ t: 'bye' }); });
+    collabRenderUi();
+  }
+  const collabActions = {
+    'btn-collab-start': () => collabStart({ role: $('collab-mode').value === 'manual' ? 'host' : undefined }),
+    'btn-collab-leave': () => collabLeave(false),
+    'btn-collab-newcode': () => { $('collab-room').value = fmtRoom(randomCode(8)); },
+    'btn-collab-copy-code': () => { const v = $('collab-code-out').value; if (v) copyText(v, 'Code copié.'); },
+    'btn-collab-invite': () => copyText(inviteLink(), 'Lien d\'invitation copié : envoyez-le aux participants.'),
+    'btn-collab-test': async () => {
+      const t = startTask({ label: 'Test du serveur', timeoutMs: 8000 });
+      try { const r = await testServer($('collab-server').value.trim(), $('collab-token').value.trim()); t.done('Serveur joignable.'); setCollabStatus(`Serveur joignable : ${r.name || 'TopoGIS'} ${r.version || ''}${r.persistent ? ', données enregistrées sur disque' : ''}.`, 'ok'); }
+      catch (err) { const m = err.userError ? err.message : 'Serveur injoignable : ' + describeNetworkFailure(err) + '.'; t.fail(m); setCollabStatus(m, 'error'); }
+    },
+    'btn-collab-offer': async () => { try { await manualCreateOffer(); } catch (err) { setCollabStatus(err.userError ? err.message : 'Invitation impossible : ' + err.message, 'error'); } },
+    'btn-collab-use-code': async () => {
+      try { await manualUseCode($('collab-code-in').value); $('collab-code-in').value = ''; }
+      catch (err) { setCollabStatus(err.userError ? err.message : 'Code inutilisable : ' + err.message, 'error'); }
+    }
+  };
+
   /* ----- Liaison des événements ----- */
   const ACTIONS = {
     'btn-theme': toggleTheme,
@@ -6467,6 +7149,7 @@ const DEM_API_KEY = '';
     'btn-save': saveProject, 'btn-load': loadProject, 'btn-clear-storage': clearLocalData, 'btn-new-project': newProject,
     'sheet-toggle': () => setSheetCollapsed(!document.body.classList.contains('sidebar-collapsed')),
     'banner-action': bannerAction, 'banner-quit': () => setMode('idle'),
+    ...collabActions,
     'btn-cad-start': cadToggle, 'btn-cad-parcel': cadFromParcel, 'btn-cad-undo': cadHistoryUndo, 'btn-cad-redo': cadHistoryRedo,
     'btn-cad-dxf': exportDxf, 'btn-cad-dxf-import': () => $('file-dxf').click(), 'btn-cad-png': async () => { const t = startTask({ label: 'Export du plan PNG', timeoutMs: 20000 }); try { await cadExportPng(); t.done(); } catch (err) { t.fail(/security|tainted/i.test(String(err && (err.name + err.message))) ? 'le fond de carte n\'autorise pas la capture d\'image (CORS). Changez de fond ou utilisez le site publié' : err); } }, 'btn-cad-zoomext': cadZoomExtents,
     'btn-help': () => openHelp('tutos'), 'btn-help-close': () => $('help-dialog').close(), 'btn-help-example': () => { $('help-dialog').close(); loadExample(); },
@@ -6491,6 +7174,7 @@ const DEM_API_KEY = '';
     }
     cadBuildUi();
     buildHelpStatic();
+    bindCollabUi();
     const importWithTask = (fn, kind) => safe(async (e) => {
       const f = e.target.files[0]; e.target.value = '';
       if (!f) return;
@@ -6654,7 +7338,7 @@ const DEM_API_KEY = '';
   // Poignée de débogage / tests : expose l'état et quelques fonctions internes.
   window.TopoGIS = {
     version: CONFIG.appVersion, state, config: CONFIG,
-    internals: { perf: { PERF, pool, importDxfFile, startTask, runInWorker, contoursGen, setEcoMode, TASKS }, tuto: { TUTORIALS, startTour, endTour, tourNext, tourPrev, tourDemo, loadExample, exampleCsv, exampleGeoJson, exampleDxf, openHelp, tour }, cad: { llToUtm, utmToLl, cadClip, cadSplitEqualArea, cadInsetConvex, cadIsConvex, offsetPath, cadOffsetEntity, cadParsePoint, buildDxf, parseDxf, cadImportDxfText, cadSubmit, cadSetTool, cadLoad, cadSerialize, cadExportFeatures, cadToXY, cadToLL, cadMetrics, cadComputeProfile, ringArea, pathLen, cadSnapAt, cadAddEntity, cadRender, cadLog, cadExportPng }, overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
+    internals: { collab: { collab, collabStart, collabLeave, collabFlush, collabApply, collectItems, manualCreateOffer, manualUseCode, packCode, unpackCode, testServer }, perf: { PERF, pool, importDxfFile, startTask, runInWorker, contoursGen, setEcoMode, TASKS }, tuto: { TUTORIALS, startTour, endTour, tourNext, tourPrev, tourDemo, loadExample, exampleCsv, exampleGeoJson, exampleDxf, openHelp, tour }, cad: { llToUtm, utmToLl, cadClip, cadSplitEqualArea, cadInsetConvex, cadIsConvex, offsetPath, cadOffsetEntity, cadParsePoint, buildDxf, parseDxf, cadImportDxfText, cadSubmit, cadSetTool, cadLoad, cadSerialize, cadExportFeatures, cadToXY, cadToLL, cadMetrics, cadComputeProfile, ringArea, pathLen, cadSnapAt, cadAddEntity, cadRender, cadLog, cadExportPng }, overpassCache, parseCsv, parseCsvNumber, detectDelimiter, assembleRings, overpassToFeatures, classifyBuilding, parseHeight, makeBuildingProps, normalizeGeoJson, buildCsv, buildExportCollection, computeParcelMetrics, buildBuildingPopup, buildGenericPopup, computeProfileStats, decodeDemPixel, sampleElevations, buildContours, ACTIONS, importGeoJsonFile, importCsvFile, serializeProject, TOPO_FIELDS }
   };
 
   init().catch(handleUnexpected);
